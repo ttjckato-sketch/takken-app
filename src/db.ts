@@ -42,7 +42,7 @@ export interface RestorationCandidate {
     original_text: string;
     original_explanation: string;
     original_is_statement_true: boolean | null;
-    restore_reason: 'placeholder_text_shortage' | 'null_statement' | 'short_explanation' | 'missing_explanation' | 'other';
+    restore_reason: 'placeholder_text_shortage' | 'null_statement' | 'short_explanation' | 'missing_explanation' | 'placeholder_v2' | 'other';
     restored_text?: string;
     restored_explanation?: string;
     restored_is_statement_true?: boolean;
