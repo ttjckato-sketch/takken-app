@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import React, { useEffect, useState } from 'react';
-import { Home, ChevronRight, Zap, RefreshCw, Brain, AlertTriangle, ArrowLeftRight, TrendingDown, Target, Compass, Info, Star, TrendingUp, BookOpen } from 'lucide-react';
+import { Home, ChevronRight, Zap, RefreshCw, Brain, AlertTriangle, ArrowLeftRight, TrendingDown, Target, Compass, Info, Star, TrendingUp, BookOpen, Database } from 'lucide-react';
 import { db } from './db';
 import { ActiveRecallView } from './components/learning/ActiveRecallView';
 import { MemoryRecallView } from './components/learning/MemoryRecallView';
@@ -14,6 +14,7 @@ import { ensureAllDataReady } from './utils/dataInitializer';
 import { InputUnitViewer } from './components/learning/InputUnitViewer';
 import { ComparisonLearningView } from './components/learning/ComparisonLearningView';
 import { TAKKEN_PROTOTYPE_UNITS } from './utils/inputUnitPrototypes';
+import { DataExplorerView } from './components/admin/DataExplorerView';
 
 type HomeStats = {
   total: number;
@@ -25,7 +26,7 @@ type HomeStats = {
   totalReviews: number;
 };
 
-type TabType = 'home' | 'study_session' | 'session_summary' | 'input_viewer' | 'comparison_viewer';
+type TabType = 'home' | 'study_session' | 'session_summary' | 'input_viewer' | 'comparison_viewer' | 'admin_explorer';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
@@ -713,6 +714,12 @@ export default function App() {
                             >
                                 <Target size={18} /> DB品質監査ページを開く
                             </button>
+                            <button 
+                                onClick={() => setCurrentTab('admin_explorer')}
+                                className="px-6 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-2xl text-sm font-black transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                            >
+                                <Database size={18} /> Data Explorer (Read-Only)
+                            </button>
                         </div>
 
                         <p className="text-slate-500 text-[10px] font-bold">※URLパラメータ ?devRepairTag=農地法 等でも直接表示可能です。</p>
@@ -848,12 +855,21 @@ export default function App() {
       case 'comparison_viewer':
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <ComparisonLearningView 
+            <ComparisonLearningView
+                onBack={() => setCurrentTab('home')}
+            />
+          </div>
+        );
+      case 'admin_explorer':
+        return (
+          <div className="animate-in fade-in duration-500">
+            <DataExplorerView 
                 onBack={() => setCurrentTab('home')} 
             />
           </div>
         );
       case 'session_summary':
+
         return sessionSummary && (
             <div className="max-w-2xl mx-auto space-y-8 py-10 text-center">
                 <h2 className="text-4xl font-black text-slate-900 tracking-tighter">🏆 SESSION COMPLETE</h2>
