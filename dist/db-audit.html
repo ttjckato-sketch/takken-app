@@ -38,19 +38,17 @@
     - 復元候補の追加・削除は自由ですが、ソース母集団の削除は禁止です。
   </div>
 
-  <div>
-    <button onclick="downloadBackup()" style="background: #8b5cf6;">💾 物理バックアップ保存 (JSON)</button>
-    <button onclick="runDryRun()" style="background: #f59e0b;">🔍 全件ドライラン実行</button>
-    <button onclick="runKnowledgeOptimizationSample()" style="background: #10b981;">🚀 1000件段階加工</button>
-    <button onclick="clearOptimizationData()" style="background: #ef4444;">🗑️ 加工データ削除</button>
-    <button onclick="location.reload()">🔄 画面更新</button>
+  <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
+    <h3 style="margin-top: 0; color: #569cd6;">💾 データ保護 (v2.1.0)</h3>
+    <button onclick="runBackupExport()" style="background: #0e639c;">💾 バックアップをエクスポート (JSON)</button>
+    <button onclick="downloadBackup()" style="background: #3a3a3a; font-size: 11px;">💾 物理全件 (旧方式)</button>
   </div>
 
   <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
-    <h3 style="margin-top: 0; color: #ce9178;">🛠️ 教材復元 PoC 操作</h3>
-    <button onclick="extractRestorationCandidates()" style="background: #ce9178;">🔍 50件復元候補を抽出</button>
+    <h3 style="margin-top: 0; color: #ce9178;">🛠️ 教材復元 Batch 操作 (v2.1.0)</h3>
+    <button onclick="runRestorationBatch1()" style="background: #ce9178;">🚀 Batch-1 復元 & 同期実行</button>
+    <button onclick="runRestorationBatch2()" style="background: #4ec9b0; color: black;">🚀 Batch-2 信号解析 & 復元</button>
     <button onclick="downloadRestorationJSON()" class="copy-btn">💾 復元候補JSON保存</button>
-    <button onclick="copyRestorationToClipboard()" class="copy-btn">📋 報告用にコピー</button>
     <button onclick="clearRestorationData()" style="background: #3a3a3a; color: #f48771; border: 1px solid #f48771;">🗑️ 候補クリア</button>
   </div>
 
@@ -137,6 +135,18 @@
       results.appendChild(table);
     }
 
+    async function runBackupExport() {
+        try {
+            addStatus('warn', '📦 バックアップを作成中...');
+            const { exportBackupAsJsonFile } = await import('/src/utils/dataBackupEngine.ts?t=' + Date.now());
+            const res = await exportBackupAsJsonFile();
+            addStatus('ok', `✅ バックアップ完了: ${res.filename} (${(res.size / 1024 / 1024).toFixed(2)} MB)`);
+        } catch (e) {
+            addStatus('fail', '❌ エクスポートエラー: ' + e.message);
+            console.error(e);
+        }
+    }
+
     async function downloadBackup() {
         const tables = ['knowledge_units', 'memory_cards', 'confusion_pairs', 'memory_card_progress', 'memory_study_events', 'restoration_candidates', 'metadata'];
         const backup = { exported_at: new Date().toISOString(), data: {} };
@@ -149,15 +159,41 @@
         a.click();
     }
 
-    async function extractRestorationCandidates() {
+    async function runRestorationBatch1() {
         try {
-            addStatus('warn', '🚀 50件復元候補の抽出を開始...');
-            const { extractRestorationCandidatesPoC } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
-            const res = await extractRestorationCandidatesPoC(50);
-            addStatus('ok', `✅ 抽出完了: ${res.total}件 (P:${res.breakdown.placeholder}, N:${res.breakdown.null_statement}, S:${res.breakdown.short})`);
+            addStatus('warn', '🚀 Batch-1 復元パイプラインを実行中...');
+            const { executeRestorationBatch1, syncRestoredBatch1ToSource } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
+            
+            const results = await executeRestorationBatch1(100);
+            addStatus('ok', `✅ 復元処理完了: ${results.recovered_count}件 (抽出: ${results.total_scanned}件)`);
+            
+            addStatus('warn', '🔄 Active Recall への同期を開始...');
+            const syncedCount = await syncRestoredBatch1ToSource();
+            addStatus('ok', `✅ 同期完了: ${syncedCount}件が学習対象になりました`);
+            
             setTimeout(() => audit(), 1000);
         } catch (e) {
-            addStatus('fail', '❌ 抽出エラー: ' + e.message);
+            addStatus('fail', '❌ 復元エラー: ' + e.message);
+            console.error(e);
+        }
+    }
+
+    async function runRestorationBatch2() {
+        try {
+            addStatus('warn', '🚀 Batch-2 信号解析パイプラインを実行中...');
+            const { executeRestorationBatch2, syncRestoredBatch2ToSource } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
+            
+            const results = await executeRestorationBatch2(50);
+            addStatus('ok', `✅ 信号解析完了: ${results.recovered_count}件を救済 (対象: ${results.total_scanned}件)`);
+            
+            addStatus('warn', '🔄 Active Recall への同期を開始...');
+            const syncedCount = await syncRestoredBatch2ToSource();
+            addStatus('ok', `✅ 同期完了: ${syncedCount}件が新しく学習対象になりました`);
+            
+            setTimeout(() => audit(), 1000);
+        } catch (e) {
+            addStatus('fail', '❌ 復元エラー: ' + e.message);
+            console.error(e);
         }
     }
 

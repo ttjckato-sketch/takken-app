@@ -38,12 +38,10 @@
     - 復元候補の追加・削除は自由ですが、ソース母集団の削除は禁止です。
   </div>
 
-  <div>
-    <button onclick="downloadBackup()" style="background: #8b5cf6;">💾 物理バックアップ保存 (JSON)</button>
-    <button onclick="runDryRun()" style="background: #f59e0b;">🔍 全件ドライラン実行</button>
-    <button onclick="runKnowledgeOptimizationSample()" style="background: #10b981;">🚀 1000件段階加工</button>
-    <button onclick="clearOptimizationData()" style="background: #ef4444;">🗑️ 加工データ削除</button>
-    <button onclick="location.reload()">🔄 画面更新</button>
+  <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
+    <h3 style="margin-top: 0; color: #569cd6;">💾 データ保護 (v2.1.0)</h3>
+    <button onclick="runBackupExport()" style="background: #0e639c;">💾 バックアップをエクスポート (JSON)</button>
+    <button onclick="downloadBackup()" style="background: #3a3a3a; font-size: 11px;">💾 物理全件 (旧方式)</button>
   </div>
 
   <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
@@ -135,6 +133,18 @@
       });
       table.appendChild(thead); table.appendChild(tbody);
       results.appendChild(table);
+    }
+
+    async function runBackupExport() {
+        try {
+            addStatus('warn', '📦 バックアップを作成中...');
+            const { exportBackupAsJsonFile } = await import('/src/utils/dataBackupEngine.ts?t=' + Date.now());
+            const res = await exportBackupAsJsonFile();
+            addStatus('ok', `✅ バックアップ完了: ${res.filename} (${(res.size / 1024 / 1024).toFixed(2)} MB)`);
+        } catch (e) {
+            addStatus('fail', '❌ エクスポートエラー: ' + e.message);
+            console.error(e);
+        }
     }
 
     async function downloadBackup() {
