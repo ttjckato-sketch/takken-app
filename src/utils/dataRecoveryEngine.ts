@@ -4,7 +4,8 @@ import { improveMemoryCardText } from './knowledgeEngine';
 import { 
     executeRestorationBatch1, syncRestoredBatch1ToSource, 
     executeRestorationBatch2, syncRestoredBatch2ToSource,
-    executeRestorationBatch3, syncRestoredBatch3ToSource
+    executeRestorationBatch3, syncRestoredBatch3ToSource,
+    executeRestorationBatch4, syncRestoredBatch4ToSource
 } from './restorationCandidates';
 import { generateCategorySuggestions } from './categorySidecarReview';
 
@@ -19,6 +20,7 @@ export async function processHiddenValueRecovery(options: {
     runBatch1Restoration?: boolean;
     runBatch2Restoration?: boolean;
     runBatch3Restoration?: boolean;
+    runBatch4Restoration?: boolean;
 } = {}): Promise<any> {
     console.log('🧙 埋もれたお宝データの精密回収を開始します...', options);
 
@@ -41,6 +43,13 @@ export async function processHiddenValueRecovery(options: {
         batch3Results = await executeRestorationBatch3(50);
         const syncedCount = await syncRestoredBatch3ToSource();
         console.log(`✅ Batch-3 Restoration completed: ${batch3Results.recovered_count} items recovered, ${syncedCount} synced to Active Recall.`);
+    }
+
+    let batch4Results = null;
+    if (options.runBatch4Restoration) {
+        batch4Results = await executeRestorationBatch4(100);
+        const syncedCount = await syncRestoredBatch4ToSource();
+        console.log(`✅ Batch-4 Restoration completed: ${batch4Results.recovered_count} items recovered, ${syncedCount} synced to Active Recall.`);
     }
     
     const allCards = await db.understanding_cards.toArray();

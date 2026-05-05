@@ -4,7 +4,7 @@ import { classifyExplanationSignal } from './explanationSignalClassifier';
 import { detectCategorySuspect } from './categorySignalClassifier';
 
 /**
- * P26: 教材復元 Batch-1/2/3 抽出および復元ロジック (v2.1.0)
+ * P26: 教材復元 Batch-1/2/3/4 抽出および復元ロジック (v2.2.0)
  * 2621件の除外カードから安全に復元可能なバッチを管理する。
  */
 
@@ -270,7 +270,7 @@ export async function executeRestorationBatch3(limit: number = 50): Promise<Rest
             continue;
         }
 
-        // 3. バリデーション (Placeholder v2: 文が少し短くても解説が長ければ検討するが、今回は15文字以上必須を維持)
+        // 3. バリデーション
         const validation = validateStatementTextForActiveRecall(statement, {
             cardId: card.card_id,
             explanation: explanation
@@ -332,6 +332,119 @@ export async function executeRestorationBatch3(limit: number = 50): Promise<Rest
 }
 
 /**
+ * Batch-4: Scaling Recovery (閾値緩和版) 復元エンジンの実行
+ */
+export async function executeRestorationBatch4(limit: number = 100): Promise<RestorationResult> {
+    console.log(`🚀 [V220-BATCH-4] Starting scaling recovery pipeline...`);
+
+    const takkenCards = await db.understanding_cards.where('exam_type').equals('takken').toArray();
+    const sourcedQuestions = await db.source_questions.where('exam_type').equals('takken').toArray();
+    const sourcedCardIds = new Set(sourcedQuestions.map(q => q.source_card_id));
+    const existingRestorationIds = new Set((await db.restoration_candidates.toArray()).map(c => c.restoration_id));
+
+    const excludedCards = takkenCards.filter(c => 
+        !sourcedCardIds.has(c.card_id) && 
+        !existingRestorationIds.has(`RES-B1-${c.card_id}`) &&
+        !existingRestorationIds.has(`RES-B2-${c.card_id}`) &&
+        !existingRestorationIds.has(`RES-B3-${c.card_id}`) &&
+        !existingRestorationIds.has(`RES-B4-${c.card_id}`)
+    );
+    
+    const results: RestorationResult = {
+        total_scanned: excludedCards.length,
+        batch_size: 0,
+        recovered_count: 0,
+        validation_pass: 0,
+        validation_fail: 0,
+        duplicates_skipped: 0,
+        excluded_reasons: {}
+    };
+
+    const candidates: RestorationCandidate[] = [];
+    const now = Date.now();
+
+    for (const card of excludedCards) {
+        if (candidates.length >= limit) break;
+
+        const explanation = card.core_knowledge?.essence || '';
+        const statement = card.core_knowledge?.rule || card.sample_question || '';
+
+        // 1. カテゴリ不整合チェック
+        const catCheck = detectCategorySuspect(card.category, explanation + " " + statement);
+        if (catCheck.is_suspect) {
+            results.excluded_reasons['category_suspect'] = (results.excluded_reasons['category_suspect'] || 0) + 1;
+            continue;
+        }
+
+        // 2. シグナル解析
+        const signal = classifyExplanationSignal(explanation);
+        if (signal.is_true === null) {
+            results.excluded_reasons[`signal_${signal.polarity}`] = (results.excluded_reasons[`signal_${signal.polarity}`] || 0) + 1;
+            continue;
+        }
+
+        // 3. バリデーション
+        const validation = validateStatementTextForActiveRecall(statement, {
+            cardId: card.card_id,
+            explanation: explanation
+        });
+
+        if (!validation.ok) {
+            results.validation_fail++;
+            results.excluded_reasons[`validation_${validation.category}`] = (results.excluded_reasons[`validation_${validation.category}`] || 0) + 1;
+            continue;
+        }
+
+        // 4. 閾値緩和チェック (解説が30文字以上あれば救済対象とする)
+        if (explanation.length < 30) {
+            results.excluded_reasons['short_explanation'] = (results.excluded_reasons['short_explanation'] || 0) + 1;
+            continue;
+        }
+
+        results.validation_pass++;
+
+        const candidate: RestorationCandidate = {
+            restoration_id: `RES-B4-${card.card_id}`,
+            source_choice_id: `SC-B4-${card.card_id}`,
+            source_question_id: `SQ-B4-${card.card_id}`,
+            exam_type: 'takken',
+            category: card.category,
+            year: 0,
+            question_no: 0,
+            option_no: 1,
+            original_text: statement,
+            original_explanation: explanation,
+            original_is_statement_true: card.is_statement_true ?? null,
+            restore_reason: 'placeholder_v2',
+            restored_text: statement,
+            restored_explanation: explanation,
+            restored_is_statement_true: signal.is_true,
+            confidence: signal.confidence as 'high' | 'medium' | 'low',
+            source_refs: [{ 
+                source_type: 'internal_db', 
+                title: 'Batch-4 Scaling Recovery', 
+                ref: `scaling_v4_${card.card_id}`,
+                checked_at: now 
+            }],
+            review_status: 'auto_ok',
+            created_at: now,
+            updated_at: now
+        };
+
+        candidates.push(candidate);
+    }
+
+    results.batch_size = candidates.length;
+
+    if (candidates.length > 0) {
+        await db.restoration_candidates.bulkPut(candidates);
+        results.recovered_count = candidates.length;
+    }
+
+    return results;
+}
+
+/**
  * 決定論的ルールによるデータ復元試行
  */
 function attemptDeterministicRecovery(card: UnderstandingCard): {
@@ -360,7 +473,7 @@ function attemptDeterministicRecovery(card: UnderstandingCard): {
 /**
  * 復元済みカードを Active Recall 出題対象に同期する (汎用版)
  */
-export async function syncRestoredBatchToSource(batchId: 'B1' | 'B2' | 'B3') {
+export async function syncRestoredBatchToSource(batchId: 'B1' | 'B2' | 'B3' | 'B4') {
     const restored = await db.restoration_candidates
         .where('review_status').equals('auto_ok')
         .and(c => c.restoration_id.startsWith(`RES-${batchId}-`))
@@ -406,3 +519,4 @@ export async function syncRestoredBatchToSource(batchId: 'B1' | 'B2' | 'B3') {
 export async function syncRestoredBatch1ToSource() { return syncRestoredBatchToSource('B1'); }
 export async function syncRestoredBatch2ToSource() { return syncRestoredBatchToSource('B2'); }
 export async function syncRestoredBatch3ToSource() { return syncRestoredBatchToSource('B3'); }
+export async function syncRestoredBatch4ToSource() { return syncRestoredBatchToSource('B4'); }

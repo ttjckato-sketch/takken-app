@@ -49,6 +49,7 @@
     <button onclick="runRestorationBatch1()" style="background: #ce9178;">🚀 Batch-1 復元 & 同期実行</button>
     <button onclick="runRestorationBatch2()" style="background: #4ec9b0; color: black;">🚀 Batch-2 信号解析 & 復元</button>
     <button onclick="runRestorationBatch3()" style="background: #dcdcaa; color: black;">🚀 Batch-3 Placeholder v2 復元</button>
+    <button onclick="runRestorationBatch4()" style="background: #ce9178; color: black;">🚀 Batch-4 スケーリング復元 (+100)</button>
     <button onclick="downloadRestorationJSON()" class="copy-btn">💾 復元候補JSON保存</button>
     <button onclick="clearRestorationData()" style="background: #3a3a3a; color: #f48771; border: 1px solid #f48771;">🗑️ 候補クリア</button>
   </div>
@@ -221,6 +222,29 @@
             addStatus('warn', '🔄 Active Recall への同期を開始...');
             const syncedCount = await syncRestoredBatch3ToSource();
             addStatus('ok', `✅ 同期完了: ${syncedCount}件が新しく学習対象になりました`);
+            
+            setTimeout(() => audit(), 1000);
+        } catch (e) {
+            addStatus('fail', '❌ 復元エラー: ' + e.message);
+            console.error(e);
+        }
+    }
+
+    async function runRestorationBatch4() {
+        try {
+            addStatus('warn', '🚀 Batch-4 スケーリング・パイプラインを実行中...');
+            const { executeRestorationBatch4, syncRestoredBatch4ToSource } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
+            
+            const results = await executeRestorationBatch4(100);
+            let msg = `✅ 復元完了: ${results.recovered_count}件 (対象: ${results.total_scanned}件)`;
+            if (results.excluded_reasons.category_suspect) {
+                msg += ` | ⚠️ カテゴリ不整合除外: ${results.excluded_reasons.category_suspect}件`;
+            }
+            addStatus('ok', msg);
+            
+            addStatus('warn', '🔄 Active Recall への同期を開始...');
+            const syncedCount = await syncRestoredBatch4ToSource();
+            addStatus('ok', `✅ 同期完了: ${syncedCount}件が新しく学習対象になりました (累計目標 300+)`);
             
             setTimeout(() => audit(), 1000);
         } catch (e) {
