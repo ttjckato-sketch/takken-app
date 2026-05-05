@@ -1,8 +1,18 @@
-# 宅建学習アプリ v2.0-rc1
+# 宅建学習アプリ v2.0.1
 
-宅建（宅地建物取引士）および賃貸不動産経営管理士の資格取得を支援するための、ブラウザ完結型学習アプリケーションです。IndexedDBを活用し、データをローカル環境に保持することで高速かつプライバシーに配慮した学習体験を提供します。
+[![Deploy GitHub Pages](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 主な機能 (v2.0-rc1)
+宅建（宅地建物取引士）および賃貸不動産経営管理士の資格取得を支援するための、ブラウザ完結型学習アプリケーションです。
+
+## 公開URL
+**[https://ttjckato-sketch.github.io/takken-app/](https://ttjckato-sketch.github.io/takken-app/)**
+
+最新リリース: [v2.0.1](https://github.com/ttjckato-sketch/takken-app/releases/tag/v2.0.1)
+
+---
+
+## 主な機能
 
 - **ActiveRecall**: 定期的な復習を促すメインの学習モード。FSRS (Free Spaced Repetition Scheduler) アルゴリズムをベースとした間隔反復学習を提供します。
 - **RepairPreview**: 誤答した問題に対し、構造化された解説（Input Unit）を動的に提示し、弱点補強を行います。
@@ -12,12 +22,17 @@
 
 ## 技術スタック
 
-- React + TypeScript
-- Vite
-- IndexedDB (Dexie.js)
-- Tailwind CSS
+- **Frontend**: React + TypeScript + Vite
+- **Storage**: IndexedDB (Dexie.js)
+- **Styling**: Tailwind CSS
 
-## セットアップ手順
+## 特徴：プライバシーと速度
+
+- **サーバー不要**: すべての処理はブラウザ内で完結します。
+- **データはローカル保存**: 学習履歴や設定はブラウザの IndexedDB に保存され、外部サーバーに送信されることはありません。
+- **高速動作**: ローカルDBを活用しているため、オフラインに近い感覚で高速に動作します。
+
+## セットアップ手順（開発者向け）
 
 本アプリケーションはNode.js環境（v18以上推奨）で動作します。
 
@@ -35,27 +50,17 @@ npm run build
 npm run preview
 ```
 
+## Deployment
+
+GitHub Pages で公開されています。GitHub Actions により、master ブランチへの push 時点で自動デプロイされます。
+
 ## 注意事項
 
-- **APIキーは不要**: 本アプリケーションはコア機能において外部のAPI（OpenAI, Gemini等のLLM）キーを要求しません。すべての学習履歴とデータはブラウザ内の IndexedDB (`TakkenOS_DB`) に保存されます。
-- **開発者用（dev-only）機能**: 一部の監査機能（`db-audit.html` など）やデバッグ用UIは、本番環境 (`NODE_ENV=production`) では非表示またはアクセス制限がかかる設計となっています。
+- **APIキーは不要**: 本アプリケーションはコア機能において外部のAPI（OpenAI, Gemini等のLLM）キーを要求しません。
 - **免責事項**: 本アプリはあくまで「学習支援」を目的としたツールです。収録されている法令データや解説内容の正確性については万全を期しておりますが、法改正等により内容が古くなる場合があります。実務における法令の最終確認は、必ず国土交通省等の公的資料・法令データ提供システムをご参照ください。
 
 ## ライセンス
 
 本ソフトウェアは **MIT License** の下で公開されています。詳細は [LICENSE](./LICENSE) ファイルを参照してください。
-
-## Deployment
-
-GitHub Pages での公開を想定しています。
-
-想定URL:
-https://ttjckato-sketch.github.io/takken-app/
-
-GitHub Actions により、master ブランチへの push 時点、または手動トリガーで自動デプロイされます。
-
-## 免責事項
-
-本アプリは学習支援を目的としており、試験の合格や法令の正確性を保証するものではありません。法令の最終確認は必ず公的資料を参照してください。また、本アプリの使用によって生じた損害等について、開発者は一切の責任を負いません。
 
 Copyright (c) 2026 hiroto katou
