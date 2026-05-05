@@ -1,6 +1,7 @@
 import { db, type KnowledgeUnit, type MemoryCard, type UnderstandingCard, type RecoveredLearningAsset } from '../db';
 import { extractLegalLearningSignals } from './analytics';
 import { improveMemoryCardText } from './knowledgeEngine';
+import { executeRestorationBatch1, syncRestoredBatch1ToSource } from './restorationCandidates';
 
 /**
  * 埋もれた高品質データを検出し、RecoveredLearningAssetとして回収する
@@ -10,8 +11,16 @@ export async function processHiddenValueRecovery(options: {
     chintaiLowConfLimit?: number;
     excludedLimit?: number;
     clusterDeltaLimit?: number;
+    runBatch1Restoration?: boolean;
 } = {}): Promise<any> {
     console.log('🧙 埋もれたお宝データの精密回収を開始します...', options);
+
+    let batch1Results = null;
+    if (options.runBatch1Restoration) {
+        batch1Results = await executeRestorationBatch1(100);
+        const syncedCount = await syncRestoredBatch1ToSource();
+        console.log(`✅ Batch-1 Restoration completed: ${batch1Results.recovered_count} items recovered, ${syncedCount} synced to Active Recall.`);
+    }
     
     const allCards = await db.understanding_cards.toArray();
     const existingUnitIds = new Set((await db.knowledge_units.toArray()).map(u => u.source_card_id));

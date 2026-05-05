@@ -1,115 +1,189 @@
-import { db, type RestorationCandidate } from '../db';
-import { classifyTakkenCard } from './takkenSourceTransformer';
+import { db, type RestorationCandidate, type UnderstandingCard } from '../db';
+import { classifyTakkenCard, validateStatementTextForActiveRecall } from './takkenSourceTransformer';
 
 /**
- * P26: 教材復元候補の抽出ユーティリティ (v2.9.1)
- * 破損カード(2621件)の中から復元可能性の高い50件をPoC候補として登録
+ * P26: 教材復元 Batch-1 抽出および復元ロジック (v2.1.0)
+ * 2621件の除外カードから安全に復元可能な50-100件を抽出し、
+ * 決定論的ルールに基づいて復元データを生成する。
  */
 
-export async function extractRestorationCandidatesPoC(limit: number = 50) {
-    console.log(`🚀 [v2.9.1] Starting extractRestorationCandidatesPoC...`);
+export interface RestorationResult {
+    total_scanned: number;
+    batch_size: number;
+    recovered_count: number;
+    validation_pass: number;
+    validation_fail: number;
+    duplicates_skipped: number;
+    excluded_reasons: Record<string, number>;
+}
+
+/**
+ * 決定論的ルールに基づく復元エンジンの実行
+ */
+export async function executeRestorationBatch1(limit: number = 100): Promise<RestorationResult> {
+    console.log(`🚀 [V210-BATCH-1] Starting data recovery pipeline...`);
 
     const takkenCards = await db.understanding_cards.where('exam_type').equals('takken').toArray();
     const sourcedQuestions = await db.source_questions.where('exam_type').equals('takken').toArray();
     const sourcedCardIds = new Set(sourcedQuestions.map(q => q.source_card_id));
 
-    // 破損カード（source化されていないもの）を収集
-    const brokenCards = takkenCards.filter(c => !sourcedCardIds.has(c.card_id));
+    // 除外カード（現在出題対象外のもの）を特定
+    const excludedCards = takkenCards.filter(c => !sourcedCardIds.has(c.card_id));
     
+    const results: RestorationResult = {
+        total_scanned: excludedCards.length,
+        batch_size: 0,
+        recovered_count: 0,
+        validation_pass: 0,
+        validation_fail: 0,
+        duplicates_skipped: 0,
+        excluded_reasons: {}
+    };
+
     const candidates: RestorationCandidate[] = [];
     const now = Date.now();
 
-    // 分類統計用
-    const breakdown = {
-        recovery_pending: 0,
-        short_text: 0,
-        count_combination: 0,
-        other: 0
-    };
+    for (const card of excludedCards) {
+        if (candidates.length >= limit) break;
 
-    // カテゴリ別カウンタ
-    const catCounts: Record<string, number> = {
-        '宅建業法': 0,
-        '権利関係': 0,
-        '法令上の制限': 0,
-        '税・その他': 0,
-        '賃貸管理士': 0
-    };
-
-    // ポリシー: 年度・問番号・肢番号が追えるものを優先
-    for (const card of brokenCards) {
         const classification = classifyTakkenCard(card);
         
-        // 分類統計
-        if (classification.category === 'source_recovery_pending') breakdown.recovery_pending++;
-        else if (classification.category === 'active_recall_excluded_count_combination') breakdown.count_combination++;
-        else breakdown.other++;
+        // 1. 個数・組合せ問題は Batch-1 では厳格に除外
+        if (classification.category === 'active_recall_excluded_count_combination') {
+            results.excluded_reasons['combination_question'] = (results.excluded_reasons['combination_question'] || 0) + 1;
+            continue;
+        }
 
-        if (candidates.length >= limit) continue; // 統計は最後まで取るが、登録は制限まで
+        // 2. 復元可能性の判定
+        const recoveryData = attemptDeterministicRecovery(card);
+        if (!recoveryData) {
+            results.excluded_reasons['no_deterministic_rule'] = (results.excluded_reasons['no_deterministic_rule'] || 0) + 1;
+            continue;
+        }
 
-        const pattern = card.question_patterns?.correct_patterns?.[0];
+        // 3. バリデーション
+        const validation = validateStatementTextForActiveRecall(recoveryData.text, {
+            cardId: card.card_id,
+            explanation: recoveryData.explanation
+        });
 
-        // 抽出基準: 
-        // 1. 個数・組合せ問題は除外
-        if (classification.category === 'active_recall_excluded_count_combination') continue;
-        
-        // 2. 年度・肢情報があるか確認
-        if (!pattern || !pattern.year || !pattern.question_no) continue;
+        if (!validation.ok) {
+            results.validation_fail++;
+            results.excluded_reasons[`validation_${validation.category}`] = (results.excluded_reasons[`validation_${validation.category}`] || 0) + 1;
+            continue;
+        }
 
-        // 3. カテゴリ配分チェック
-        const cat = card.category;
-        const normalizedCat = (cat === '税金・その他' || cat.includes('税')) ? '税・その他' : cat;
-
-        if (normalizedCat === '宅建業法' && catCounts['宅建業法'] >= 20) continue;
-        if (normalizedCat === '権利関係' && catCounts['権利関係'] >= 10) continue;
-        if (normalizedCat === '法令上の制限' && catCounts['法令上の制限'] >= 10) continue;
-        if (normalizedCat === '税・その他' && catCounts['税・その他'] >= 5) continue;
-        if (normalizedCat === '賃貸管理士' && catCounts['賃貸管理士'] >= 5) continue;
-
-        let reason: RestorationCandidate['restore_reason'] = 'placeholder_text_shortage';
-        if (classification.category === 'source_recovery_pending') reason = 'null_statement';
+        results.validation_pass++;
 
         const candidate: RestorationCandidate = {
-            restoration_id: `RES-POC-${card.card_id}`,
-            source_choice_id: `SC-${card.card_id}`, // 仮想ID
-            source_question_id: `SQ-${card.card_id}`, // 仮想ID
+            restoration_id: `RES-B1-${card.card_id}`,
+            source_choice_id: `SC-B1-${card.card_id}`,
+            source_question_id: `SQ-B1-${card.card_id}`,
             exam_type: 'takken',
             category: card.category,
-            year: pattern.year,
-            question_no: pattern.question_no,
-            option_no: pattern.correct_option || 1,
-            original_text: pattern.question_text || '',
-            original_explanation: pattern.explanation?.full || '',
-            original_is_statement_true: pattern.is_correct ?? null,
-            restore_reason: reason,
-            confidence: 'medium',
+            year: recoveryData.year,
+            question_no: recoveryData.question_no,
+            option_no: recoveryData.option_no,
+            original_text: card.sample_question || '',
+            original_explanation: '',
+            original_is_statement_true: card.is_statement_true ?? null,
+            restore_reason: classification.category === 'source_recovery_pending' ? 'null_statement' : 'placeholder_text_shortage',
+            restored_text: recoveryData.text,
+            restored_explanation: recoveryData.explanation,
+            restored_is_statement_true: recoveryData.is_true,
+            confidence: 'high',
             source_refs: [{ 
                 source_type: 'internal_db', 
-                title: 'Understanding Card', 
-                ref: card.card_id,
+                title: 'Batch-1 Deterministic Recovery', 
+                ref: `flashcard_trace_${card.card_id}`,
                 checked_at: now 
             }],
-            review_status: 'candidate',
+            review_status: 'auto_ok',
             created_at: now,
             updated_at: now
         };
 
         candidates.push(candidate);
-        if (catCounts[normalizedCat] !== undefined) catCounts[normalizedCat]++;
     }
+
+    results.batch_size = candidates.length;
 
     if (candidates.length > 0) {
         await db.restoration_candidates.bulkPut(candidates);
+        results.recovered_count = candidates.length;
     }
 
-    return {
-        total: candidates.length,
-        broken_total: brokenCards.length,
-        breakdown,
-        categories: catCounts
-    };
+    return results;
 }
 
-export async function clearRestorationCandidates() {
-    await db.restoration_candidates.clear();
+/**
+ * 決定論的ルールによるデータ復元試行
+ */
+function attemptDeterministicRecovery(card: UnderstandingCard): {
+    text: string;
+    explanation: string;
+    is_true: boolean;
+    year: number;
+    question_no: number;
+    option_no: number;
+} | null {
+    // ルール1: core_knowledge.rule が十分な長さを持つ場合
+    if (card.core_knowledge?.rule && card.core_knowledge.rule.length > 20) {
+        return {
+            text: card.core_knowledge.rule,
+            explanation: card.core_knowledge.essence || '法的根拠に基づく規定です。',
+            is_true: true,
+            year: 0,
+            question_no: 0,
+            option_no: 1
+        };
+    }
+    
+    return null;
+}
+
+/**
+ * 復元済みカードを Active Recall 出題対象に同期する
+ */
+export async function syncRestoredBatch1ToSource() {
+    const restored = await db.restoration_candidates
+        .where('review_status').equals('auto_ok')
+        .and(c => c.restoration_id.startsWith('RES-B1-'))
+        .toArray();
+
+    let syncedCount = 0;
+
+    for (const item of restored) {
+        if (!item.restored_text || item.restored_is_statement_true === undefined) continue;
+
+        // source_questions への登録
+        await db.source_questions.put({
+            id: item.source_question_id,
+            exam_type: 'takken',
+            year: item.year,
+            question_no: item.question_no,
+            question_text: item.restored_text,
+            correct_option: item.option_no,
+            question_type: 'true_false',
+            polarity: 'select_true',
+            category: item.category,
+            source_card_id: item.source_choice_id.replace('SC-B1-', '')
+        });
+
+        // source_choices への登録
+        await db.source_choices.put({
+            id: item.source_choice_id,
+            question_id: item.source_question_id,
+            option_no: item.option_no,
+            text: item.restored_text,
+            is_exam_correct_option: true,
+            is_statement_true: item.restored_is_statement_true,
+            explanation: item.restored_explanation || '',
+            source_card_id: item.source_choice_id.replace('SC-B1-', '')
+        });
+
+        syncedCount++;
+    }
+
+    return syncedCount;
 }
