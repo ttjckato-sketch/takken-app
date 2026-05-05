@@ -1,0 +1,72 @@
+# === Dependencies ===
+node_modules/
+.pnp
+.pnp.js
+
+# === Build Output ===
+# dist/ is intentionally INCLUDED in this repo (pre-built distribution)
+!dist/
+# node_modules/ is always ignored
+node_modules/
+
+# === Environment Files ===
+.env
+.env.*
+!.env.example
+*.local
+
+# === Development Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# === Internal Development Scripts ===
+# Audit/maintenance scripts not needed by end users
+scripts/
+
+# === Backup & Audit Result Files ===
+pre_*.json
+*backup*.json
+*audit_results*.json
+*audit_result*.json
+
+# === Evidence & Screenshots (internal QA) ===
+evidence/screenshots*/
+evidence/screenshots_v*/
+**/*.webp
+**/*.png
+**/*.jpg
+**/*.jpeg
+
+# === Secret & Credential Files ===
+credentials.json
+token.json
+secret*
+private*
+*.pem
+*.key
+*.p12
+*.p8
+*.pfx
+
+# === Database Files ===
+*.sqlite
+*.sqlite3
+*.db
+
+# === OS & IDE ===
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/settings.json
+*.suo
+*.sw?
+
+# === TypeScript Build Cache ===
+*.tsbuildinfo
+
+# === Vite Cache ===
+.vite/

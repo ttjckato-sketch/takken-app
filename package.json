@@ -1,0 +1,32 @@
+{
+  "name": "takken-app",
+  "private": true,
+  "version": "1.3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "clean": "powershell -Command \"Remove-Item -Recurse -Force dist, node_modules/.vite -ErrorAction SilentlyContinue\"",
+    "build:clean": "npm run clean && npm run build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "dexie": "^3.2.4",
+    "dexie-react-hooks": "^1.1.6",
+    "lucide-react": "^1.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.14",
+    "playwright": "^1.59.1",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-pwa": "^1.2.0"
+  }
+}

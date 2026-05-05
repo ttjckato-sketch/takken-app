@@ -1,0 +1,885 @@
+{
+  "metadata": {
+    "name": "宅建専門用語辞典",
+    "description": "宅建士試験で出題される専門用語の平易な翻訳",
+    "last_updated": "2026-04-26",
+    "total_terms": 170
+  },
+  "terms": {
+    "宅建業法": {
+      "translation": "宅建業者（不動産会社）を規制する法律。消費者を保護するためのルール。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "欠格事由": {
+      "translation": "宅建業界のブラックリスト（免許がもらえない条件）。犯罪歴や未成年破産などが該当。",
+      "category": "免許",
+      "difficulty": "beginner"
+    },
+    "科料": {
+      "translation": "一番軽い罰金（1万円未満）。軽い過失（うっかり）に対する罰。",
+      "category": "刑罰",
+      "difficulty": "beginner"
+    },
+    "拘禁刑": {
+      "translation": "刑務所に入れられる重い刑。身体の自由を奪う罰。",
+      "category": "刑罰",
+      "difficulty": "beginner"
+    },
+    "懲役刑": {
+      "translation": "刑務所に収容される刑罰。拘禁刑より重い。",
+      "category": "刑罰",
+      "difficulty": "beginner"
+    },
+    "執行猶予": {
+      "translation": "有罪判決だけど、刑の執行を猶予されて刑務所に行かないで済む。条件を満たせば罰なし。",
+      "category": "刑罰",
+      "difficulty": "intermediate"
+    },
+    "罰金刑": {
+      "translation": "金銭を支払う刑罰。1万円以上の罰。",
+      "category": "刑罰",
+      "difficulty": "beginner"
+    },
+    "35条書面": {
+      "translation": "重要事項説明書。契約前に不動産会社が説明する書類。物件の重要な情報が載っている。",
+      "category": "書類",
+      "difficulty": "beginner"
+    },
+    "37条書面": {
+      "translation": "契約書（契約後の交付書類）。契約内容を記載した書類。",
+      "category": "書類",
+      "difficulty": "beginner"
+    },
+    "クーリングオフ": {
+      "translation": "一定期間なら無条件で契約を解除できる権利。訪問販売などで消費者を保護。",
+      "category": "契約",
+      "difficulty": "beginner"
+    },
+    "媒介契約": {
+      "translation": "不動産会社に仲介を依頼する契約。",
+      "category": "契約",
+      "difficulty": "beginner"
+    },
+    "専任媒介契約": {
+      "translation": "1社だけに仲介を依頼する契約。他社に依頼できない。",
+      "category": "契約",
+      "difficulty": "intermediate"
+    },
+    "一般媒介契約": {
+      "translation": "複数社に仲介を依頼できる契約。自分で見つけた相手とも契約できる。",
+      "category": "契約",
+      "difficulty": "intermediate"
+    },
+    "手付金": {
+      "translation": "契約時に支払う金額。価格の20%までが上限。相手が契約を破った場合は没収。",
+      "category": "金銭",
+      "difficulty": "beginner"
+    },
+    "内金": {
+      "translation": "手付金と同じ意味（内入れ金の略）。",
+      "category": "金銭",
+      "difficulty": "beginner"
+    },
+    "違約手付": {
+      "translation": "相手方が契約を破った場合に没収される手付金。",
+      "category": "金銭",
+      "difficulty": "intermediate"
+    },
+    "解約手付": {
+      "translation": "買主が契約を破った場合に放棄される手付金。",
+      "category": "金銭",
+      "difficulty": "intermediate"
+    },
+    "宅地建物取引業者": {
+      "translation": "宅建業者の正式名称。免許を受けた不動産会社。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "宅地建物取引士": {
+      "translation": "旧「宅地建物取引主任者」。国家資格を持つ専門スタッフ。",
+      "category": "資格",
+      "difficulty": "beginner"
+    },
+    "重要事項説明": {
+      "translation": "契約前に物件の重要な情報を説明すること。35条書面を使って説明。",
+      "category": "業務",
+      "difficulty": "beginner"
+    },
+    "業務上規制": {
+      "translation": "宅建業者が守るべき業務ルール。広告規制、誇大広告の禁止など。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "8種制限": {
+      "translation": "宅建業者が業務として行えない8つの制限。手付金受領額、損害額の予定など。",
+      "category": "業務",
+      "difficulty": "advanced"
+    },
+    "自ら売主": {
+      "translation": "宅建業者が自分の物件を売る場合。通常の仲介とはルールが異なる。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "免許": {
+      "translation": "宅建業を行うために必要な許可証。都道府県知事から交付。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "免許更新": {
+      "translation": "5年ごとの免許の更新。更新講習の受講が必要。",
+      "category": "資格",
+      "difficulty": "beginner"
+    },
+    "事務所": {
+      "translation": "宅建業者の営業所。本店や支店。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "補助者": {
+      "translation": "宅建業者の使用人。宅建士以外のスタッフ。",
+      "category": "資格",
+      "difficulty": "intermediate"
+    },
+    "監督処分": {
+      "translation": "違反に対する行政処分。業務停止、免許取消など。",
+      "category": "行政",
+      "difficulty": "intermediate"
+    },
+    "業務停止": {
+      "translation": "一定期間業務ができなくなる処分。",
+      "category": "行政",
+      "difficulty": "intermediate"
+    },
+    "免許取消": {
+      "translation": "免許を取り消される処分。再取得まで5年待つ必要がある。",
+      "category": "行政",
+      "difficulty": "intermediate"
+    },
+    "指定住宅性能評価機関": {
+      "translation": "住宅性能評価を行う機関。インスペクターを派遣。",
+      "category": "機関",
+      "difficulty": "advanced"
+    },
+    "宅地建物取引業保証協会": {
+      "translation": "宅建業者の業界団体。保証協会に加入していると、各種の届出が不要になる。",
+      "category": "機関",
+      "difficulty": "intermediate"
+    },
+    "営業保証金": {
+      "translation": "被害者が救済されるための保証金。保証協会に加入している場合は不要。",
+      "category": "金銭",
+      "difficulty": "intermediate"
+    },
+    "供託": {
+      "translation": "法務局などに金銭や有価証券を預けること。",
+      "category": "金銭",
+      "difficulty": "intermediate"
+    },
+    "住宅金融支援機構": {
+      "translation": "旧「住宅金融公庫」。住宅ローンを融資する機関。",
+      "category": "機関",
+      "difficulty": "beginner"
+    },
+    "不動産特定共同事業": {
+      "translation": "不動産小口化商品のこと。現在は新規販売が中止されている。",
+      "category": "業務",
+      "difficulty": "advanced"
+    },
+    "500万円基金": {
+      "translation": "不動産特定共同事業の救济基金。現在は機能していない。",
+      "category": "金銭",
+      "difficulty": "advanced"
+    },
+    "区分所有法": {
+      "translation": "マンションなどの区分所有に関する法律。",
+      "category": "法律",
+      "difficulty": "intermediate"
+    },
+    "登記": {
+      "translation": "不動産の権利関係を法務局に登録すること。",
+      "category": "法律",
+      "difficulty": "beginner"
+    },
+    "所有権移転登記": {
+      "translation": "売買によって所有権が移動したことを登記すること。",
+      "category": "法律",
+      "difficulty": "beginner"
+    },
+    "抵当権": {
+      "translation": "ローンの担保として設定される権利。ローンが返せない場合は競売される。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "先取特権": {
+      "translation": "他の債権者より優先的に弁済を受けられる権利。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "留置権": {
+      "translation": "他人の物を占有している者が、その物に関する債権の弁済を受けるまで留置できる権利。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "質権": {
+      "translation": "債権の担保として目的物を留置する権利。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "賃借権": {
+      "translation": "賃貸借契約による借主の権利。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "地上権": {
+      "translation": "他人の土地で工作物や竹木を所有する権利。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "地役権": {
+      "translation": "他人の土地を自分の土地のために利用する権利。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "定期借地権": {
+      "translation": "契約期間が決まっている借地権。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "定期建物賃貸借": {
+      "translation": "契約期間が決まっている賃貸借契約。期間満了時に更新がない。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "通行地役権": {
+      "translation": "他人の土地を通行する権利。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "用益地役権": {
+      "translation": "他人の土地から収益（草刈り、狩猟など）を得る権利。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "相続": {
+      "translation": "人が亡くなった際に財産を承継すること。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "遺言": {
+      "translation": "死後に財産をどうするか指定すること。「ゆいごん」と読む。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "遺産分割": {
+      "translation": "相続財産を分けること。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "法定相続分": {
+      "translation": "法律で決まっている相続分の割合。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "遺留分": {
+      "translation": "相続人に保障される最低限りの相続分。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "相続放棄": {
+      "translation": "相続権を放棄すること。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "承認": {
+      "translation": "相続を承認すること。単純承と限定承認がある。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "限定承認": {
+      "translation": "相続財産の範囲で借金を引き継ぐ方法。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "相続人の欠格": {
+      "translation": "相続人になれない人のこと。殺人者などが該当。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "推定相続人": {
+      "translation": "相続が開始した場合に相続人になるべき人。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "代襲相続": {
+      "translation": "相続人が死亡している場合にその子供が相続すること。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "都市計画法": {
+      "translation": "都市の土地利用を規制する法律。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "開発許可": {
+      "translation": "一定規模以上の宅地開発を行う場合に必要な許可。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "用途地域": {
+      "translation": "建物の用途を制限する地域。住宅、商業、工業など。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "建ぺい率": {
+      "translation": "敷地面積に対する建築面積の割合。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "容積率": {
+      "translation": "敷地面積に対する延べ床面積の割合。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "建築確認": {
+      "translation": "建物を建てる前に建築計画が法令に適合しているか確認を受けること。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "建築基準法": {
+      "translation": "建物の安全性を確保するための法律。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "防火地域": {
+      "translation": "火灾予防のために建築制限が厳しい地域。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "準防火地域": {
+      "translation": "防火地域より制限が緩やかな地域。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "道路斜線": {
+      "translation": "道路側の採光や通風を確保するための斜線制限。",
+      "category": "法令",
+      "difficulty": "advanced"
+    },
+    "隣地斜線": {
+      "translation": "隣地側の採光や通風を確保するための斜線制限。",
+      "category": "法令",
+      "difficulty": "advanced"
+    },
+    "北側斜線": {
+      "translation": "北側の住居の日照を確保するための斜線制限。",
+      "category": "法令",
+      "difficulty": "advanced"
+    },
+    "日影規制": {
+      "translation": "中高層建物が作る日影を規制すること。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "セットバック": {
+      "translation": "道路境界線から後退して建物を建てること。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "国土利用計画法": {
+      "translation": "土地の投機的取引を規制する法律。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "事後届出": {
+      "translation": "取引後に都道府県知事に届け出る制度。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "事前届出": {
+      "translation": "取引前に都道府県知事に届け出る制度。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "報酬": {
+      "translation": "仲介手数料。売買価格に応じて上限がある。",
+      "category": "金銭",
+      "difficulty": "beginner"
+    },
+    "不当景品類": {
+      "translation": "顧客を誘引する過大な景品の提供。禁止されている。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "不当表示": {
+      "translation": "消費者を誤認させるような広告。景品表示法で禁止。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "誇大広告": {
+      "translation": "実際よりも良いように見せる広告。宅建業法で禁止。",
+      "category": "業務",
+      "difficulty": "beginner"
+    },
+    "手付金等の保全": {
+      "translation": "手付金が返ってくるよう保証する措置。保証協会への加入や供託。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "損害賠償額の予定": {
+      "translation": "違約した場合に支払う損害賠償額。あらかじめ定めておく。",
+      "category": "金銭",
+      "difficulty": "intermediate"
+    },
+    "売主": {
+      "translation": "不動産を売る人。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "買主": {
+      "translation": "不動産を買う人。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "媒介": {
+      "translation": "仲介。売主と買主の間に立って契約を成立させること。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "代理": {
+      "translation": "他人の代わりに契約を結ぶこと。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "問合せ": {
+      "translation": "物件の情報を提供してもらうこと。まだ契約ではない。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "申込み": {
+      "translation": "買付の意思表示。これで契約関係が始まる。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "契約": {
+      "translation": "売買契約。売主と買主の合意。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "物件": {
+      "translation": "売買の対象となる不動産。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "表示": {
+      "translation": "広告などで物件情報を公開すること。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "説明": {
+      "translation": "物件の詳細を伝えること。",
+      "category": "基本",
+      "difficulty": "beginner"
+    },
+    "時効": {
+      "translation": "一定期間経過によって権利を取得したり消滅したりする制度。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "取得時効": {
+      "translation": "一定期間他人の物を占有し続けることで所有権を取得する制度。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "消滅時効": {
+      "translation": "一定期間権利を行使しないことで権利が消滅する制度。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "除斥期間": {
+      "translation": "権利行使ができる期間を制限する短期間の時効。",
+      "category": "民法",
+      "difficulty": "advanced"
+    },
+    "占有": {
+      "translation": "物を事実上支配している状態。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "所有権": {
+      "translation": "物を全面的に支配・使用・収益できる権利。",
+      "category": "権利",
+      "difficulty": "beginner"
+    },
+    "根抵当": {
+      "translation": "将来の貸付金を担保として設定される抵当権。継続的な取引で使用。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "借地権": {
+      "translation": "他人の土地を借りて建物を建てる権利。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "底地": {
+      "translation": "借地権の目的となっている土地。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "賃貸借": {
+      "translation": "物を借りて使用収益する権利。",
+      "category": "権利",
+      "difficulty": "beginner"
+    },
+    "使用貸借": {
+      "translation": "無料で物を使う権利。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    },
+    "担保責任": {
+      "translation": "売主が買主に対して権利の欠陥について責任を負うこと。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "瑕疵担保責任": {
+      "translation": "物件に隠れた欠陥があった場合の売主の責任。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "危険負担": {
+      "translation": "物件が滅失した場合のリスクを誰が負うか。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "解除条件": {
+      "translation": "契約を解除できる条件。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "耐火構造": {
+      "translation": "火灾時に崩れにくい鉄筋コンクリート造り。",
+      "category": "建築",
+      "difficulty": "beginner"
+    },
+    "防火区画": {
+      "translation": "火灾延焼を防ぐために建物を区画する制度。",
+      "category": "建築",
+      "difficulty": "intermediate"
+    },
+    "防火壁": {
+      "translation": "火灾の延焼を防ぐための壁。",
+      "category": "建築",
+      "difficulty": "intermediate"
+    },
+    "延べ面積": {
+      "translation": "建物の各階の床面積の合計。",
+      "category": "建築",
+      "difficulty": "beginner"
+    },
+    "建築面積": {
+      "translation": "建物が敷地に占める面積。",
+      "category": "建築",
+      "difficulty": "beginner"
+    },
+    "都市計画区域": {
+      "translation": "都市計画法が適用される区域。",
+      "category": "法令",
+      "difficulty": "beginner"
+    },
+    "準都市計画区域": {
+      "translation": "将来都市計画区域になる予定の区域。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "区域区分": {
+      "translation": "市街化区域と調整区域に分ける制度。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "市街化区域": {
+      "translation": "既に市街地となっている区域で、計画的な市街化を図る区域。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "調整区域": {
+      "translation": "将来市街化を図る区域で、無秩序な開発を規制する区域。",
+      "category": "法令",
+      "difficulty": "intermediate"
+    },
+    "固定資産税": {
+      "translation": "土地や建物などの固定資産にかかる税金。",
+      "category": "税",
+      "difficulty": "beginner"
+    },
+    "譲渡所得税": {
+      "translation": "土地や建物を売って得た利益にかかる税金。",
+      "category": "税",
+      "difficulty": "intermediate"
+    },
+    "登録免許税": {
+      "translation": "登記申請時にかかる税金。",
+      "category": "税",
+      "difficulty": "beginner"
+    },
+    "消費税": {
+      "translation": "商品の消費にかかる税金。不動産取引には原則としてかからない。",
+      "category": "税",
+      "difficulty": "beginner"
+    },
+    "印紙税": {
+      "translation": "契約書などの文書にかかる税金。",
+      "category": "税",
+      "difficulty": "beginner"
+    },
+    "不動産取得税": {
+      "translation": "土地や建物を取得した際に都道府県が課す税金。",
+      "category": "税",
+      "difficulty": "beginner"
+    },
+    "路線価": {
+      "translation": "相続税や贈与税の計算基準となる価格。国税庁が公示。",
+      "category": "評価",
+      "difficulty": "intermediate"
+    },
+    "標準的価額": {
+      "translation": "地価公示法に基づく標準的な土地価格。",
+      "category": "評価",
+      "difficulty": "intermediate"
+    },
+    "登記簿面積": {
+      "translation": "登記簿に記載されている面積。",
+      "category": "測量",
+      "difficulty": "beginner"
+    },
+    "実測面積": {
+      "translation": "実際に測った面積。",
+      "category": "測量",
+      "difficulty": "beginner"
+    },
+    "坪": {
+      "translation": "面積の単位。1坪 = 約3.3平方メートル。",
+      "category": "測量",
+      "difficulty": "beginner"
+    },
+    "平方メートル": {
+      "translation": "面積の国際単位。1㎡ = 1m×1m。",
+      "category": "測量",
+      "difficulty": "beginner"
+    },
+    "専任専任媒介": {
+      "translation": "専任媒介契約で他社への依頼も認める契約。",
+      "category": "契約",
+      "difficulty": "advanced"
+    },
+    "明示義務": {
+      "translation": "宅建業者が相手方に重要な事実を明示しなければならない義務。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "標識掲示": {
+      "translation": "宅建業者であることを示す標識を掲示すること。",
+      "category": "業務",
+      "difficulty": "beginner"
+    },
+    "宅建業法37条": {
+      "translation": "契約締結時の書面交付義務。37条書面。",
+      "category": "業務",
+      "difficulty": "beginner"
+    },
+    "宅建業法35条": {
+      "translation": "重要事項説明義務。35条書面。",
+      "category": "業務",
+      "difficulty": "beginner"
+    },
+    "特定事業": {
+      "translation": "宅建業者が行える一定の付帯事業。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "重説行為": {
+      "translation": "重要事項について説明する際に誤認させないように説明すること。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "断定的判断の禁止": {
+      "translation": "将来の価格や値上がりを確定的に説明することを禁止。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "不当な勧誘": {
+      "translation": "客を不当に誘引して契約させること。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "秘密保持義務": {
+      "translation": "業務上知った秘密を漏らしてはならない義務。",
+      "category": "業務",
+      "difficulty": "intermediate"
+    },
+    "損害賠償": {
+      "translation": "違反によって生じた損害を補填すること。",
+      "category": "法律",
+      "difficulty": "beginner"
+    },
+    "不法行為": {
+      "translation": "故意または過失によって他人の権利を侵害すること。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "不当利得": {
+      "translation": "法律上の原因なく他人の損失で利益を得ること。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "事務管理": {
+      "translation": "一定の期間経過により債権が時効で消滅すること。",
+      "category": "民法",
+      "difficulty": "advanced"
+    },
+    "取得時効の起算点": {
+      "translation": "時効期間が開始する時点。",
+      "category": "民法",
+      "difficulty": "advanced"
+    },
+    "催告": {
+      "translation": "債権者が債務者に履行を請求すること。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "放棄": {
+      "translation": "権利を放棄すること。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "更生": {
+      "translation": "時効完成後に権利を取り戻すこと。",
+      "category": "民法",
+      "difficulty": "advanced"
+    },
+    "詐害": {
+      "translation": "他人を欺罧して財産を奪う罪。",
+      "category": "刑法",
+      "difficulty": "intermediate"
+    },
+    "恐喝": {
+      "translation": "脅して財産を奪う罪。",
+      "category": "刑法",
+      "difficulty": "intermediate"
+    },
+    "横領": {
+      "translation": "他人の財産を着服する罪。",
+      "category": "刑法",
+      "difficulty": "intermediate"
+    },
+    "背任": {
+      "translation": "他人のためにその人の財産を処分する立場の人の犯罪。",
+      "category": "刑法",
+      "difficulty": "intermediate"
+    },
+    "暴行": {
+      "translation": "暴行を加える罪。",
+      "category": "刑法",
+      "difficulty": "beginner"
+    },
+    "脅迫": {
+      "translation": "脅して相手に恐怖を与える罪。",
+      "category": "刑法",
+      "difficulty": "beginner"
+    },
+    "公用制限": {
+      "translation": "公共の利益のために財産権を制限すること。",
+      "category": "法律",
+      "difficulty": "advanced"
+    },
+    "相隣関係": {
+      "translation": "隣接する不動産の利用の調整に関するルール。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "有料版": {
+      "translation": "借地権などで地代を支払う権利。",
+      "category": "権利",
+      "difficulty": "beginner"
+    },
+    "無償版": {
+      "translation": "地代を支払わない借地権。",
+      "category": "権利",
+      "difficulty": "beginner"
+    },
+    "存続期間": {
+      "translation": "権利が有効な期間。",
+      "category": "権利",
+      "difficulty": "beginner"
+    },
+    "更新": {
+      "translation": "期間を延長して契約を続けること。",
+      "category": "契約",
+      "difficulty": "beginner"
+    },
+    "解約": {
+      "translation": "当事者の一方からの申し出によって契約を終了させること。",
+      "category": "契約",
+      "difficulty": "beginner"
+    },
+    "合意解除": {
+      "translation": "双方の合意によって契約を終了させること。",
+      "category": "契約",
+      "difficulty": "beginner"
+    },
+    "債務不履行": {
+      "translation": "契約上の義務を履行しないこと。",
+      "category": "民法",
+      "difficulty": "beginner"
+    },
+    "履行遅滞": {
+      "translation": "履行期日までに債務を履行しないこと。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "解除権": {
+      "translation": "契約を解除できる権利。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "撤回権": {
+      "translation": "一方的な意思表示で契約を消滅させる権利。",
+      "category": "民法",
+      "difficulty": "advanced"
+    },
+    "留保": {
+      "translation": "手付金などを担保として残しておくこと。",
+      "category": "金銭",
+      "difficulty": "intermediate"
+    },
+    "相殺": {
+      "translation": "対立する債務を消滅させること。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "連帯債務": {
+      "translation": "複数の債務者が全額の責任を負う債務。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "保証債務": {
+      "translation": "主たる債務者が履行しない場合に負う債務。",
+      "category": "民法",
+      "difficulty": "intermediate"
+    },
+    "物上保証": {
+      "translation": "物上に担保権を設定する保証方式。",
+      "category": "権利",
+      "difficulty": "advanced"
+    },
+    "人的保証": {
+      "translation": "保証人自身の信用で保証する方式。",
+      "category": "権利",
+      "difficulty": "beginner"
+    },
+    "連帯保証": {
+      "translation": "連帯債務を負う保証。",
+      "category": "権利",
+      "difficulty": "intermediate"
+    }
+  }
+}

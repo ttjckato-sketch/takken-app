@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+</head>
+<body>
+    <div id="status">Seeding...</div>
+    <script>
+        async function run() {
+            try {
+                const db = new Dexie('TakkenOS_DB');
+                db.version(25).stores({
+                    understanding_cards: 'card_id, category, *tags, exam_type',
+                    study_events: 'event_id, card_id, exam_type, category, mode, answered_correct, created_at',
+                    metadata: 'key'
+                });
+                await db.open();
+                
+                const tags = ['知事免許', '専任の宅建士', '8種制限'];
+                for (const tag of tags) {
+                    const card = await db.table('understanding_cards').where('tags').equals(tag).first();
+                    if (card) {
+                        for (let i = 0; i < 30; i++) {
+                            await db.table('study_events').put({
+                                event_id: `SEED-V3-${tag}-${Date.now()}-${i}`,
+                                card_id: card.card_id,
+                                tags: card.tags,
+                                mode: 'active_recall',
+                                answered_correct: false,
+                                created_at: Date.now() - (i * 1000)
+                            });
+                        }
+                    }
+                }
+                await db.table('metadata').put({ key: 'takken_source_transform_status', value: 'success' });
+                await db.table('metadata').delete('weak_tags_cache');
+                await db.table('metadata').delete('focus_progress_cache');
+                document.getElementById('status').innerText = 'DONE';
+            } catch (e) {
+                document.getElementById('status').innerText = 'ERROR: ' + e.message;
+            }
+        }
+        run();
+    </script>
+</body>
+</html>

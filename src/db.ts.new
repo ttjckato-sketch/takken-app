@@ -1,0 +1,31 @@
+import Dexie, { type Table } from 'dexie';
+
+// ... (省略: 前回のインターフェース定義と同じ) ...
+
+export interface ChintaiCluster {
+  cluster_id: string;
+  official_category: string;
+  tags: string[];
+  canonical_statement: string;
+  core_rule: string;
+  variations_count: number;
+  source_choice_ids: string[];
+  years: number[];
+  trap_patterns: string[];
+  confidence: 'high' | 'medium' | 'low';
+}
+
+// 既存のTakkenDatabaseを拡張
+export class TakkenDatabase extends Dexie {
+  // ... (既存テーブル) ...
+  chintai_clusters!: Table<ChintaiCluster, string>;
+  // ... (その他の新規テーブル) ...
+
+  constructor() {
+    super('TakkenOS_DB');
+    this.version(15).stores({
+      // ... (既存ストア) ...
+      chintai_clusters: 'cluster_id, official_category, *tags, variations_count, confidence'
+    });
+  }
+}

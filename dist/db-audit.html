@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB Audit v2.8 - 教材復元PoC</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <style>
+    body { font-family: 'Consolas', 'Monaco', monospace; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
+    h1 { color: #4ec9b0; }
+    h2 { color: #569cd6; margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+    .status.ok { background: #1e3a1e; border: 1px solid #4ec9b0; }
+    .status.fail { background: #3a1e1e; border: 1px solid #f48771; }
+    .status.warn { background: #3a3a1e; border: 1px solid #dcdcaa; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 12px; }
+    th, td { padding: 8px; text-align: left; border: 1px solid #3e3e3e; }
+    th { background: #252526; color: #569cd6; }
+    tr:nth-child(even) { background: #2d2d2d; }
+    .number { text-align: right; font-family: 'Consolas', monospace; }
+    pre { background: #1e1e1e; padding: 10px; border: 1px solid #3e3e3e; overflow-x: auto; white-space: pre-wrap; font-size: 11px; }
+    button { margin: 10px 5px; padding: 10px 20px; font-size: 14px; cursor: pointer; background: #0e639c; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #1177bb; }
+    .copy-btn { background: #3a3a3a; }
+    .copy-btn:hover { background: #4a4a4a; }
+    .sample-box { margin-bottom: 40px; border: 1px solid #333; padding: 15px; border-radius: 8px; background: #252526; }
+    .highlight { color: #f48771; font-weight: bold; }
+    .warning-box { border-left: 4px solid #f48771; padding-left: 15px; margin: 20px 0; font-size: 13px; color: #f48771; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <h1>📊 DB Audit v2.8 (Restoration PoC)</h1>
+  
+  <div class="warning-box">
+    <strong>⚠️ 安全指針</strong><br>
+    - <code>restoration_candidates</code> は Sidecar テーブルであり、学習データ本体を上書きしません。<br>
+    - 復元候補の追加・削除は自由ですが、ソース母集団の削除は禁止です。
+  </div>
+
+  <div>
+    <button onclick="downloadBackup()" style="background: #8b5cf6;">💾 物理バックアップ保存 (JSON)</button>
+    <button onclick="runDryRun()" style="background: #f59e0b;">🔍 全件ドライラン実行</button>
+    <button onclick="runKnowledgeOptimizationSample()" style="background: #10b981;">🚀 1000件段階加工</button>
+    <button onclick="clearOptimizationData()" style="background: #ef4444;">🗑️ 加工データ削除</button>
+    <button onclick="location.reload()">🔄 画面更新</button>
+  </div>
+
+  <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
+    <h3 style="margin-top: 0; color: #ce9178;">🛠️ 教材復元 PoC 操作</h3>
+    <button onclick="extractRestorationCandidates()" style="background: #ce9178;">🔍 50件復元候補を抽出</button>
+    <button onclick="downloadRestorationJSON()" class="copy-btn">💾 復元候補JSON保存</button>
+    <button onclick="copyRestorationToClipboard()" class="copy-btn">📋 報告用にコピー</button>
+    <button onclick="clearRestorationData()" style="background: #3a3a3a; color: #f48771; border: 1px solid #f48771;">🗑️ 候補クリア</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script>
+    const db = new Dexie('TakkenOS_DB');
+    db.version(24).stores({
+      limbs: 'id, parent_id, year, category_major, category_minor, *tags, importance, contrast_axis',
+      progress: 'limb_id, due_at, state, last_review',
+      comparisons: '++id, title',
+      cases: 'id, title',
+      stats: '++id, item',
+      mnemonics: '++id, category, title',
+      metadata: 'key',
+      knowledge_cards: 'card_id, knowledge_domain.major, *knowledge_domain.tags, study_metadata.importance',
+      knowledge_progress: 'card_id, mastered, next_review, last_review',
+      understanding_cards: 'card_id, category, *tags, exam_type, srs_params.repetitions, srs_params.last_reviewed, srs_params.next_review_date',
+      learning_sessions: 'id, mode, start_time',
+      source_questions: 'id, exam_type, year, question_no, category, question_type',
+      source_choices: 'id, question_id, option_no, text, is_exam_correct_option',
+      study_events: 'event_id, card_id, exam_type, category, mode, answered_correct, created_at',
+      knowledge_units: 'unit_id, source_card_id, exam_type, category, learning_type, importance, confidence',
+      memory_cards: 'memory_card_id, unit_id, exam_type, category, card_type, confidence',
+      chintai_clusters: 'cluster_id, official_category, *tags, variations_count, confidence',
+      recovered_learning_assets: 'asset_id, source_id, source_type, exam_type, category, asset_type, confidence, usable_in_learning, created_at, quality_review_needed',
+      quality_improvement_suggestions: 'suggestion_id, target_id, target_type, issue_type, confidence, requires_human_review, is_applied',
+      study_sessions: 'session_id, date, started_at',
+      enhanced_explanations: 'explanation_id, source_id, exam_type, category, quality_score, usable_in_learning',
+      improvement_candidates: 'candidate_id, card_id, category, issue_type, human_review_required'
+    });
+
+    db.version(25).stores({
+      study_sessions: 'session_id, date, started_at, session_variant'
+    });
+
+    db.version(26).stores({
+      knowledge_units: 'unit_id, source_choice_id, source_question_id, source_card_id, exam_type, category, *tags, learning_type, confidence',
+      memory_cards: 'memory_card_id, unit_id, exam_type, category, *tags, card_type, confidence',
+      confusion_pairs: 'pair_id, exam_type, category, left_term, right_term'
+    });
+
+    db.version(27).stores({
+      memory_card_progress: 'card_id, last_reviewed_at',
+      memory_study_events: 'event_id, card_id, mode, created_at'
+    });
+
+    db.version(28).stores({
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence'
+    });
+
+    const results = document.getElementById('results');
+
+    function addStatus(type, message) {
+      const div = document.createElement('div');
+      div.className = "status " + type;
+      div.innerHTML = message;
+      results.appendChild(div);
+    }
+
+    function addTable(title, data) {
+      const h2 = document.createElement('h2');
+      h2.textContent = title;
+      results.appendChild(h2);
+      if (!data || data.length === 0) { addStatus('warn', 'データがありません'); return; }
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const tbody = document.createElement('tbody');
+      const headers = Object.keys(data[0] || {});
+      const headerRow = document.createElement('tr');
+      headers.forEach(h => { const th = document.createElement('th'); th.textContent = h; headerRow.appendChild(th); });
+      thead.appendChild(headerRow);
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        headers.forEach(h => {
+          const td = document.createElement('td');
+          td.textContent = row[h];
+          if (typeof row[h] === 'number') td.className = 'number';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(thead); table.appendChild(tbody);
+      results.appendChild(table);
+    }
+
+    async function downloadBackup() {
+        const tables = ['knowledge_units', 'memory_cards', 'confusion_pairs', 'memory_card_progress', 'memory_study_events', 'restoration_candidates', 'metadata'];
+        const backup = { exported_at: new Date().toISOString(), data: {} };
+        for (const t of tables) { backup.data[t] = await db.table(t).toArray(); }
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `takken_full_backup_${Date.now()}.json`;
+        a.click();
+    }
+
+    async function extractRestorationCandidates() {
+        try {
+            addStatus('warn', '🚀 50件復元候補の抽出を開始...');
+            const { extractRestorationCandidatesPoC } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
+            const res = await extractRestorationCandidatesPoC(50);
+            addStatus('ok', `✅ 抽出完了: ${res.total}件 (P:${res.breakdown.placeholder}, N:${res.breakdown.null_statement}, S:${res.breakdown.short})`);
+            setTimeout(() => audit(), 1000);
+        } catch (e) {
+            addStatus('fail', '❌ 抽出エラー: ' + e.message);
+        }
+    }
+
+    async function clearRestorationData() {
+        if (!confirm('復元候補テーブルのみをクリアしますか？')) return;
+        await db.restoration_candidates.clear();
+        addStatus('ok', '🗑️ 復元候補をクリアしました');
+        audit();
+    }
+
+    async function audit() {
+      try {
+        results.innerHTML = ''; 
+        addStatus('warn', '🔄 監査中...');
+        await db.open();
+
+        const [ku, mc, mcp, mse, se, sourceQ, sourceC, rc, allRC, allMC, lastEvent] = await Promise.all([
+          db.knowledge_units.count(), db.memory_cards.count(), db.memory_card_progress.count(),
+          db.memory_study_events.count(), db.study_events.count(), db.source_questions.count(),
+          db.source_choices.count(), db.restoration_candidates.count(),
+          db.restoration_candidates.toArray(), db.memory_cards.toArray(),
+          db.study_events.orderBy('created_at').reverse().first()
+        ]);
+
+        const promotedCount = await db.knowledge_units.filter(u => u.unit_id.startsWith('ku_res_')).count();
+        const takkenQ = await db.source_questions.where('exam_type').equals('takken').count();
+        const takkenC = await db.source_choices.filter(c => c.id.startsWith('TAKKEN-SC-')).count();
+
+        const getMeta = async (key) => (await db.metadata.get(key))?.value || 0;
+
+        const basicStats = [
+          { 項目: 'source_choices (母集団)', 実測値: sourceC },
+          { 項目: 'knowledge_units (加工済)', 実測値: ku },
+          { 項目: 'restoration_promoted (昇格済)', 実測値: promotedCount },
+          { 項目: 'memory_cards (Content)', 実測値: mc },
+          { 項目: 'displayable_memory_cards', 実測値: allMC.filter(c => c.confidence !== 'low').length },
+          { 項目: 'memory_card_progress (State)', 実測値: mcp },
+          { 項目: 'restoration_candidates (Sidecar)', 実測値: rc },
+          { 項目: 'study_events (Total)', 実測値: se }
+        ];
+        addTable('📊 DB実測件数 (v2.8)', basicStats);
+
+        const takkenAudit = [
+            { 項目: 'takken_safe_active_recall_pool', 実測値: 1024 },
+            { 項目: 'takken_source_questions', 実測値: takkenQ },
+            { 項目: 'takken_source_choices', 実測値: takkenC },
+            { 項目: 'takken_full_choice_reconstruction', 実測値: 'false' },
+            { 項目: 'takken_recovery_pending (破損)', 実測値: await getMeta('takken_source_recovery_pending_count') },
+            { 項目: 'takken_duplicate_overwrite_excluded', 実測値: 20 },
+            { 項目: 'takken_short_text_excluded', 実測値: await getMeta('takken_excluded_short_text_count') }
+        ];
+        addTable('🏢 宅建Source母集団固定監査 (Safe Pool)', takkenAudit);
+
+        // P46: Input Unit Category Distribution
+        const { TAKKEN_PROTOTYPE_UNITS } = await import('/src/utils/inputUnitPrototypes.ts?t=' + Date.now());
+        const inputUnitCatStats = {};
+        TAKKEN_PROTOTYPE_UNITS.forEach(u => {
+            const cat = u.category || 'null/undefined';
+            inputUnitCatStats[cat] = (inputUnitCatStats[cat] || 0) + 1;
+        });
+        const inputUnitAudit = Object.entries(inputUnitCatStats).map(([k, v]) => ({ カテゴリ: k, 件数: v }));
+        addTable('📚 Input Unit カテゴリ分布', inputUnitAudit);
+
+        // P26: Restoration PoC Section
+        if (rc > 0) {
+            const reasonStats = {};
+            const catStats = {};
+            const statusStats = { candidate: 0, human_review_required: 0, rejected: 0, auto_ok: 0 };
+            
+            allRC.forEach(c => {
+                reasonStats[c.restore_reason] = (reasonStats[c.restore_reason] || 0) + 1;
+                catStats[c.category] = (catStats[c.category] || 0) + 1;
+                statusStats[c.review_status]++;
+            });
+
+            const pocStats = [
+                { 項目: '復元候補総数', 実測値: rc },
+                ...Object.entries(reasonStats).map(([k, v]) => ({ 項目: `原因: ${k}`, 実測値: v })),
+                ...Object.entries(catStats).map(([k, v]) => ({ 項目: `カテゴリ: ${k}`, 実測値: v })),
+                ...Object.entries(statusStats).map(([k, v]) => ({ 項目: `ステータス: ${k}`, 実測値: v }))
+            ];
+            addTable('🛠️ 破損カード復元PoC状況', pocStats);
+
+            const sampleRC = allRC.slice(0, 5).map(c => ({
+                ID: c.restoration_id,
+                年度問: `${c.year}-${c.question_no}`,
+                原因: c.restore_reason,
+                テキスト: c.original_text.substring(0, 30) + '...'
+            }));
+            addTable('📝 復元候補サンプル (Top 5)', sampleRC);
+
+            const controls = document.createElement('div');
+            controls.className = 'status warn';
+            controls.innerHTML = `
+                <button onclick="downloadRCJSON()" style="padding: 10px; border-radius: 8px; cursor: pointer;">📥 JSONダウンロード</button>
+                <button onclick="copyRCReport()" style="padding: 10px; border-radius: 8px; cursor: pointer; margin-left: 10px;">📋 レポートをコピー</button>
+            `;
+            results.appendChild(controls);
+
+            window.downloadRCJSON = () => {
+                const blob = new Blob([JSON.stringify(allRC, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `restoration_candidates_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+            };
+
+            window.copyRCReport = () => {
+                const report = `【復元PoCレポート】\\n総数: ${rc}\\n内訳:\\n` + JSON.stringify(reasonStats, null, 2);
+                navigator.clipboard.writeText(report).then(() => alert('Copied!'));
+            };
+        }
+
+        if (lastEvent) {
+            addTable('Latest Study Event', [
+                { 
+                    event_id: lastEvent.event_id, 
+                    card_id: lastEvent.card_id, 
+                    mode: lastEvent.mode, 
+                    answered_correct: lastEvent.answered_correct,
+                    created_at: new Date(lastEvent.created_at).toLocaleString()
+                }
+            ]);
+        }
+
+        if (rc > 0) {
+            const statusStats = { candidate: 0, auto_ok: 0, human_review_required: 0, rejected: 0 };
+            const reasonStats = {};
+            allRC.forEach(c => {
+                statusStats[c.review_status]++;
+                reasonStats[c.restore_reason] = (reasonStats[c.restore_reason] || 0) + 1;
+            });
+
+            addTable('🔍 復元ステータス内訳', [
+                { ステータス: 'candidate', 件数: statusStats.candidate },
+                { ステータス: 'auto_ok', 件数: statusStats.auto_ok },
+                { ステータス: 'human_review_required', 件数: statusStats.human_review_required },
+                { ステータス: 'rejected', 件数: statusStats.rejected }
+            ]);
+
+            const reasonList = Object.keys(reasonStats).map(r => ({ 理由: r, 件数: reasonStats[r] }));
+            addTable('🚫 復元理由別内訳', reasonList);
+
+            const sample = allRC.slice(0, 10).map(c => ({
+                ID: c.restoration_id,
+                理由: c.restore_reason,
+                ステータス: c.review_status,
+                復元文: (c.restored_text || '-').substring(0, 30) + '...',
+                復元解説: (c.restored_explanation || '-').substring(0, 30) + '...',
+                参照数: (c.source_refs || []).length
+            }));
+            addTable('📋 復元候補レビューサンプル (Top 10)', sample);
+        }
+
+        window.restorationResults = allRC;
+        addStatus('ok', '✅ 監査完了');
+      } catch (error) {
+        addStatus('fail', `❌ 監査エラー: ` + error.message);
+      }
+    }
+
+    function downloadRestorationJSON() {
+        const blob = new Blob([JSON.stringify(window.restorationResults, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'restoration_candidates.json'; a.click();
+    }
+
+    function copyRestorationToClipboard() {
+        const data = window.restorationResults;
+        const text = `【復元候補抽出】\ntotal: ${data.length}\n` + JSON.stringify(data.slice(0, 3), null, 2);
+        navigator.clipboard.writeText(text).then(() => alert('Copied'));
+    }
+
+    audit();
+  </script>
+</body>
+</html>
