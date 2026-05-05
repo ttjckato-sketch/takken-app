@@ -1,7 +1,7 @@
 import { db, type KnowledgeUnit, type MemoryCard, type UnderstandingCard, type RecoveredLearningAsset } from '../db';
 import { extractLegalLearningSignals } from './analytics';
 import { improveMemoryCardText } from './knowledgeEngine';
-import { executeRestorationBatch1, syncRestoredBatch1ToSource } from './restorationCandidates';
+import { executeRestorationBatch1, syncRestoredBatch1ToSource, executeRestorationBatch2, syncRestoredBatch2ToSource } from './restorationCandidates';
 
 /**
  * 埋もれた高品質データを検出し、RecoveredLearningAssetとして回収する
@@ -12,6 +12,7 @@ export async function processHiddenValueRecovery(options: {
     excludedLimit?: number;
     clusterDeltaLimit?: number;
     runBatch1Restoration?: boolean;
+    runBatch2Restoration?: boolean;
 } = {}): Promise<any> {
     console.log('🧙 埋もれたお宝データの精密回収を開始します...', options);
 
@@ -20,6 +21,13 @@ export async function processHiddenValueRecovery(options: {
         batch1Results = await executeRestorationBatch1(100);
         const syncedCount = await syncRestoredBatch1ToSource();
         console.log(`✅ Batch-1 Restoration completed: ${batch1Results.recovered_count} items recovered, ${syncedCount} synced to Active Recall.`);
+    }
+
+    let batch2Results = null;
+    if (options.runBatch2Restoration) {
+        batch2Results = await executeRestorationBatch2(50);
+        const syncedCount = await syncRestoredBatch2ToSource();
+        console.log(`✅ Batch-2 Restoration completed: ${batch2Results.recovered_count} items recovered, ${syncedCount} synced to Active Recall.`);
     }
     
     const allCards = await db.understanding_cards.toArray();

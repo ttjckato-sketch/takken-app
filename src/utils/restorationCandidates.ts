@@ -1,8 +1,9 @@
 import { db, type RestorationCandidate, type UnderstandingCard } from '../db';
 import { classifyTakkenCard, validateStatementTextForActiveRecall } from './takkenSourceTransformer';
+import { classifyExplanationSignal } from './explanationSignalClassifier';
 
 /**
- * P26: 教材復元 Batch-1 抽出および復元ロジック (v2.1.0)
+ * P26: 教材復元 Batch-1/2 抽出および復元ロジック (v2.1.0)
  * 2621件の除外カードから安全に復元可能な50-100件を抽出し、
  * 決定論的ルールに基づいて復元データを生成する。
  */
@@ -18,7 +19,7 @@ export interface RestorationResult {
 }
 
 /**
- * 決定論的ルールに基づく復元エンジンの実行
+ * Batch-1: 決定論的ルールに基づく復元エンジンの実行
  */
 export async function executeRestorationBatch1(limit: number = 100): Promise<RestorationResult> {
     console.log(`🚀 [V210-BATCH-1] Starting data recovery pipeline...`);
@@ -117,6 +118,108 @@ export async function executeRestorationBatch1(limit: number = 100): Promise<Res
 }
 
 /**
+ * Batch-2: 解説文シグナルに基づく復元エンジンの実行
+ */
+export async function executeRestorationBatch2(limit: number = 50): Promise<RestorationResult> {
+    console.log(`🚀 [V210-BATCH-2] Starting explanation signal recovery pipeline...`);
+
+    const takkenCards = await db.understanding_cards.where('exam_type').equals('takken').toArray();
+    const sourcedQuestions = await db.source_questions.where('exam_type').equals('takken').toArray();
+    const sourcedCardIds = new Set(sourcedQuestions.map(q => q.source_card_id));
+    
+    // すでに復元済みのID（B1を含む）を取得
+    const existingRestorationIds = new Set((await db.restoration_candidates.toArray()).map(c => c.restoration_id));
+
+    // 除外カードのうち、まだ復元されていない null_statement 候補を抽出
+    const excludedCards = takkenCards.filter(c => 
+        !sourcedCardIds.has(c.card_id) && 
+        !existingRestorationIds.has(`RES-B1-${c.card_id}`) &&
+        !existingRestorationIds.has(`RES-B2-${c.card_id}`)
+    );
+    
+    const results: RestorationResult = {
+        total_scanned: excludedCards.length,
+        batch_size: 0,
+        recovered_count: 0,
+        validation_pass: 0,
+        validation_fail: 0,
+        duplicates_skipped: 0,
+        excluded_reasons: {}
+    };
+
+    const candidates: RestorationCandidate[] = [];
+    const now = Date.now();
+
+    for (const card of excludedCards) {
+        if (candidates.length >= limit) break;
+
+        // null_statement (判定不能) カードを主対象とする
+        if (card.is_statement_true !== null) continue;
+
+        const explanation = card.core_knowledge?.essence || '';
+        const signal = classifyExplanationSignal(explanation);
+
+        if (signal.confidence !== 'high' || signal.is_true === null) {
+            results.excluded_reasons[`signal_${signal.polarity}`] = (results.excluded_reasons[`signal_${signal.polarity}`] || 0) + 1;
+            continue;
+        }
+
+        const statement = card.core_knowledge?.rule || card.sample_question || '';
+        const validation = validateStatementTextForActiveRecall(statement, {
+            cardId: card.card_id,
+            explanation: explanation
+        });
+
+        if (!validation.ok) {
+            results.validation_fail++;
+            results.excluded_reasons[`validation_${validation.category}`] = (results.excluded_reasons[`validation_${validation.category}`] || 0) + 1;
+            continue;
+        }
+
+        results.validation_pass++;
+
+        const candidate: RestorationCandidate = {
+            restoration_id: `RES-B2-${card.card_id}`,
+            source_choice_id: `SC-B2-${card.card_id}`,
+            source_question_id: `SQ-B2-${card.card_id}`,
+            exam_type: 'takken',
+            category: card.category,
+            year: 0,
+            question_no: 0,
+            option_no: 1,
+            original_text: statement,
+            original_explanation: explanation,
+            original_is_statement_true: null,
+            restore_reason: 'null_statement',
+            restored_text: statement,
+            restored_explanation: explanation,
+            restored_is_statement_true: signal.is_true,
+            confidence: 'high',
+            source_refs: [{ 
+                source_type: 'internal_db', 
+                title: 'Batch-2 Signal Recovery', 
+                ref: `explanation_signal_${card.card_id}`,
+                checked_at: now 
+            }],
+            review_status: 'auto_ok',
+            created_at: now,
+            updated_at: now
+        };
+
+        candidates.push(candidate);
+    }
+
+    results.batch_size = candidates.length;
+
+    if (candidates.length > 0) {
+        await db.restoration_candidates.bulkPut(candidates);
+        results.recovered_count = candidates.length;
+    }
+
+    return results;
+}
+
+/**
  * 決定論的ルールによるデータ復元試行
  */
 function attemptDeterministicRecovery(card: UnderstandingCard): {
@@ -143,12 +246,12 @@ function attemptDeterministicRecovery(card: UnderstandingCard): {
 }
 
 /**
- * 復元済みカードを Active Recall 出題対象に同期する
+ * 復元済みカードを Active Recall 出題対象に同期する (汎用版)
  */
-export async function syncRestoredBatch1ToSource() {
+export async function syncRestoredBatchToSource(batchId: 'B1' | 'B2') {
     const restored = await db.restoration_candidates
         .where('review_status').equals('auto_ok')
-        .and(c => c.restoration_id.startsWith('RES-B1-'))
+        .and(c => c.restoration_id.startsWith(`RES-${batchId}-`))
         .toArray();
 
     let syncedCount = 0;
@@ -167,7 +270,7 @@ export async function syncRestoredBatch1ToSource() {
             question_type: 'true_false',
             polarity: 'select_true',
             category: item.category,
-            source_card_id: item.source_choice_id.replace('SC-B1-', '')
+            source_card_id: item.source_question_id.replace(`SQ-${batchId}-`, '')
         });
 
         // source_choices への登録
@@ -179,7 +282,7 @@ export async function syncRestoredBatch1ToSource() {
             is_exam_correct_option: true,
             is_statement_true: item.restored_is_statement_true,
             explanation: item.restored_explanation || '',
-            source_card_id: item.source_choice_id.replace('SC-B1-', '')
+            source_card_id: item.source_question_id.replace(`SQ-${batchId}-`, '')
         });
 
         syncedCount++;
@@ -187,3 +290,6 @@ export async function syncRestoredBatch1ToSource() {
 
     return syncedCount;
 }
+
+export async function syncRestoredBatch1ToSource() { return syncRestoredBatchToSource('B1'); }
+export async function syncRestoredBatch2ToSource() { return syncRestoredBatchToSource('B2'); }
