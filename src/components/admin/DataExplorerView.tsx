@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Filter, Database, AlertCircle, CheckCircle2, 
-  ChevronRight, Shield, ShieldCheck, HelpCircle, ArrowLeft
+  ChevronRight, Shield, ShieldCheck, HelpCircle, ArrowLeft, Tag
 } from 'lucide-react';
 import { db, type UnderstandingCard, type RestorationCandidate } from '../../db';
 import { CardDetailPanel } from './CardDetailPanel';
+import { generateCategorySuggestions, type CategoryCorrectionSuggestion } from '../../utils/categorySidecarReview';
 
 interface DataExplorerViewProps {
   onBack: () => void;
@@ -17,7 +18,9 @@ type FilterType =
   | 'broken' 
   | 'batch1' 
   | 'batch2' 
-  | 'review';
+  | 'batch3'
+  | 'review'
+  | 'suspect';
 
 export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) => {
   const [cards, setCards] = useState<UnderstandingCard[]>([]);
@@ -49,12 +52,21 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
   const restorationMap = useMemo(() => {
     const map = new Map<string, RestorationCandidate>();
     restorations.forEach(r => {
-      // restoration_id is like RES-B1-cardId
       const cardId = r.restoration_id.split('-').slice(2).join('-');
       if (cardId) map.set(cardId, r);
     });
     return map;
   }, [restorations]);
+
+  const suggestions = useMemo(() => 
+    generateCategorySuggestions(cards, restorations),
+  [cards, restorations]);
+
+  const suggestionMap = useMemo(() => {
+    const map = new Map<string, CategoryCorrectionSuggestion>();
+    suggestions.forEach(s => map.set(s.source_card_id, s));
+    return map;
+  }, [suggestions]);
 
   const filteredCards = useMemo(() => {
     return cards.filter(card => {
@@ -69,6 +81,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
 
       // Filter
       const res = restorationMap.get(card.card_id);
+      const sug = suggestionMap.get(card.card_id);
       
       switch (filter) {
         case 'eligible': return card.is_statement_true !== null;
@@ -76,11 +89,13 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
         case 'broken': return !card.sample_question && !card.core_knowledge?.rule;
         case 'batch1': return res?.restoration_id.startsWith('RES-B1-');
         case 'batch2': return res?.restoration_id.startsWith('RES-B2-');
+        case 'batch3': return res?.restoration_id.startsWith('RES-B3-');
         case 'review': return res?.review_status === 'human_review_required';
+        case 'suspect': return !!sug;
         default: return true;
       }
     });
-  }, [cards, filter, search, restorationMap]);
+  }, [cards, filter, search, restorationMap, suggestionMap]);
 
   const stats = useMemo(() => ({
     total: cards.length,
@@ -88,7 +103,9 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
     pending: cards.filter(c => c.is_statement_true === null).length,
     batch1: restorations.filter(r => r.restoration_id.startsWith('RES-B1-')).length,
     batch2: restorations.filter(r => r.restoration_id.startsWith('RES-B2-')).length,
-  }), [cards, restorations]);
+    batch3: restorations.filter(r => r.restoration_id.startsWith('RES-B3-')).length,
+    suspect: suggestions.length
+  }), [cards, restorations, suggestions]);
 
   const selectedCard = useMemo(() => 
     cards.find(c => c.card_id === selectedCardId), 
@@ -97,6 +114,10 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
   const selectedRestoration = useMemo(() => 
     selectedCardId ? restorationMap.get(selectedCardId) : undefined,
   [restorationMap, selectedCardId]);
+
+  const selectedSuggestion = useMemo(() =>
+    selectedCardId ? suggestionMap.get(selectedCardId) : undefined,
+  [suggestionMap, selectedCardId]);
 
   if (loading) {
     return (
@@ -134,12 +155,12 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
                 <span className="text-green-400 font-bold">{stats.eligible}</span>
               </div>
               <div className="flex flex-col items-end border-l border-slate-800 pl-4">
-                <span className="text-slate-500 uppercase text-[9px]">Pending</span>
-                <span className="text-amber-400 font-bold">{stats.pending}</span>
+                <span className="text-slate-500 uppercase text-[9px]">Suspect</span>
+                <span className="text-red-400 font-bold">{stats.suspect}</span>
               </div>
               <div className="flex flex-col items-end border-l border-slate-800 pl-4">
                 <span className="text-slate-500 uppercase text-[9px]">Recovered</span>
-                <span className="text-blue-400 font-bold">{stats.batch1 + stats.batch2}</span>
+                <span className="text-blue-400 font-bold">{stats.batch1 + stats.batch2 + stats.batch3}</span>
               </div>
             </div>
           </div>
@@ -163,10 +184,11 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
             {[
               { id: 'all', label: 'All' },
               { id: 'eligible', label: 'Eligible' },
-              { id: 'pending', label: 'Pending' },
-              { id: 'batch1', label: 'Batch-1' },
-              { id: 'batch2', label: 'Batch-2' },
-              { id: 'review', label: 'Needs Review' }
+              { id: 'suspect', label: 'Suspect' },
+              { id: 'batch1', label: 'B1' },
+              { id: 'batch2', label: 'B2' },
+              { id: 'batch3', label: 'B3' },
+              { id: 'review', label: 'Review' }
             ].map(f => (
               <button
                 key={f.id}
@@ -191,12 +213,13 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Card ID / Category</th>
                 <th className="px-6 py-4">Content Preview</th>
-                <th className="px-6 py-4">Recovery</th>
+                <th className="px-6 py-4">Recovery / Suggestion</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
               {filteredCards.map(card => {
                 const res = restorationMap.get(card.card_id);
+                const sug = suggestionMap.get(card.card_id);
                 const isEligible = card.is_statement_true !== null;
                 const isSelected = selectedCardId === card.card_id;
 
@@ -221,8 +244,18 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
                       <div className="font-mono text-[11px] text-slate-300 group-hover:text-blue-400 transition-colors">
                         {card.card_id}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-bold uppercase mt-1">
-                        {card.category}
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-[10px] text-slate-500 font-bold uppercase">
+                          {card.category}
+                        </span>
+                        {sug && (
+                          <>
+                            <ChevronRight size={10} className="text-red-500" />
+                            <span className="text-[10px] text-red-400 font-black bg-red-900/20 px-1 rounded">
+                              {sug.suggested_category}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -231,20 +264,33 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {res ? (
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[9px] px-2 py-0.5 rounded font-black uppercase ${
-                            res.restoration_id.startsWith('RES-B1-') ? 'bg-blue-900/30 text-blue-400' : 'bg-teal-900/30 text-teal-400'
-                          }`}>
-                            {res.restoration_id.startsWith('RES-B1-') ? 'B1' : 'B2'}
-                          </span>
-                          <span className="text-[9px] text-slate-600 font-mono">
-                            {res.confidence}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-[9px] text-slate-700 uppercase font-bold italic tracking-tighter">Excluded</span>
-                      )}
+                      <div className="flex flex-col gap-1.5">
+                        {res && (
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[9px] px-2 py-0.5 rounded font-black uppercase ${
+                              res.restoration_id.includes('B1') ? 'bg-blue-900/30 text-blue-400' : 
+                              res.restoration_id.includes('B2') ? 'bg-teal-900/30 text-teal-400' :
+                              'bg-amber-900/30 text-amber-400'
+                            }`}>
+                              {res.restoration_id.includes('B1') ? 'B1' : res.restoration_id.includes('B2') ? 'B2' : 'B3'}
+                            </span>
+                            <span className="text-[9px] text-slate-600 font-mono">
+                              {res.confidence}
+                            </span>
+                          </div>
+                        )}
+                        {sug && (
+                          <div className="flex items-center gap-2">
+                            <Tag size={10} className="text-red-500" />
+                            <span className="text-[9px] bg-red-900/30 text-red-400 px-2 py-0.5 rounded font-black uppercase tracking-tighter">
+                              Sug: {sug.confidence}
+                            </span>
+                          </div>
+                        )}
+                        {!res && !sug && (
+                          <span className="text-[9px] text-slate-700 uppercase font-bold italic tracking-tighter">Excluded</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -263,7 +309,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
         {/* Footer Info */}
         <footer className="h-8 bg-slate-900 border-t border-slate-800 px-4 flex items-center justify-between text-[9px] text-slate-500 uppercase tracking-widest shrink-0">
           <div>Showing {filteredCards.length} of {cards.length} cards</div>
-          <div>Knowledge Engine v2.1.0-alpha</div>
+          <div>Knowledge Engine v2.1.0-beta</div>
         </footer>
       </div>
 
@@ -272,6 +318,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
         <CardDetailPanel 
           card={selectedCard}
           restoration={selectedRestoration}
+          suggestion={selectedSuggestion}
           onClose={() => setSelectedCardId(null)}
         />
       )}

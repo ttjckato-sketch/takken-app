@@ -345,7 +345,7 @@
             const reasonStats = {};
             const catStats = {};
             const statusStats = { candidate: 0, human_review_required: 0, rejected: 0, auto_ok: 0 };
-            
+
             allRC.forEach(c => {
                 reasonStats[c.restore_reason] = (reasonStats[c.restore_reason] || 0) + 1;
                 catStats[c.category] = (catStats[c.category] || 0) + 1;
@@ -360,6 +360,14 @@
             ];
             addTable('🛠️ 破損カード復元PoC状況', pocStats);
 
+            // Category Sidecar Summary
+            const { getCategorySidecarSummary } = await import('/src/utils/dataRecoveryEngine.ts?t=' + Date.now());
+            const catSummary = await getCategorySidecarSummary();
+            addTable('🏷️ カテゴリ不整合レビュー (Sidecar)', [
+                { 項目: 'Suspect総数', 実測値: catSummary.total_suspect },
+                { 項目: 'High Confidence (自動提案)', 実測値: catSummary.high_confidence },
+                { 項目: '要レビュー', 実測値: catSummary.needs_review }
+            ]);
             const sampleRC = allRC.slice(0, 5).map(c => ({
                 ID: c.restoration_id,
                 年度問: `${c.year}-${c.question_no}`,

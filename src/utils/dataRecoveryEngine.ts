@@ -6,6 +6,7 @@ import {
     executeRestorationBatch2, syncRestoredBatch2ToSource,
     executeRestorationBatch3, syncRestoredBatch3ToSource
 } from './restorationCandidates';
+import { generateCategorySuggestions } from './categorySidecarReview';
 
 /**
  * 埋もれた高品質データを検出し、RecoveredLearningAssetとして回収する
@@ -123,5 +124,18 @@ export async function processHiddenValueRecovery(options: {
     return {
         recovered_count: recoveredAssets.length,
         usable_count: recoveredAssets.filter(a => a.usable_in_learning).length
+    };
+}
+
+export async function getCategorySidecarSummary() {
+    const cards = await db.understanding_cards.toArray();
+    const restorations = await db.restoration_candidates.toArray();
+    const suggestions = generateCategorySuggestions(cards, restorations);
+    
+    return {
+        total_suspect: suggestions.length,
+        high_confidence: suggestions.filter(s => s.confidence === 'high').length,
+        needs_review: suggestions.filter(s => s.confidence === 'medium').length,
+        samples: suggestions.slice(0, 5)
     };
 }
