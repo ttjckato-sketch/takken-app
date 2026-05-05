@@ -1,4 +1,4 @@
-# 宅建学習アプリ v2.1.0-beta
+# 宅建学習アプリ v2.1.0 Stable
 
 [![Deploy GitHub Pages](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,14 +8,13 @@
 ## 公開URL
 **[https://ttjckato-sketch.github.io/takken-app/](https://ttjckato-sketch.github.io/takken-app/)**
 
-最新リリース: [v2.1.0-alpha.1](https://github.com/ttjckato-sketch/takken-app/releases/tag/v2.1.0-alpha.1)
-(v2.1.0-beta.1 近日公開予定)
+最新リリース: [v2.1.0](https://github.com/ttjckato-sketch/takken-app/releases/tag/v2.1.0)
 
 ---
 
-## Development Status: v2.1.0 Beta Candidate
+## Development Status: v2.1.0 Stable
 
-本プロジェクトは **v2.1.0 beta** 段階にあります。基盤となるデータ復元パイプラインとデータ保護機能が実装されました。
+本プロジェクトは **v2.1.0 Stable** リリースです。alpha/beta フェーズを経て、データ復元パイプライン、データ保護基盤、およびデータ透明性が強化されました。
 
 ### 🚀 Data Recovery Status (累計 200件復元済)
 - **Batch-1 (Deterministic)**: 100件の高品質規定を復元
@@ -78,7 +77,7 @@ GitHub Pages で公開されています。GitHub Actions により、master ブ
 
 ## 注意事項
 
-- **Beta Release**: 本バージョンはプレリリース版です。全問題の復元や法的正確性を完全に保証するものではありません。
+- **Known Limitations**: 本バージョンでは一部のカテゴリ不整合が疑われるデータ（14件）を意図的に学習対象から除外しています。また、バックアップのインポートは現在検証（Dry-run）のみに対応しています。
 - **APIキーは不要**: 本アプリケーションはコア機能において外部のAPI（OpenAI, Gemini等のLLM）キーを要求しません。
 - **免責事項**: 本アプリはあくまで「学習支援」を目的としたツールです。収録されている法令データや解説内容の正確性については万全を期しておりますが、法改正等により内容が古くなる場合があります。実務における法令の最終確認は、必ず国土交通省等の公的資料・法令データ提供システムをご参照ください。
 
