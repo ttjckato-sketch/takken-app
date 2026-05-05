@@ -15,6 +15,8 @@ import { InputUnitViewer } from './components/learning/InputUnitViewer';
 import { ComparisonLearningView } from './components/learning/ComparisonLearningView';
 import { TAKKEN_PROTOTYPE_UNITS } from './utils/inputUnitPrototypes';
 import { DataExplorerView } from './components/admin/DataExplorerView';
+import { AISalvageView } from './components/admin/AISalvageView';
+import { RealityProjectionView } from './components/admin/RealityProjectionView';
 
 type HomeStats = {
   total: number;
@@ -26,7 +28,7 @@ type HomeStats = {
   totalReviews: number;
 };
 
-type TabType = 'home' | 'study_session' | 'session_summary' | 'input_viewer' | 'comparison_viewer' | 'admin_explorer';
+type TabType = 'home' | 'study_session' | 'session_summary' | 'input_viewer' | 'comparison_viewer' | 'admin_explorer' | 'ai_salvage' | 'reality_projection';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
@@ -720,6 +722,18 @@ export default function App() {
                             >
                                 <Database size={18} /> Data Explorer (Read-Only)
                             </button>
+                            <button 
+                                onClick={() => setCurrentTab('ai_salvage')}
+                                className="px-6 py-3 bg-indigo-700 hover:bg-indigo-600 text-white rounded-2xl text-sm font-black transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                            >
+                                <Zap size={18} /> AI Salvage (Pro)
+                            </button>
+                            <button 
+                                onClick={() => setCurrentTab('reality_projection')}
+                                className="px-6 py-3 bg-rose-700 hover:bg-rose-600 text-white rounded-2xl text-sm font-black transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                            >
+                                <Target size={18} /> Reality Projection
+                            </button>
                         </div>
 
                         <p className="text-slate-500 text-[10px] font-bold">※URLパラメータ ?devRepairTag=農地法 等でも直接表示可能です。</p>
@@ -864,6 +878,22 @@ export default function App() {
         return (
           <div className="animate-in fade-in duration-500">
             <DataExplorerView 
+                onBack={() => setCurrentTab('home')} 
+            />
+          </div>
+        );
+      case 'ai_salvage':
+        return (
+          <div className="animate-in fade-in duration-500">
+            <AISalvageView 
+                onBack={() => setCurrentTab('home')} 
+            />
+          </div>
+        );
+      case 'reality_projection':
+        return (
+          <div className="animate-in fade-in duration-500">
+            <RealityProjectionView 
                 onBack={() => setCurrentTab('home')} 
             />
           </div>
