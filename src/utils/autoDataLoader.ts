@@ -10,6 +10,7 @@ import { importChintaiData } from './chintaiDataTransformer';
 import { integrateHighQualityData, isHighQualityDataLoaded } from './highQualityDataLoader';
 import { logDatabaseStats } from './analytics';
 import { convertTakkinToSourceData } from './takkenSourceTransformer';
+import { resolvePublicAssetPath } from './publicAssetPath';
 
 // グローバル進捗コールバック（オプション）
 export type ImportProgressCallback = (current: number, total: number, message: string) => void;
@@ -98,7 +99,8 @@ export async function loadInitialData(forceReload: boolean = false): Promise<{ s
     reportProgress(0, 0, '宅建データファイルを読み込み中...');
 
     const timestamp = new Date().getTime();
-    const response = await fetch(`/ULTIMATE_STUDY_DECK.json?v=${timestamp}`, { cache: 'no-store' });
+    const deckUrl = resolvePublicAssetPath(`ULTIMATE_STUDY_DECK.json?v=${timestamp}`);
+    const response = await fetch(deckUrl, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error('宅建データファイルの読み込みに失敗しました');
     }

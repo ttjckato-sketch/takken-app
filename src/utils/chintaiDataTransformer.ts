@@ -6,6 +6,7 @@
 import { db, type KnowledgeCard, UnderstandingCard, SourceQuestion, SourceChoice } from '../db';
 import { buildIntegratedCard } from './dataIntegration';
 import { analyzeQuestionType, calculateIsStatementTrue, type Polarity } from './questionTypeAnalyzer';
+import { resolvePublicAssetPath } from './publicAssetPath';
 
 export interface ChintaiQuestion {
   id: string;
@@ -388,7 +389,8 @@ export async function importChintaiData(): Promise<{
 }> {
   try {
     const timestamp = new Date().getTime();
-    const response = await fetch(`/chintai_raw.json?v=${timestamp}`, { cache: 'no-store' });
+    const chintaiUrl = resolvePublicAssetPath(`chintai_raw.json?v=${timestamp}`);
+    const response = await fetch(chintaiUrl, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error('chintai_raw.jsonの読み込みに失敗しました');
     }

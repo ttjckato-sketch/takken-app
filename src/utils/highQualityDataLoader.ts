@@ -4,6 +4,7 @@
  */
 
 import { db, type UnderstandingCard } from '../db';
+import { resolvePublicAssetPath } from './publicAssetPath';
 
 export interface AnalogyData {
   card_id: string;
@@ -156,7 +157,8 @@ function findActiveRecallData(
 export async function loadAnalogyData(): Promise<Map<string, AnalogyData>> {
   try {
     const timestamp = new Date().getTime();
-    const response = await fetch(`/ANALOGY_SYSTEM.json?v=${timestamp}`, { cache: 'no-store' });
+    const analogyUrl = resolvePublicAssetPath(`ANALOGY_SYSTEM.json?v=${timestamp}`);
+    const response = await fetch(analogyUrl, { cache: 'no-store' });
     if (!response.ok) {
       console.warn('ANALOGY_SYSTEM.jsonの読み込みに失敗しました');
       return new Map();
@@ -183,7 +185,8 @@ export async function loadAnalogyData(): Promise<Map<string, AnalogyData>> {
 export async function loadActiveRecallData(): Promise<Map<string, ActiveRecallData>> {
   try {
     const timestamp = new Date().getTime();
-    const response = await fetch(`/ACTIVE_RECALL_SYSTEM.json?v=${timestamp}`, { cache: 'no-store' });
+    const recallUrl = resolvePublicAssetPath(`ACTIVE_RECALL_SYSTEM.json?v=${timestamp}`);
+    const response = await fetch(recallUrl, { cache: 'no-store' });
     if (!response.ok) {
       console.warn('ACTIVE_RECALL_SYSTEM.jsonの読み込みに失敗しました');
       return new Map();
@@ -210,7 +213,8 @@ export async function loadActiveRecallData(): Promise<Map<string, ActiveRecallDa
 export async function loadCognitiveLoadData(): Promise<Map<string, any>> {
   try {
     const timestamp = new Date().getTime();
-    const response = await fetch(`/COGNITIVE_LOAD_OPTIMIZED.json?v=${timestamp}`, { cache: 'no-store' });
+    const cognitiveUrl = resolvePublicAssetPath(`COGNITIVE_LOAD_OPTIMIZED.json?v=${timestamp}`);
+    const response = await fetch(cognitiveUrl, { cache: 'no-store' });
     if (!response.ok) {
       console.warn('COGNITIVE_LOAD_OPTIMIZED.jsonの読み込みに失敗しました');
       return new Map();
