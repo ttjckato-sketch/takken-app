@@ -52,6 +52,14 @@
     <button onclick="clearRestorationData()" style="background: #3a3a3a; color: #f48771; border: 1px solid #f48771;">🗑️ 候補クリア</button>
   </div>
 
+  <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
+    <h3 style="margin-top: 0; color: #4ec9b0;">🔍 バックアップ検証 (Dry-run)</h3>
+    <p style="font-size: 12px; color: #888;">※実DBへの書き込みは一切行われません。</p>
+    <input type="file" id="backupFileInput" accept=".json,application/json" style="margin-bottom: 10px; display: block; background: #333; color: #fff; border: 1px solid #555; padding: 5px; width: 100%;">
+    <button onclick="runBackupValidation()" style="background: #4ec9b0; color: black;">🔍 バックアップJSONを検証 (Dry-run)</button>
+    <div id="validationResult" style="margin-top: 15px;"></div>
+  </div>
+
   <div id="results"></div>
 
   <script>
@@ -193,6 +201,57 @@
             setTimeout(() => audit(), 1000);
         } catch (e) {
             addStatus('fail', '❌ 復元エラー: ' + e.message);
+            console.error(e);
+        }
+    }
+
+    async function runBackupValidation() {
+        const fileInput = document.getElementById('backupFileInput');
+        const validationResult = document.getElementById('validationResult');
+        
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('ファイルを選択してください');
+            return;
+        }
+
+        try {
+            validationResult.innerHTML = '<div class="status warn">⌛ 検証中...</div>';
+            const file = fileInput.files[0];
+            const text = await file.text();
+            
+            const { validateBackupPayloadDryRun } = await import('/src/utils/backupImportValidator.ts?t=' + Date.now());
+            const report = await validateBackupPayloadDryRun(text);
+            
+            let html = `<div class="status ${report.verdict === 'PASS' ? 'ok' : (report.verdict === 'FAIL' ? 'fail' : 'warn')}">
+                <strong>判定: ${report.verdict}</strong><br>
+                アプリ: ${report.app_id} (Format Ver: ${report.format_version})<br>
+                作成日: ${report.created_at}
+            </div>`;
+
+            if (report.errors.length > 0) {
+                html += '<div class="status fail" style="margin-top:10px;"><strong>❌ エラー (要修正):</strong><ul>' + 
+                    report.errors.map(e => `<li>${e}</li>`).join('') + '</ul></div>';
+            }
+
+            if (report.warnings.length > 0) {
+                html += '<div class="status warn" style="margin-top:10px;"><strong>⚠️ 警告 (確認推奨):</strong><ul>' + 
+                    report.warnings.map(w => `<li>${w}</li>`).join('') + '</ul></div>';
+            }
+
+            // Recovery Stats
+            html += `<h3>🛠️ 救済データ統計 (Backup)</h3>
+                <pre style="margin:0;">Batch-1 (決定論的): ${report.recovery_stats.b1_count} 件\nBatch-2 (信号解析): ${report.recovery_stats.b2_count} 件</pre>`;
+
+            // DB Comparison
+            html += '<h3>📊 現在のDBとの比較</h3><table><tr><th>テーブル</th><th>現在</th><th>バックアップ</th><th>差分</th></tr>';
+            for (const [table, comp] of Object.entries(report.db_comparison)) {
+                html += `<tr><td>${table}</td><td class="number">${comp.current}</td><td class="number">${comp.backup}</td><td class="number">${comp.delta >= 0 ? '+' : ''}${comp.delta}</td></tr>`;
+            }
+            html += '</table>';
+
+            validationResult.innerHTML = html;
+        } catch (e) {
+            validationResult.innerHTML = '<div class="status fail">❌ システムエラー: ' + e.message + '</div>';
             console.error(e);
         }
     }
