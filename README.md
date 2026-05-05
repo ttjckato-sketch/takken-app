@@ -1,4 +1,4 @@
-# 宅建学習アプリ v2.0.1
+# 宅建学習アプリ v2.1.0-beta
 
 [![Deploy GitHub Pages](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -8,7 +8,29 @@
 ## 公開URL
 **[https://ttjckato-sketch.github.io/takken-app/](https://ttjckato-sketch.github.io/takken-app/)**
 
-最新リリース: [v2.0.1](https://github.com/ttjckato-sketch/takken-app/releases/tag/v2.0.1)
+最新リリース: [v2.1.0-alpha.1](https://github.com/ttjckato-sketch/takken-app/releases/tag/v2.1.0-alpha.1)
+(v2.1.0-beta.1 近日公開予定)
+
+---
+
+## Development Status: v2.1.0 Beta Candidate
+
+本プロジェクトは **v2.1.0 beta** 段階にあります。基盤となるデータ復元パイプラインとデータ保護機能が実装されました。
+
+### 🚀 Data Recovery Status (累計 200件復元済)
+- **Batch-1 (Deterministic)**: 100件の高品質規定を復元
+- **Batch-2 (Explanation Signal)**: 50件の解説文解析による救済
+- **Batch-3 (Placeholder v2)**: 50件の境界値救済（合計 200件）
+- **Safety**: 既存カードの上書きなし、学習履歴の完全保持、サイドカーID方式を採用
+
+### 🛡️ Backup & Safety
+- **JSON Export (v1)**: IndexedDB内の全データをJSONでバックアップ可能
+- **Import Validator**: バックアップJSONの整合性を書き込みなしで検証（Dry-run）
+- **Read-Only**: 全ての管理ツールは安全のため読み取り専用または非破壊操作に限定されています
+
+### 🛠️ Admin & Inspection Tools
+- **Data Explorer (Read-Only)**: 除外カード、除外理由、復元メタデータの詳細確認
+- **DB Audit Dashboard**: 復元パイプラインの実行と統計確認（`db-audit.html`）
 
 ---
 
@@ -56,6 +78,7 @@ GitHub Pages で公開されています。GitHub Actions により、master ブ
 
 ## 注意事項
 
+- **Beta Release**: 本バージョンはプレリリース版です。全問題の復元や法的正確性を完全に保証するものではありません。
 - **APIキーは不要**: 本アプリケーションはコア機能において外部のAPI（OpenAI, Gemini等のLLM）キーを要求しません。
 - **免責事項**: 本アプリはあくまで「学習支援」を目的としたツールです。収録されている法令データや解説内容の正確性については万全を期しておりますが、法改正等により内容が古くなる場合があります。実務における法令の最終確認は、必ず国土交通省等の公的資料・法令データ提供システムをご参照ください。
 
