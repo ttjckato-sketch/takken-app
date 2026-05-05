@@ -47,10 +47,9 @@
   </div>
 
   <div style="margin-top: 20px; padding: 15px; background: #252526; border-radius: 8px; border: 1px solid #333;">
-    <h3 style="margin-top: 0; color: #ce9178;">🛠️ 教材復元 PoC 操作</h3>
-    <button onclick="extractRestorationCandidates()" style="background: #ce9178;">🔍 50件復元候補を抽出</button>
+    <h3 style="margin-top: 0; color: #ce9178;">🛠️ 教材復元 Batch-1 操作 (v2.1.0)</h3>
+    <button onclick="runRestorationBatch1()" style="background: #ce9178;">🚀 Batch-1 復元 & 同期実行</button>
     <button onclick="downloadRestorationJSON()" class="copy-btn">💾 復元候補JSON保存</button>
-    <button onclick="copyRestorationToClipboard()" class="copy-btn">📋 報告用にコピー</button>
     <button onclick="clearRestorationData()" style="background: #3a3a3a; color: #f48771; border: 1px solid #f48771;">🗑️ 候補クリア</button>
   </div>
 
@@ -149,15 +148,22 @@
         a.click();
     }
 
-    async function extractRestorationCandidates() {
+    async function runRestorationBatch1() {
         try {
-            addStatus('warn', '🚀 50件復元候補の抽出を開始...');
-            const { extractRestorationCandidatesPoC } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
-            const res = await extractRestorationCandidatesPoC(50);
-            addStatus('ok', `✅ 抽出完了: ${res.total}件 (P:${res.breakdown.placeholder}, N:${res.breakdown.null_statement}, S:${res.breakdown.short})`);
+            addStatus('warn', '🚀 Batch-1 復元パイプラインを実行中...');
+            const { executeRestorationBatch1, syncRestoredBatch1ToSource } = await import('/src/utils/restorationCandidates.ts?t=' + Date.now());
+            
+            const results = await executeRestorationBatch1(100);
+            addStatus('ok', `✅ 復元処理完了: ${results.recovered_count}件 (抽出: ${results.total_scanned}件)`);
+            
+            addStatus('warn', '🔄 Active Recall への同期を開始...');
+            const syncedCount = await syncRestoredBatch1ToSource();
+            addStatus('ok', `✅ 同期完了: ${syncedCount}件が学習対象になりました`);
+            
             setTimeout(() => audit(), 1000);
         } catch (e) {
-            addStatus('fail', '❌ 抽出エラー: ' + e.message);
+            addStatus('fail', '❌ 復元エラー: ' + e.message);
+            console.error(e);
         }
     }
 
