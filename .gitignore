@@ -50,6 +50,8 @@ private*
 *.p12
 *.p8
 *.pfx
+id_ed25519
+id_ed25519.pub
 
 # === Database Files ===
 *.sqlite
@@ -70,3 +72,25 @@ Thumbs.db
 
 # === Vite Cache ===
 .vite/
+
+# === local audit / temporary files ===
+*.tmp
+*.temp
+*.bak
+*.cjs
+audit-*.json
+*audit*.json
+*results.json
+*result.json
+*_report.json
+local-*.json
+debug-*.json
+
+# === local audit scripts ===
+audit-*.js
+audit-*.ts
+audit-*.py
+verify-*.py
+check-*.py
+temp-*.py
+local-*.py

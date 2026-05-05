@@ -45,6 +45,15 @@ npm run preview
 
 本ソフトウェアは **MIT License** の下で公開されています。詳細は [LICENSE](./LICENSE) ファイルを参照してください。
 
+## Deployment
+
+GitHub Pages での公開を想定しています。
+
+想定URL:
+https://ttjckato-sketch.github.io/takken-app/
+
+GitHub Actions により、master ブランチへの push 時点、または手動トリガーで自動デプロイされます。
+
 ## 免責事項
 
 本アプリは学習支援を目的としており、試験の合格や法令の正確性を保証するものではありません。法令の最終確認は必ず公的資料を参照してください。また、本アプリの使用によって生じた損害等について、開発者は一切の責任を負いません。
