@@ -52,10 +52,13 @@ export function auditSingleCard(card: UnderstandingCard): AuditResult {
   if (card.sample_question || card.core_knowledge?.rule) score += 15;
   else weak_reasons.push('statement_missing');
 
-  if (card.is_statement_true !== null) score += 15;
+  if (card.is_statement_true !== null && card.is_statement_true !== undefined) score += 15;
   else weak_reasons.push('answer_not_defined');
 
-  const expLen = (card.explanation || '').length;
+  // For UnderstandingCard, explanation might be in core_knowledge.essence if not directly on the card
+  const effectiveExplanation = card.explanation || card.core_knowledge?.essence || '';
+  const expLen = effectiveExplanation.length;
+  
   if (expLen >= 80) score += 20;
   else if (expLen > 0) {
     score += 5;
@@ -64,23 +67,33 @@ export function auditSingleCard(card: UnderstandingCard): AuditResult {
     weak_reasons.push('explanation_missing');
   }
 
-  if (card.prerequisite) score += 10;
+  // P29 fields check (might be present in future or if mapped)
+  if (card.prerequisite || card.core_knowledge?.essence?.includes('【前提】')) score += 10;
   else weak_reasons.push('prerequisite_missing');
 
-  if (card.why_it_matters) score += 10;
+  if (card.why_it_matters || card.core_knowledge?.essence?.includes('【本質】')) score += 10;
   else weak_reasons.push('why_it_matters_missing');
 
-  if (card.trap_point) score += 10;
+  if (card.trap_point || card.core_knowledge?.examiners_intent) score += 10;
   else weak_reasons.push('trap_point_missing');
 
-  if (card.source_trace && card.source_trace.length > 0) score += 10;
+  // Check for source trace (tags or explicit field)
+  if ((card.source_trace && card.source_trace.length > 0) || (card.tags && card.tags.some(t => /^\d+/.test(t)))) score += 10;
   else weak_reasons.push('no_source_trace');
 
   // Match topic
-  const matchedTopic = LEARNING_SCOPE_MAP.find(t => 
-    card.category?.includes(t.sub_topic) || 
-    t.keywords.some(k => card.category?.includes(k) || (card.tags && card.tags.includes(k)))
-  );
+  const matchedTopic = LEARNING_SCOPE_MAP.find(t => {
+    // If card has explicit exam_type, prioritize it
+    if (card.exam_type && card.exam_type !== t.exam) return false;
+    
+    return card.category?.includes(t.sub_topic) || 
+           t.keywords.some(k => 
+             card.category?.includes(k) || 
+             (card.tags && card.tags.includes(k)) ||
+             (card.sample_question || '').includes(k) ||
+             (effectiveExplanation || '').includes(k)
+           );
+  });
 
   if (matchedTopic) score += 10;
   else weak_reasons.push('category_not_matched_to_scope');
@@ -89,7 +102,7 @@ export function auditSingleCard(card: UnderstandingCard): AuditResult {
   if (expLen < 20 && expLen > 0) score -= 20;
   if (!card.category || card.category === '未分類') score -= 15;
 
-  const is_input = !!(card.explanation && card.explanation.length > 50);
+  const is_input = !!(effectiveExplanation && effectiveExplanation.length > 50);
   const is_output = card.is_statement_true !== null && !!card.sample_question;
 
   let recommended_fix = 'none';

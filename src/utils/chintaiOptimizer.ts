@@ -20,31 +20,42 @@ export type ChintaiOfficialCategory = typeof CHINTAI_OFFICIAL_CATEGORIES[number]
  */
 export function mapChintaiOfficialCategory(qText: string, cText: string, explanation: string): {
   category: ChintaiOfficialCategory;
+  sub_topic: string;
   tags: string[];
   confidence: 'high' | 'medium' | 'low';
 } {
   const text = (qText + ' ' + cText + ' ' + explanation).toLowerCase();
 
-  if (text.includes('管理業法') || text.includes('業務管理者') || text.includes('登録') || text.includes('サブリース') || text.includes('不当勧誘')) {
-    return { category: '賃貸住宅管理業法・法令', tags: ['管理業法'], confidence: 'high' };
+  if (text.includes('管理受託') || text.includes('受託契約')) {
+    return { category: '管理受託契約', sub_topic: '管理受託契約', tags: ['受託契約'], confidence: 'high' };
   }
-  if (text.includes('維持保全') || text.includes('修繕') || text.includes('点検') || text.includes('設備') || text.includes('原状回復') || text.includes('通常損耗')) {
-    return { category: '維持保全', tags: ['維持保全'], confidence: 'high' };
+  if (text.includes('重要事項説明') || text.includes('重説')) {
+      if (text.includes('管理受託')) return { category: '管理受託契約', sub_topic: '重要事項説明', tags: ['重要事項説明'], confidence: 'high' };
+      return { category: '賃貸住宅管理業法・法令', sub_topic: '管理受託契約前の重要事項説明', tags: ['重要事項説明'], confidence: 'high' };
   }
-  if (text.includes('家賃') || text.includes('敷金') || text.includes('共益費') || text.includes('滞納') || text.includes('精算') || text.includes('分別管理')) {
-    return { category: '金銭管理', tags: ['金銭管理'], confidence: 'high' };
+  if (text.includes('サブリース') || text.includes('特定賃貸借') || text.includes('マスターリース')) {
+    return { category: '管理受託契約', sub_topic: 'サブリース方式', tags: ['サブリース'], confidence: 'high' };
   }
-  if (text.includes('管理受託') || text.includes('重要事項説明') || text.includes('委託者') || text.includes('締結時書面')) {
-    return { category: '管理受託契約', tags: ['受託契約'], confidence: 'high' };
+  if (text.includes('原状回復') || text.includes('ガイドライン') || text.includes('通常損耗')) {
+    return { category: '維持保全', sub_topic: '原状回復', tags: ['原状回復'], confidence: 'high' };
   }
-  if (text.includes('賃貸借契約') || text.includes('借地借家法') || text.includes('更新') || text.includes('解約') || text.includes('定期建物')) {
-    return { category: '賃貸借契約', tags: ['賃貸借契約'], confidence: 'high' };
+  if (text.includes('修繕') || text.includes('維持保全') || text.includes('点検') || text.includes('設備')) {
+    return { category: '維持保全', sub_topic: '建物設備', tags: ['維持保全'], confidence: 'high' };
   }
-  if (text.includes('クレーム') || text.includes('募集') || text.includes('防犯') || text.includes('防災') || text.includes('個人情報')) {
-    return { category: '管理実務・その他', tags: ['管理実務'], confidence: 'high' };
+  if (text.includes('家賃') || text.includes('賃料') || text.includes('敷金') || text.includes('共益費') || text.includes('滞納')) {
+    return { category: '金銭管理', sub_topic: '家賃', tags: ['金銭管理'], confidence: 'high' };
+  }
+  if (text.includes('賃貸借契約') || text.includes('借地借家法') || text.includes('更新') || text.includes('解約') || text.includes('退去')) {
+    return { category: '賃貸借契約', sub_topic: '賃貸借契約', tags: ['賃貸借契約'], confidence: 'high' };
+  }
+  if (text.includes('管理業法') || text.includes('登録') || text.includes('業務管理者') || text.includes('分別管理')) {
+    return { category: '賃貸住宅管理業法・法令', sub_topic: '登録制度', tags: ['管理業法'], confidence: 'high' };
+  }
+  if (text.includes('個人情報') || text.includes('苦情') || text.includes('ハザード') || text.includes('保険')) {
+    return { category: '管理実務・その他', sub_topic: '入居者対応', tags: ['管理実務'], confidence: 'high' };
   }
 
-  return { category: '管理実務・その他', tags: ['管理実務'], confidence: 'low' };
+  return { category: '管理実務・その他', sub_topic: '実務文書', tags: ['管理実務'], confidence: 'low' };
 }
 
 /**

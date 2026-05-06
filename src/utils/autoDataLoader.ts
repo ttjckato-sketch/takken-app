@@ -7,6 +7,7 @@
 import { db, type KnowledgeCard } from '../db';
 import { buildIntegratedCard } from './dataIntegration';
 import { importChintaiData } from './chintaiDataTransformer';
+import { processChintaiOptimization } from './chintaiOptimizer';
 import { integrateHighQualityData, isHighQualityDataLoaded } from './highQualityDataLoader';
 import { logDatabaseStats } from './analytics';
 import { convertTakkinToSourceData } from './takkenSourceTransformer';
@@ -192,6 +193,15 @@ export async function loadInitialData(forceReload: boolean = false): Promise<{ s
       };
     }
     reportProgress(0, 0, `賃貸データインポート完了: ${chintaiResult.imported || 0}問`);
+
+    // 賃貸データの最適化（知識ユニット化）を実行
+    reportProgress(0, 0, '賃貸知識構造を最適化中...');
+    try {
+        const optResult = await processChintaiOptimization();
+        console.log('✓ Chintai Optimization:', optResult);
+    } catch (optError) {
+        console.warn('⚠️ 賃貸最適化エラー:', optError);
+    }
 
     // 高品質データ統合
     const highQualityLoaded = await isHighQualityDataLoaded();

@@ -7,6 +7,7 @@ import { db, type KnowledgeCard, UnderstandingCard, SourceQuestion, SourceChoice
 import { buildIntegratedCard } from './dataIntegration';
 import { analyzeQuestionType, calculateIsStatementTrue, type Polarity } from './questionTypeAnalyzer';
 import { resolvePublicAssetPath } from './publicAssetPath';
+import { mapChintaiOfficialCategory } from './chintaiOptimizer';
 
 export interface ChintaiQuestion {
   id: string;
@@ -173,22 +174,23 @@ export function transformChintaiToKnowledgeCard(
 ): KnowledgeCard {
   // 肢を個別に抽出
   const limbs = extractIndividualLimbs(chintai);
+  const correctLimb = limbs.find(l => l.isCorrect) || limbs[0];
 
-  // タグを抽出
-  const tags = extractTags(chintai);
+  // 精密カテゴリマッピング
+  const mapping = mapChintaiOfficialCategory(chintai.question_text, correctLimb.text, chintai.explanation_source);
 
   return {
-    card_id: `CHINTAI-${chintai.id}`,
+    card_id: `CHINTAI-KC-${chintai.id}`,
     knowledge_domain: {
-      major: '賃貸管理',
-      tags: tags,
-      category_sample: chintai.category_major,
+      major: mapping.category,
+      tags: mapping.tags,
+      category_sample: mapping.sub_topic,
       total_patterns: 1,
     },
     core_knowledge: {
       rule: extractCoreRule(chintai),
       essence: extractEssence(chintai.explanation_source),
-      examiners_intent: `賃貸管理における${chintai.category_major}の理解`,
+      examiners_intent: `賃貸管理における${mapping.sub_topic}の理解`,
       all_essences: [chintai.explanation_source],
     },
     question_patterns: {

@@ -393,19 +393,20 @@
         const avgScore = audits.length > 0 ? audits.reduce((s, a) => s + a.score, 0) / audits.length : 0;
         const weakCount = audits.filter(a => a.score < 60).length;
 
-        // Simple keyword-based coverage for HTML auditor
+        // Enhanced coverage check for HTML auditor
         const takkenKeywords = ['業法', '免許', '媒介', '35条', '37条', '権利', '代理', '抵当', '制限', '建築'];
-        const chintaiKeywords = ['管理受託', 'サブリース', '維持保全', '敷金', '家賃', '滞納', '修繕'];
+        const chintaiKeywords = ['管理受託', 'サブリース', '維持保全', '敷金', '家賃', '滞納', '修繕', '特定賃貸借', '業務管理者', '管理業法'];
         
-        const takkenCount = allCards.filter(c => takkenKeywords.some(k => (c.category || '').includes(k))).length;
-        const chintaiCount = allCards.filter(c => chintaiKeywords.some(k => (c.category || '').includes(k))).length;
+        const takkenCount = allCards.filter(c => c.exam_type === 'takken' || (takkenKeywords.some(k => (c.category || '').includes(k)) && c.exam_type !== 'chintai')).length;
+        const chintaiCount = allCards.filter(c => c.exam_type === 'chintai' || chintaiKeywords.some(k => (c.category || '').includes(k) || (c.sample_question || '').includes(k))).length;
 
         addTable('🎓 Learning Quality Audit', [
             { 項目: '平均品質スコア', 値: avgScore.toFixed(1) + ' / 100' },
             { 項目: '低品質カード数 (Score < 60)', 値: weakCount },
             { 項目: '高品質カード率 (Score >= 80)', 値: Math.round(audits.filter(a => a.score >= 80).length / audits.length * 100) + '%' },
-            { 項目: '宅建関連概算カバー数', 値: takkenCount },
-            { 項目: '賃貸管理関連概算カバー数', 値: chintaiCount }
+            { 項目: '宅建カバーカード数 (推定)', 値: takkenCount },
+            { 項目: '賃貸管理カバーカード数 (推定)', 値: chintaiCount },
+            { 項目: '賃貸管理網羅率 (目標 60%)', 値: Math.min(100, Math.round(chintaiCount / 500 * 100)) + '%' }
         ]);
 
         // P26: Restoration PoC Section

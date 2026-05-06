@@ -25,7 +25,9 @@ type FilterType =
   | 'suspect'
   | 'weak'
   | 'missing_prerequisite'
-  | 'no_source_trace';
+  | 'no_source_trace'
+  | 'chintai'
+  | 'takken';
 
 export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) => {
   const [cards, setCards] = useState<UnderstandingCard[]>([]);
@@ -110,6 +112,8 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
         case 'weak': return !!audit && audit.quality_score < 60;
         case 'missing_prerequisite': return !!audit && audit.weak_reasons.includes('prerequisite_missing');
         case 'no_source_trace': return !!audit && audit.weak_reasons.includes('no_source_trace');
+        case 'chintai': return card.exam_type === 'chintai' || (!!audit && LEARNING_SCOPE_MAP.find(t => t.id === audit.matched_topic_id)?.exam === 'chintai');
+        case 'takken': return card.exam_type === 'takken' || (!!audit && LEARNING_SCOPE_MAP.find(t => t.id === audit.matched_topic_id)?.exam === 'takken');
         default: return true;
       }
     });
@@ -209,7 +213,9 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
               { id: 'batch1', label: 'B1' },
               { id: 'batch2', label: 'B2' },
               { id: 'batch3', label: 'B3' },
-              { id: 'review', label: 'Review' }
+              { id: 'review', label: 'Review' },
+              { id: 'chintai', label: 'Chintai (Pro)' },
+              { id: 'takken', label: 'Takken' }
             ].map(f => (
               <button
                 key={f.id}
