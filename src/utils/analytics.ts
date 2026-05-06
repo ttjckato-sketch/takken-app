@@ -218,6 +218,10 @@ export async function persistRecommendedDistribution(rec: any): Promise<void> {
     });
 }
 
+import { isActiveRecallReady } from './questionTypeClassifier';
+
+...
+
 /**
  * ActiveRecall用のキュー生成
  */
@@ -225,11 +229,11 @@ export async function buildLearningQueue(options: any = {}): Promise<any[]> {
     const { limit = 50, examType = 'all' } = options;
     const now = Date.now();
 
-    let cards = await db.understanding_cards
-        .filter(c => c.is_statement_true === true || c.is_statement_true === false)
-        .toArray();
+    const allCards = await db.understanding_cards.toArray();
+    let cards = allCards.filter(isActiveRecallReady);
 
     if (examType !== 'all') cards = cards.filter(c => c.exam_type === examType);
+...
 
     const scored = cards.map(c => {
         let score = 50;

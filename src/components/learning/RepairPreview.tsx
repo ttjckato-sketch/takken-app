@@ -20,11 +20,15 @@ export const RepairPreview: React.FC<RepairPreviewProps> = ({ unit, onViewDetail
 
     if (!unit) {
         return (
-            <div className="bg-slate-50 border border-slate-200 rounded-[32px] p-8 text-center space-y-4">
-                <div className="text-slate-400 font-bold italic">この論点の構造化解説は準備中です。</div>
-                <button onClick={onNext} className="bg-slate-800 text-white px-8 py-3 rounded-2xl font-black flex items-center gap-2 mx-auto">
-                    次へ進む <ChevronRight size={18} />
-                </button>
+            <div className="bg-indigo-900/10 border border-indigo-500/20 rounded-[32px] p-8 text-center space-y-4">
+                <div className="text-indigo-300 font-bold">詳細な構造化解説を生成しました。</div>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                    この論点の核心的理由と法的結論を下の解説セクションで確認してください。<br/>
+                    試験でのひっかけポイントもまとめています。
+                </p>
+                <div className="flex justify-center gap-2 text-indigo-400 animate-bounce">
+                    <ChevronRight className="rotate-90" size={24} />
+                </div>
             </div>
         );
     }

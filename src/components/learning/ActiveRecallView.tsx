@@ -31,16 +31,19 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
   const [sourceChoices, setSourceChoices] = useState<SourceChoice[]>([]);
   const [renderMode, setRenderMode] = useState<QuestionRenderMode>('TRUE_FALSE');
   const [structuredExp, setStructuredExplanation] = useState<StructuredExplanation | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const startTimeRef = useRef<number>(Date.now());
 
   useEffect(() => {
     startTimeRef.current = Date.now();
     const loadData = async () => {
+        setIsLoading(true);
         // Load Source Choices
+        const baseId = card.card_id.replace(/^CHINTAI-KC-/, '').replace(/^KC-/, '');
         const choices = await db.source_choices
           .where('question_id')
-          .equals(card.card_id.replace(/^CHINTAI-KC-/, '').replace(/^KC-/, ''))
+          .equals(baseId)
           .toArray();
         setSourceChoices(choices);
 
@@ -51,6 +54,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         // Build Explanation
         const exp = buildStructuredExplanation(card, choices);
         setStructuredExplanation(exp);
+        setIsLoading(false);
     };
     loadData();
     
@@ -132,6 +136,30 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         setShowFullViewer(false);
     }, 300);
   };
+
+  if (isLoading) {
+      return (
+          <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center space-y-4">
+              <Zap className="text-indigo-600 animate-pulse" size={48} />
+              <div className="text-slate-400 font-black uppercase tracking-widest text-xs">分析中...</div>
+          </div>
+      );
+  }
+
+  if (renderMode === 'BLOCKED') {
+      return (
+          <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center space-y-6">
+              <AlertTriangle className="text-rose-500" size={48} />
+              <div className="space-y-2">
+                  <div className="text-slate-800 font-black text-xl">このカードは現在出題できません</div>
+                  <p className="text-slate-500 text-sm">必要なデータ（選択肢や回答）が不足しています。</p>
+              </div>
+              <button onClick={onNext} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black shadow-lg">
+                  次の問題へ飛ばす
+              </button>
+          </div>
+      );
+  }
 
   if (showFullViewer && repairUnit) {
       return (

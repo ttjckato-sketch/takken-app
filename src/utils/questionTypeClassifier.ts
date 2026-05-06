@@ -29,19 +29,23 @@ export function classifyQuestionRenderMode(
     text.includes('正しいものはいくつ') || 
     text.includes('誤っているものはいくつ') || 
     text.includes('正しいものの組み合わせ') || 
-    text.includes('記述のうち');
+    text.includes('記述のうち') ||
+    text.includes('ア、イ、ウ、エ') ||
+    text.includes('a、b、c、d') ||
+    text.includes('選択肢');
 
   // 3. Determine mode based on intent and available data
   if (isMcqIntent) {
-    if (sourceChoicesCount >= 4 || (card.question_patterns?.total || 0) >= 4) {
+    // If it's clearly an MCQ, we MUST have choices.
+    if (sourceChoicesCount >= 2 || (card.question_patterns?.total || 0) >= 2) {
       return { mode: 'MCQ', reasons: ['mcq_intent_with_choices'] };
     } else {
-      // Intent is MCQ but we don't have choices
+      // Intent is MCQ but we don't have choices - DO NOT fall back to TRUE_FALSE
       return { mode: 'BLOCKED', reasons: ['mcq_intent_missing_choices'] };
     }
   }
 
-  // 4. Default to True/False if we have a definitive answer
+  // 4. Default to True/False ONLY if it's a single limb (no MCQ intent)
   if (card.is_statement_true === true || card.is_statement_true === false) {
     return { mode: 'TRUE_FALSE', reasons: ['has_boolean_answer'] };
   }

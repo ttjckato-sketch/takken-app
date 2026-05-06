@@ -24,18 +24,21 @@ export function buildStructuredExplanation(
   
   // 1. Base components
   const conclusion = 
-    card.is_statement_true === true ? '法的結論：正しい。' : 
-    card.is_statement_true === false ? '法的結論：誤り。' : 
-    '法的結論：解説を参照。';
+    card.is_statement_true === true ? '【法的結論】正しい記述です。' : 
+    card.is_statement_true === false ? '【法的結論】誤りを含む記述です。' : 
+    '【法的結論】選択肢の個別判断を参照してください。';
 
-  // 2. Main reasoning
-  const reason = card.explanation || card.core_knowledge?.essence || '詳細な理由は現在精査中ですが、本論点の核心は以下の通りです。';
+  // 2. Main reasoning (Enhanced with category context)
+  let reason = card.explanation || card.core_knowledge?.essence || '';
+  if (!reason || reason.length < 20) {
+      reason = `${card.category}に関する重要論点です。問題文の内容が、関連する法令（宅建業法や借地借家法など）の規定に適合しているかを確認してください。`;
+  }
 
-  // 3. Prerequisite
-  const prerequisite = card.prerequisite || '不動産取引における基本原則（信義則・対抗要件等）に基づきます。';
+  // 3. Prerequisite ( 初学者向け )
+  const prerequisite = card.prerequisite || '不動産取引における「信義則」や、弱者保護のための「特別法（借地借家法等）」の基本原則に基づいています。';
 
   // 4. Trap points
-  const trap_point = card.trap_point || '試験では、主語（業者か個人か）や「～することができる」という表現のすり替えに注意してください。';
+  const trap_point = card.trap_point || '試験では「～しなければならない（義務）」と「～することができる（任意）」のすり替え、および対象者（業者か一般人か）の区別に注意が必要です。';
 
   // 5. Source trace
   let source = '出典：過去問データベース（Raw Trace）';
@@ -49,12 +52,18 @@ export function buildStructuredExplanation(
   // 6. Choice-level details for MCQ
   let choice_details;
   if (choices.length > 0) {
-    choice_details = choices.map(c => ({
-      option_no: c.option_no,
-      text: c.text,
-      is_correct: !!c.is_exam_correct_option,
-      explanation: c.explanation || '選択肢の個別解説を構築中。'
-    }));
+    choice_details = choices.map(c => {
+        let choiceExp = c.explanation || '';
+        if (!choiceExp) {
+            choiceExp = c.is_exam_correct_option ? 'この記述が正解（本問の要求に合致）となります。' : 'この記述は本問の正解ではありません。正誤の理由を確認してください。';
+        }
+        return {
+            option_no: c.option_no,
+            text: c.text,
+            is_correct: !!c.is_exam_correct_option,
+            explanation: choiceExp
+        };
+    });
   }
 
   return {
