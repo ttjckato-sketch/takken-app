@@ -46,7 +46,23 @@ export interface UnderstandingCard {
 export interface LearningSession { id: string; mode: 'understanding' | 'memorization' | 'integrated'; start_time: number; end_time?: number; cards_studied: number; correct_count: number; total_count: number; }
 export interface SourceQuestion { id: string; exam_type: 'takken' | 'chintai'; year: number; question_no: number; question_text: string; correct_option: number; question_type: 'true_false' | 'correct_choice' | 'incorrect_choice' | 'count_choice' | 'combination' | 'unknown'; polarity?: 'select_true' | 'select_false' | 'count' | 'combination' | 'unknown'; category: string; source_url?: string; source_card_id?: string; }
 export interface SourceChoice { id: string; question_id: string; option_no: number; text: string; is_exam_correct_option: boolean; is_statement_true: boolean | null; explanation?: string; source_card_id?: string; }
-export interface StudyEvent { event_id: string; card_id: string; question_id?: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; mode: 'understanding' | 'memorization' | 'integrated' | 'active_recall' | 'memory_recall' | 'comparison_recall' | 'trap_recall' | 'number_recall' | 'focus_recall'; answered_correct: boolean; selected_answer: boolean | null; correct_answer: boolean | null; response_time_ms: number; rating?: number; rating_source?: string; mistake_note?: string; created_at: number; }
+export interface StudyEvent { 
+    event_id: string; 
+    card_id: string; 
+    question_id?: string; 
+    exam_type: 'takken' | 'chintai'; 
+    category: string; 
+    tags: string[]; 
+    mode: 'understanding' | 'memorization' | 'integrated' | 'active_recall' | 'memory_recall' | 'comparison_recall' | 'trap_recall' | 'number_recall' | 'focus_recall'; 
+    answered_correct: boolean; 
+    selected_answer: boolean | number | null; 
+    correct_answer: boolean | number | null; 
+    response_time_ms: number; 
+    rating?: number; 
+    rating_source?: string; 
+    mistake_note?: string; 
+    created_at: number; 
+}
 export interface Metadata { key: string; value: any; }
 export interface KnowledgeUnit { 
     unit_id: string; 
