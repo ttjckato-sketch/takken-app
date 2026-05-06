@@ -10,6 +10,7 @@ import { ComparisonRecallView } from './components/learning/ComparisonRecallView
 import { RepairPreview } from './components/learning/RepairPreview';
 import { getStudyDashboard, buildDailyStudySessionQueue, startStudySession, completeStudySession, updateCardSRS } from './utils/analytics';
 import { ensureAllDataReady } from './utils/dataInitializer';
+import { resolvePublicAssetPath } from './utils/publicAssetPath';
 
 import { InputUnitViewer } from './components/learning/InputUnitViewer';
 import { ComparisonLearningView } from './components/learning/ComparisonLearningView';
@@ -213,6 +214,13 @@ export default function App() {
   useEffect(() => {
     const init = async () => {
       await ensureAllDataReady();
+
+      // 初期タブの制御 (URLパラメータ優先)
+      const params = new URLSearchParams(window.location.search);
+      const initialTab = params.get('tab') as TabType;
+      if (initialTab && ['admin_explorer', 'ai_salvage', 'reality_projection'].includes(initialTab)) {
+          setCurrentTab(initialTab);
+      }
       
       // 状態の復元
       const savedState = localStorage.getItem('takken_session_state_v2');
@@ -711,7 +719,7 @@ export default function App() {
                                 <Brain size={18} /> MemoryRecall 最終PoC (10Q)
                             </button>
                             <button 
-                                onClick={() => window.open('/db-audit.html', '_blank')}
+                                onClick={() => window.open(resolvePublicAssetPath('db-audit.html'), '_blank')}
                                 className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-2xl text-sm font-black transition-all shadow-lg active:scale-95 flex items-center gap-2"
                             >
                                 <Target size={18} /> DB品質監査ページを開く

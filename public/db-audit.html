@@ -354,8 +354,10 @@
         ];
         addTable('🏢 宅建Source母集団固定監査 (Safe Pool)', takkenAudit);
 
-        // P46: Input Unit Category Distribution
-        const { TAKKEN_PROTOTYPE_UNITS } = await import('/src/utils/inputUnitPrototypes.ts?t=' + Date.now());
+        // P46: Input Unit Category Distribution (JSON fetch for production compatibility)
+        const inputRes = await fetch('./inputUnitPrototypes.json');
+        const TAKKEN_PROTOTYPE_UNITS = inputRes.ok ? await inputRes.json() : [];
+        
         const inputUnitCatStats = {};
         TAKKEN_PROTOTYPE_UNITS.forEach(u => {
             const cat = u.category || 'null/undefined';
@@ -384,14 +386,9 @@
             ];
             addTable('🛠️ 破損カード復元PoC状況', pocStats);
 
-            // Category Sidecar Summary
-            const { getCategorySidecarSummary } = await import('/src/utils/dataRecoveryEngine.ts?t=' + Date.now());
-            const catSummary = await getCategorySidecarSummary();
-            addTable('🏷️ カテゴリ不整合レビュー (Sidecar)', [
-                { 項目: 'Suspect総数', 実測値: catSummary.total_suspect },
-                { 項目: 'High Confidence (自動提案)', 実測値: catSummary.high_confidence },
-                { 項目: '要レビュー', 実測値: catSummary.needs_review }
-            ]);
+            // Note: getCategorySidecarSummary logic is skipped in pure-HTML auditor for production stability
+            // Or if needed, it should be provided via a pre-rendered JSON.
+            addStatus('warn', '🏷️ カテゴリ不整合レビュー詳細はアプリ内の Data Explorer で確認してください。');
             const sampleRC = allRC.slice(0, 5).map(c => ({
                 ID: c.restoration_id,
                 年度問: `${c.year}-${c.question_no}`,
