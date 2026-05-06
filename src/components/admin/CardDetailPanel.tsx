@@ -1,7 +1,8 @@
-import React from 'react';
-import { X, AlertCircle, Info, Database, Shield, Tag, ChevronRight } from 'lucide-react';
+import { X, AlertCircle, Info, Database, Shield, Tag, ChevronRight, Star, Brain, AlertTriangle } from 'lucide-react';
 import { type UnderstandingCard, type RestorationCandidate } from '../../db';
 import { type CategoryCorrectionSuggestion } from '../../utils/categorySidecarReview';
+import { auditSingleCard } from '../../utils/learningQualityAudit';
+import { LEARNING_SCOPE_MAP } from '../../utils/learningCoverageMap';
 
 interface CardDetailPanelProps {
   card: UnderstandingCard;
@@ -11,6 +12,9 @@ interface CardDetailPanelProps {
 }
 
 export const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card, restoration, suggestion, onClose }) => {
+  const audit = auditSingleCard(card);
+  const matchedTopic = LEARNING_SCOPE_MAP.find(t => t.id === audit.matched_topic_id);
+
   return (
     <div className="flex flex-col h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-700 w-full md:w-[500px] overflow-hidden">
       <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800">
@@ -25,6 +29,56 @@ export const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card, restorat
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Quality Audit Section */}
+        <section className="bg-indigo-900/20 border border-indigo-500/30 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-indigo-400">
+                    <Star size={16} fill="currentColor" />
+                    <h4 className="text-xs font-black uppercase tracking-widest">Quality Audit</h4>
+                </div>
+                <div className={`text-xl font-black ${audit.quality_score >= 80 ? 'text-green-400' : audit.quality_score >= 60 ? 'text-amber-400' : 'text-rose-500'}`}>
+                    {audit.quality_score}<span className="text-[10px] text-slate-500 ml-1">pts</span>
+                </div>
+            </div>
+
+            <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                    {audit.is_input && <span className="text-[9px] bg-green-900/30 text-green-400 px-1.5 py-0.5 rounded border border-green-500/20 font-bold">INPUT OK</span>}
+                    {audit.is_output && <span className="text-[9px] bg-blue-900/30 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20 font-bold">OUTPUT OK</span>}
+                    {matchedTopic && <span className="text-[9px] bg-indigo-900/30 text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-500/20 font-bold">SCOPE MATCHED</span>}
+                </div>
+
+                {matchedTopic && (
+                    <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                        <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Matched Official Topic</div>
+                        <div className="text-sm font-bold text-slate-300">
+                            {matchedTopic.exam.toUpperCase()}: {matchedTopic.major_category} - {matchedTopic.sub_topic}
+                        </div>
+                    </div>
+                )}
+
+                {audit.weak_reasons.length > 0 && (
+                    <div className="space-y-1.5">
+                        <div className="text-[9px] text-rose-400 uppercase font-black">Weak Points Detected</div>
+                        <ul className="space-y-1">
+                            {audit.weak_reasons.map(r => (
+                                <li key={r} className="text-[11px] text-rose-300/70 flex items-center gap-1.5">
+                                    <AlertTriangle size={10} /> {r.replace(/_/g, ' ')}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                <div className="pt-2 border-t border-white/5">
+                    <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Recommended Fix</div>
+                    <div className="text-xs font-mono text-indigo-300">
+                        {audit.recommended_fix.toUpperCase()}
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section>
           <div className="flex items-center gap-2 mb-2 text-slate-400">
             <Info size={14} />

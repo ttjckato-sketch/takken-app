@@ -6,6 +6,8 @@ import {
 import { db, type UnderstandingCard, type RestorationCandidate } from '../../db';
 import { CardDetailPanel } from './CardDetailPanel';
 import { generateCategorySuggestions, type CategoryCorrectionSuggestion } from '../../utils/categorySidecarReview';
+import { auditSingleCard, generateGlobalAuditReport, type AuditResult, type GlobalAuditReport } from '../../utils/learningQualityAudit';
+import { LEARNING_SCOPE_MAP } from '../../utils/learningCoverageMap';
 
 interface DataExplorerViewProps {
   onBack: () => void;
@@ -20,7 +22,10 @@ type FilterType =
   | 'batch2' 
   | 'batch3'
   | 'review'
-  | 'suspect';
+  | 'suspect'
+  | 'weak'
+  | 'missing_prerequisite'
+  | 'no_source_trace';
 
 export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) => {
   const [cards, setCards] = useState<UnderstandingCard[]>([]);
@@ -29,6 +34,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [globalAudit, setGlobalAudit] = useState<GlobalAuditReport | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +46,9 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
         ]);
         setCards(allCards);
         setRestorations(allRestorations);
+
+        const report = await generateGlobalAuditReport(allCards);
+        setGlobalAudit(report);
       } catch (error) {
         console.error('Failed to fetch explorer data:', error);
       } finally {
@@ -49,6 +58,11 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
     fetchData();
   }, []);
 
+  const cardAudits = useMemo(() => {
+    const map = new Map<string, AuditResult>();
+    cards.forEach(c => map.set(c.card_id, auditSingleCard(c)));
+    return map;
+  }, [cards]);
   const restorationMap = useMemo(() => {
     const map = new Map<string, RestorationCandidate>();
     restorations.forEach(r => {
@@ -82,6 +96,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
       // Filter
       const res = restorationMap.get(card.card_id);
       const sug = suggestionMap.get(card.card_id);
+      const audit = cardAudits.get(card.card_id);
       
       switch (filter) {
         case 'eligible': return card.is_statement_true !== null;
@@ -92,10 +107,13 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
         case 'batch3': return res?.restoration_id.startsWith('RES-B3-');
         case 'review': return res?.review_status === 'human_review_required';
         case 'suspect': return !!sug;
+        case 'weak': return !!audit && audit.quality_score < 60;
+        case 'missing_prerequisite': return !!audit && audit.weak_reasons.includes('prerequisite_missing');
+        case 'no_source_trace': return !!audit && audit.weak_reasons.includes('no_source_trace');
         default: return true;
       }
     });
-  }, [cards, filter, search, restorationMap, suggestionMap]);
+  }, [cards, filter, search, restorationMap, suggestionMap, cardAudits]);
 
   const stats = useMemo(() => ({
     total: cards.length,
@@ -185,6 +203,9 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
               { id: 'all', label: 'All' },
               { id: 'eligible', label: 'Eligible' },
               { id: 'suspect', label: 'Suspect' },
+              { id: 'weak', label: 'Weak (Score < 60)' },
+              { id: 'missing_prerequisite', label: 'No Prereq' },
+              { id: 'no_source_trace', label: 'No Source' },
               { id: 'batch1', label: 'B1' },
               { id: 'batch2', label: 'B2' },
               { id: 'batch3', label: 'B3' },
@@ -204,6 +225,34 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) =>
             ))}
           </div>
         </div>
+
+        {/* Global Quality Audit Summary */}
+        {globalAudit && (
+          <div className="px-6 py-4 bg-indigo-900/20 border-b border-indigo-500/20 grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div>
+                  <div className="text-[10px] text-indigo-400 font-black uppercase tracking-widest mb-1">Takken Coverage</div>
+                  <div className="flex items-end gap-2">
+                      <div className="text-2xl font-black text-white">{Math.round(globalAudit.takken.coverage_rate * 100)}%</div>
+                      <div className="text-[10px] text-slate-500 font-bold mb-1">HP: {Math.round(globalAudit.takken.high_priority_coverage * 100)}%</div>
+                  </div>
+              </div>
+              <div>
+                  <div className="text-[10px] text-indigo-400 font-black uppercase tracking-widest mb-1">Chintai Coverage</div>
+                  <div className="flex items-end gap-2">
+                      <div className="text-2xl font-black text-white">{Math.round(globalAudit.chintai.coverage_rate * 100)}%</div>
+                      <div className="text-[10px] text-slate-500 font-bold mb-1">HP: {Math.round(globalAudit.chintai.high_priority_coverage * 100)}%</div>
+                  </div>
+              </div>
+              <div>
+                  <div className="text-[10px] text-indigo-400 font-black uppercase tracking-widest mb-1">Avg Quality Score</div>
+                  <div className="text-2xl font-black text-amber-400">{globalAudit.takken.average_score.toFixed(1)} <span className="text-xs text-slate-500">pts</span></div>
+              </div>
+              <div>
+                  <div className="text-[10px] text-indigo-400 font-black uppercase tracking-widest mb-1">Weak Cards</div>
+                  <div className="text-2xl font-black text-rose-500">{globalAudit.takken.weak_card_count + globalAudit.chintai.weak_card_count}</div>
+              </div>
+          </div>
+        )}
 
         {/* Table */}
         <div className="flex-1 overflow-auto relative">

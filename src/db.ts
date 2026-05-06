@@ -15,13 +15,68 @@ export interface KnowledgeCard { card_id: string; knowledge_domain: { major: str
 export interface Flashcard { card_id: string; flashcard_id: string; qa: { q: string; a: string; category: string; tags: string[]; }; explanation: { core_rule: string; reasoning: string; year: number; }; metadata: { question_id: string; is_original: boolean; pattern_index: number; }; }
 export interface KnowledgeProgress { card_id: string; mastered: boolean; correct_count: number; incorrect_count: number; last_review: number; next_review: number; }
 export interface ConfusionPair { pair_id: string; exam_type: 'takken' | 'chintai'; category: string; left_term: string; right_term: string; difference?: string; }
-export interface UnderstandingCard { card_id: string; category: string; tags: string[]; core_knowledge: { rule: string; essence: string; examiners_intent: string; }; sample_question?: string; sample_answer?: boolean; is_statement_true?: boolean | null; source_choice_id?: string | null; question_patterns?: { total: number; correct_count: number; incorrect_count: number; years_active: number[]; correct_patterns?: Array<{ id: string; year: number; question_no: number; question_text: string; is_correct: boolean; correct_option: number; explanation?: any; }>; incorrect_patterns?: Array<{ id: string; year: number; question_no: number; question_text: string; is_correct: boolean; correct_option: number; explanation?: any; }>; }; srs_params?: { efactor: number; interval: number; repetitions: number; next_review_date: string | null; quality_history: number[]; last_reviewed: string | null; total_reviews: number; successful_reviews: number; }; fsrs_state?: any; personal_notes?: string[]; analogies?: Array<{ analogy: string; explanation: string; mapping: Record<string, string>; }>; step_decomposition?: Array<{ step_number: number; content: string; type: 'condition' | 'obligation' | 'prohibition' | 'permission' | 'period' | 'ratio' | 'general'; key_elements: string[]; }>; active_recall_questions?: Array<{ type: 'blank_fill' | 'partial_recall' | 'inverse' | 'why'; question: string; answer?: string; correct_answer?: string; hints?: Array<{ level: number; hint: string; penalty: number; }>; expected_answer_points?: string[]; answer_points?: string[]; original_question?: string; keyword?: string; category?: string; hint?: string; }>; metacognitive_prompts?: { self_assessment: string[]; reflection: string[]; next_steps: string[]; }; misconceptions?: Array<{ misconception: string; correction: string; why_wrong: string; key_point: string; }>; cognitive_load_chunk?: { title: string; chunks: string[]; cognitive_load_rating: 'low' | 'medium' | 'high'; }; exam_type?: 'takken' | 'chintai'; }
+export interface UnderstandingCard { 
+    card_id: string; 
+    category: string; 
+    tags: string[]; 
+    core_knowledge: { rule: string; essence: string; examiners_intent: string; }; 
+    sample_question?: string; 
+    sample_answer?: boolean; 
+    is_statement_true?: boolean | null; 
+    source_choice_id?: string | null; 
+    question_patterns?: { total: number; correct_count: number; incorrect_count: number; years_active: number[]; correct_patterns?: Array<{ id: string; year: number; question_no: number; question_text: string; is_correct: boolean; correct_option: number; explanation?: any; }>; incorrect_patterns?: Array<{ id: string; year: number; question_no: number; question_text: string; is_correct: boolean; correct_option: number; explanation?: any; }>; }; 
+    srs_params?: { efactor: number; interval: number; repetitions: number; next_review_date: string | null; quality_history: number[]; last_reviewed: string | null; total_reviews: number; successful_reviews: number; }; 
+    fsrs_state?: any; 
+    personal_notes?: string[]; 
+    analogies?: Array<{ analogy: string; explanation: string; mapping: Record<string, string>; }>; 
+    step_decomposition?: Array<{ step_number: number; content: string; type: 'condition' | 'obligation' | 'prohibition' | 'permission' | 'period' | 'ratio' | 'general'; key_elements: string[]; }>; 
+    active_recall_questions?: Array<{ type: 'blank_fill' | 'partial_recall' | 'inverse' | 'why'; question: string; answer?: string; correct_answer?: string; hints?: Array<{ level: number; hint: string; penalty: number; }>; expected_answer_points?: string[]; answer_points?: string[]; original_question?: string; keyword?: string; category?: string; hint?: string; }>; 
+    metacognitive_prompts?: { self_assessment: string[]; reflection: string[]; next_steps: string[]; }; 
+    misconceptions?: Array<{ misconception: string; correction: string; why_wrong: string; key_point: string; }>; 
+    cognitive_load_chunk?: { title: string; chunks: string[]; cognitive_load_rating: 'low' | 'medium' | 'high'; }; 
+    exam_type?: 'takken' | 'chintai';
+    // P29: Educational Metadata
+    explanation?: string;
+    prerequisite?: string;
+    why_it_matters?: string;
+    trap_point?: string;
+    legal_protection?: string;
+    source_trace?: Array<{ type: string; id: string; text: string; }>;
+}
 export interface LearningSession { id: string; mode: 'understanding' | 'memorization' | 'integrated'; start_time: number; end_time?: number; cards_studied: number; correct_count: number; total_count: number; }
 export interface SourceQuestion { id: string; exam_type: 'takken' | 'chintai'; year: number; question_no: number; question_text: string; correct_option: number; question_type: 'true_false' | 'correct_choice' | 'incorrect_choice' | 'count_choice' | 'combination' | 'unknown'; polarity?: 'select_true' | 'select_false' | 'count' | 'combination' | 'unknown'; category: string; source_url?: string; source_card_id?: string; }
 export interface SourceChoice { id: string; question_id: string; option_no: number; text: string; is_exam_correct_option: boolean; is_statement_true: boolean | null; explanation?: string; source_card_id?: string; }
 export interface StudyEvent { event_id: string; card_id: string; question_id?: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; mode: 'understanding' | 'memorization' | 'integrated' | 'active_recall' | 'memory_recall' | 'comparison_recall' | 'trap_recall' | 'number_recall' | 'focus_recall'; answered_correct: boolean; selected_answer: boolean | null; correct_answer: boolean | null; response_time_ms: number; rating?: number; rating_source?: string; mistake_note?: string; created_at: number; }
 export interface Metadata { key: string; value: any; }
-export interface KnowledgeUnit { unit_id: string; source_choice_id?: string; source_question_id?: string; source_card_id?: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; statement: string; is_statement_true: boolean; core_rule: string; why: string; exception?: string; trap?: string; contrast?: string; concrete_example?: string; memory_hook?: string; numbers_to_memorize?: string[]; parties?: string[]; legal_terms?: string[]; learning_type: 'rule' | 'exception' | 'number' | 'comparison' | 'trap' | 'definition'; difficulty: 1 | 2 | 3 | 4 | 5; importance: 1 | 2 | 3 | 4 | 5; confidence: 'high' | 'medium' | 'low'; }
+export interface KnowledgeUnit { 
+    unit_id: string; 
+    source_choice_id?: string; 
+    source_question_id?: string; 
+    source_card_id?: string; 
+    exam_type: 'takken' | 'chintai'; 
+    category: string; 
+    tags: string[]; 
+    statement: string; 
+    is_statement_true: boolean; 
+    core_rule: string; 
+    why: string; 
+    exception?: string; 
+    trap?: string; 
+    contrast?: string; 
+    concrete_example?: string; 
+    memory_hook?: string; 
+    numbers_to_memorize?: string[]; 
+    parties?: string[]; 
+    legal_terms?: string[]; 
+    learning_type: 'rule' | 'exception' | 'number' | 'comparison' | 'trap' | 'definition'; 
+    difficulty: 1 | 2 | 3 | 4 | 5; 
+    importance: 1 | 2 | 3 | 4 | 5; 
+    confidence: 'high' | 'medium' | 'low';
+    // P29: Educational Metadata
+    prerequisite?: string;
+    why_it_matters?: string;
+    legal_protection?: string;
+}
 export interface MemoryCard { memory_card_id: string; unit_id: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; card_type: 'rule' | 'why' | 'exception' | 'number' | 'comparison' | 'trap'; question: string; answer: string; source_text: string; confidence: 'high' | 'medium' | 'low'; srs_params?: any; fsrs_state?: any; last_reviewed_at?: number; }
 
 export interface MemoryCardProgress { card_id: string; srs_params?: SRSParams; fsrs_state?: any; last_reviewed_at: number; }

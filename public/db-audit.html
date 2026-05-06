@@ -366,6 +366,48 @@
         const inputUnitAudit = Object.entries(inputUnitCatStats).map(([k, v]) => ({ カテゴリ: k, 件数: v }));
         addTable('📚 Input Unit カテゴリ分布', inputUnitAudit);
 
+        // Learning Quality Audit (Ported logic)
+        const allCards = await db.understanding_cards.toArray();
+        const audits = allCards.map(card => {
+            let score = 0;
+            const weak = [];
+            if (card.sample_question || (card.core_knowledge && card.core_knowledge.rule)) score += 15;
+            else weak.push('text_missing');
+            if (card.is_statement_true !== null) score += 15;
+            else weak.push('answer_null');
+            const expLen = (card.explanation || '').length;
+            if (expLen >= 80) score += 20;
+            else if (expLen > 0) score += 5;
+            if (card.prerequisite) score += 10;
+            else weak.push('no_prereq');
+            if (card.why_it_matters) score += 10;
+            else weak.push('no_why');
+            if (card.trap_point) score += 10;
+            else weak.push('no_trap');
+            if (card.source_trace && card.source_trace.length > 0) score += 10;
+            else weak.push('no_source');
+            if (card.category && card.category !== '未分類') score += 10;
+            return { id: card.card_id, score, weak };
+        });
+
+        const avgScore = audits.length > 0 ? audits.reduce((s, a) => s + a.score, 0) / audits.length : 0;
+        const weakCount = audits.filter(a => a.score < 60).length;
+
+        // Simple keyword-based coverage for HTML auditor
+        const takkenKeywords = ['業法', '免許', '媒介', '35条', '37条', '権利', '代理', '抵当', '制限', '建築'];
+        const chintaiKeywords = ['管理受託', 'サブリース', '維持保全', '敷金', '家賃', '滞納', '修繕'];
+        
+        const takkenCount = allCards.filter(c => takkenKeywords.some(k => (c.category || '').includes(k))).length;
+        const chintaiCount = allCards.filter(c => chintaiKeywords.some(k => (c.category || '').includes(k))).length;
+
+        addTable('🎓 Learning Quality Audit', [
+            { 項目: '平均品質スコア', 値: avgScore.toFixed(1) + ' / 100' },
+            { 項目: '低品質カード数 (Score < 60)', 値: weakCount },
+            { 項目: '高品質カード率 (Score >= 80)', 値: Math.round(audits.filter(a => a.score >= 80).length / audits.length * 100) + '%' },
+            { 項目: '宅建関連概算カバー数', 値: takkenCount },
+            { 項目: '賃貸管理関連概算カバー数', 値: chintaiCount }
+        ]);
+
         // P26: Restoration PoC Section
         if (rc > 0) {
             const reasonStats = {};
@@ -400,10 +442,27 @@
             const controls = document.createElement('div');
             controls.className = 'status warn';
             controls.innerHTML = `
-                <button onclick="downloadRCJSON()" style="padding: 10px; border-radius: 8px; cursor: pointer;">📥 JSONダウンロード</button>
-                <button onclick="copyRCReport()" style="padding: 10px; border-radius: 8px; cursor: pointer; margin-left: 10px;">📋 レポートをコピー</button>
+                <button onclick="downloadRCJSON()" style="padding: 10px; border-radius: 8px; cursor: pointer;">📥 復元JSON</button>
+                <button onclick="downloadQualityReport()" style="padding: 10px; border-radius: 8px; cursor: pointer; margin-left: 10px; background: #4f46e5; color: white;">🎓 品質レポートJSON</button>
+                <button onclick="copyRCReport()" style="padding: 10px; border-radius: 8px; cursor: pointer; margin-left: 10px;">📋 コピー</button>
             `;
             results.appendChild(controls);
+
+            window.downloadQualityReport = () => {
+                const report = {
+                    version: 'v3.6.2',
+                    generated_at: Date.now(),
+                    avg_score: avgScore,
+                    weak_count: weakCount,
+                    audits: audits
+                };
+                const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `learning_quality_audit_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+            };
 
             window.downloadRCJSON = () => {
                 const blob = new Blob([JSON.stringify(allRC, null, 2)], { type: 'application/json' });
