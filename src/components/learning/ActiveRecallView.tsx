@@ -33,6 +33,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
   const [renderMode, setRenderMode] = useState<QuestionRenderMode>('TRUE_FALSE');
   const [contract, setContract] = useState<LearningContentContract | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
   const startTimeRef = useRef<number>(Date.now());
 
@@ -113,8 +114,46 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     if (isCorrect) onAnswer(true);
   };
 
-  const updateRating = (rating: number) => {
-      handleAnswer(selectedAnswer as boolean | number, rating);
+  // handleFSRSRating: FSRS button pressed -> save rating -> advance to next card
+  const handleFSRSRating = (rating: number) => {
+    if (isSubmittingRating) return; // prevent double-click
+    setIsSubmittingRating(true);
+
+    const isCorrect = selectedAnswer === correctAnswer;
+    const eventParams: any = {
+      card_id: card.card_id,
+      exam_type: card.exam_type || 'takken',
+      category: card.category,
+      tags: card.tags,
+      mode: 'active_recall',
+      answered_correct: isCorrect,
+      selected_answer: selectedAnswer,
+      correct_answer: correctAnswer === undefined ? null : correctAnswer,
+      response_time_ms: Date.now() - startTimeRef.current,
+      rating,
+      rating_source: 'explicit_user_rating',
+      mistake_type: contract?.mistake_diagnosis?.mistake_type,
+      render_mode: contract?.render_mode
+    };
+    if (!isCorrect && repairUnit) {
+      eventParams.repair_preview_eligible = true;
+      eventParams.repair_unit_id = repairUnit.unit_id;
+    }
+    recordStudyEvent(eventParams);
+    updateCardSRS(card.card_id, isCorrect, rating);
+
+    // Advance to next card after a brief animation delay
+    setIsExiting(true);
+    setTimeout(() => {
+      setIsSubmittingRating(false);
+      setIsExiting(false);
+      setHasAnswered(false);
+      setSelectedAnswer(null);
+      setRepairUnit(null);
+      setShowFullViewer(false);
+      setContract(null);
+      onNext();
+    }, 300);
   };
 
   const handleNext = () => {
@@ -269,13 +308,15 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                   </div>
               )}
               
-              {/* オプション評価ボタン */}
+              {/* FSRS評価ボタン: 押下後に次問へ自動進行 */}
               <div className="mt-8 pt-8 border-t border-current/10 flex justify-center gap-3">
                   {[1, 2, 3, 4].map(r => (
                       <button 
                         key={r} 
-                        onClick={() => updateRating(r)} 
+                        onClick={() => handleFSRSRating(r)}
+                        disabled={isSubmittingRating}
                         className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-tighter border-2 transition-all active:scale-95 shadow-sm
+                          ${isSubmittingRating ? 'opacity-50 cursor-not-allowed' : ''}
                           ${r===1 ? 'bg-rose-500 text-white border-rose-600 hover:bg-rose-600' : 
                             r===2 ? 'bg-orange-500 text-white border-orange-600 hover:bg-orange-600' :
                             r===3 ? 'bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600' :
