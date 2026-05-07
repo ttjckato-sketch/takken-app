@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import React, { useEffect, useState } from 'react';
-import { Home, ChevronRight, Zap, RefreshCw, Brain, AlertTriangle, ArrowLeftRight, TrendingDown, Target, Compass, Info, Star, TrendingUp, BookOpen, Database } from 'lucide-react';
+import { Home, ChevronRight, Zap, RefreshCw, Brain, AlertTriangle, ArrowLeftRight, TrendingDown, Target, Compass, Info, Star, TrendingUp, BookOpen, Database, CheckCircle2 } from 'lucide-react';
 import { db } from './db';
 import { ActiveRecallView } from './components/learning/ActiveRecallView';
 import { MemoryRecallView } from './components/learning/MemoryRecallView';
@@ -273,6 +273,65 @@ export default function App() {
     } finally { 
       setLoading(false); 
     }
+  };
+
+  const startWrongAnswerSession = async () => {
+    setLoading(true);
+    try {
+      const sessionId = await startStudySession(20, 'wrong_answer');
+      setCurrentSessionId(sessionId);
+      const { buildWrongAnswerQueue } = await import('./utils/analytics');
+      const queue = await buildWrongAnswerQueue({ examType: examTypeFilter || 'all', limit: 20 });
+      const validCards = queue.map(c => ({ ...c, session_mode: 'active_recall' }));
+      if (validCards.length === 0) {
+        alert('直近で間違えた問題はありません！素晴らしいです。');
+        return;
+      }
+      setKnowledgeQueue(validCards);
+      setActiveKnowledgeCard(validCards[0]);
+      setCurrentTab('study_session');
+    } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
+
+  const startUnansweredSession = async () => {
+    setLoading(true);
+    try {
+      const sessionId = await startStudySession(20, 'unanswered');
+      setCurrentSessionId(sessionId);
+      const { buildUnansweredQueue } = await import('./utils/analytics');
+      const queue = await buildUnansweredQueue({ examType: examTypeFilter || 'all', limit: 20 });
+      const validCards = queue.map(c => ({ ...c, session_mode: 'active_recall' }));
+      if (validCards.length === 0) {
+        alert('すべての問題に回答済みです！');
+        return;
+      }
+      setKnowledgeQueue(validCards);
+      setActiveKnowledgeCard(validCards[0]);
+      setCurrentTab('study_session');
+    } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
+
+  const startWeakTopicSession = async () => {
+    setLoading(true);
+    try {
+      const sessionId = await startStudySession(20, 'weak_topic');
+      setCurrentSessionId(sessionId);
+      const priorityTag = dashboard.priority_tag;
+      if (!priorityTag) {
+        alert('データが不足しており、弱点分野を特定できませんでした。');
+        return;
+      }
+      const { buildWeakTopicQueue } = await import('./utils/analytics');
+      const queue = await buildWeakTopicQueue({ topic: priorityTag.name, limit: 20 });
+      const validCards = queue.map(c => ({ ...c, session_mode: 'active_recall' }));
+      if (validCards.length === 0) {
+        alert('対象カードがありません。');
+        return;
+      }
+      setKnowledgeQueue(validCards);
+      setActiveKnowledgeCard(validCards[0]);
+      setCurrentTab('study_session');
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
   const startThirtyFiveSession = async () => {
@@ -655,12 +714,21 @@ export default function App() {
                             <button onClick={startDailySession} className="col-span-2 md:col-span-1 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-6 rounded-3xl font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3">
                                 学習 <ChevronRight size={24} />
                             </button>
+                            <button onClick={startWrongAnswerSession} className="w-full bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 py-6 rounded-3xl font-black text-xl border border-rose-500/30 transition-all active:scale-95 flex items-center justify-center gap-3">
+                                復習 <AlertTriangle size={24} />
+                            </button>
+                            <button onClick={startUnansweredSession} className="w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 py-6 rounded-3xl font-black text-xl border border-emerald-500/30 transition-all active:scale-95 flex items-center justify-center gap-3">
+                                未答 <CheckCircle2 size={24} />
+                            </button>
+                            <button onClick={startWeakTopicSession} className="w-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 py-6 rounded-3xl font-black text-xl border border-amber-500/30 transition-all active:scale-95 flex items-center justify-center gap-3">
+                                弱点 <Target size={24} />
+                            </button>
+                            <button onClick={startMemoryRecallTest} className="hidden md:flex w-full bg-white/10 hover:bg-white/20 text-white py-6 rounded-3xl font-black text-xl border border-white/20 transition-all active:scale-95 items-center justify-center gap-3">
+                                暗記 <Brain size={24} className="text-indigo-400" />
+                            </button>
                             <button onClick={startThirtyFiveSession} className="hidden md:flex w-full bg-slate-800 hover:bg-slate-700 text-white py-6 rounded-3xl font-black text-xl border border-slate-700 transition-all active:scale-95 items-center justify-center gap-3 relative overflow-hidden group">
                                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 集中 <Zap size={24} className="text-amber-400" />
-                            </button>
-                            <button onClick={startMemoryRecallTest} className="w-full bg-white/10 hover:bg-white/20 text-white py-6 rounded-3xl font-black text-xl border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3">
-                                暗記 <Brain size={24} className="text-indigo-400" />
                             </button>
                             <button onClick={startTrapRecallTest} className="w-full bg-white/10 hover:bg-white/20 text-white py-6 rounded-3xl font-black text-xl border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3">
                                 罠 <AlertTriangle size={24} className="text-rose-400" />

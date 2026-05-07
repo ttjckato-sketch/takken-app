@@ -221,6 +221,75 @@ export async function persistRecommendedDistribution(rec: any): Promise<void> {
 import { isActiveRecallReady } from './questionTypeClassifier';
 
 /**
+ * 新機能用のキュー生成：直近不正解のみ
+ */
+export async function buildWrongAnswerQueue(options: any = {}): Promise<any[]> {
+    const { limit = 50, examType = 'all' } = options;
+    const events = await db.study_events
+        .where('mode')
+        .equals('active_recall')
+        .reverse()
+        .toArray();
+    
+    // 最近間違えたカードIDのセットを取得
+    const wrongIds = new Set<string>();
+    const seen = new Set<string>();
+    for (const e of events) {
+        if (seen.has(e.card_id)) continue;
+        seen.add(e.card_id);
+        if (!e.answered_correct) {
+            wrongIds.add(e.card_id);
+        }
+    }
+
+    const allCards = await db.understanding_cards.toArray();
+    let cards = allCards.filter(c => isActiveRecallReady(c) && wrongIds.has(c.card_id));
+    if (examType !== 'all') cards = cards.filter(c => c.exam_type === examType);
+
+    // Randomize or sort
+    cards.sort(() => Math.random() - 0.5);
+    return cards.slice(0, limit);
+}
+
+/**
+ * 新機能用のキュー生成：未回答のみ
+ */
+export async function buildUnansweredQueue(options: any = {}): Promise<any[]> {
+    const { limit = 50, examType = 'all' } = options;
+    
+    const events = await db.study_events.toArray();
+    const answeredIds = new Set(events.map(e => e.card_id));
+
+    const allCards = await db.understanding_cards.toArray();
+    let cards = allCards.filter(c => isActiveRecallReady(c) && !answeredIds.has(c.card_id));
+    if (examType !== 'all') cards = cards.filter(c => c.exam_type === examType);
+
+    cards.sort(() => Math.random() - 0.5);
+    return cards.slice(0, limit);
+}
+
+/**
+ * 新機能用のキュー生成：弱点論点（タグ・カテゴリ指定）
+ */
+export async function buildWeakTopicQueue(options: any = {}): Promise<any[]> {
+    const { limit = 50, topic = '' } = options;
+    if (!topic) return buildLearningQueue(options);
+
+    const allCards = await db.understanding_cards.toArray();
+    let cards = allCards.filter(c => isActiveRecallReady(c) && 
+        (c.category === topic || (c.tags && c.tags.includes(topic)))
+    );
+
+    // SRSスコアが低い順
+    const scored = cards.map(c => {
+        let score = c.srs_params ? c.srs_params.efactor : 0;
+        return { ...c, priority_score: score };
+    }).sort((a, b) => a.priority_score - b.priority_score);
+
+    return scored.slice(0, limit);
+}
+
+/**
  * ActiveRecall用のキュー生成
  */
 export async function buildLearningQueue(options: any = {}): Promise<any[]> {

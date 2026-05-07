@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { CheckCircle2, XCircle, ArrowRight, Home, Zap, ChevronRight, BookOpen, List, Target, AlertTriangle, Shield } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, Home, Zap, ChevronRight, BookOpen, List, Target, AlertTriangle, Shield, Lightbulb, Database } from 'lucide-react';
 import { db, type UnderstandingCard, type SourceChoice } from '../../db';
 import { AnalogyBlock } from './AnalogyBlock';
 import { recordStudyEvent, updateCardSRS } from '../../utils/analytics';
@@ -7,7 +7,8 @@ import { findRepairInputUnit } from '../../utils/inputUnitRepairMatcher';
 import { RepairPreview } from './RepairPreview';
 import { InputUnitViewer } from './InputUnitViewer';
 import { classifyQuestionRenderMode, type QuestionRenderMode } from '../../utils/questionTypeClassifier';
-import { buildStructuredExplanation, type StructuredExplanation } from '../../utils/explanationBuilder';
+import { buildLearningContentContract } from '../../utils/explanationBuilder';
+import { type LearningContentContract } from '../../utils/learningContentContract';
 
 interface SessionProgress { current: number; total: number; }
 interface CategoryProgress { total: number; learned: number; due: number; streak: number; todayStudied: number; accuracy: number; totalReviews: number; }
@@ -30,7 +31,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
   const [showFullViewer, setShowFullViewer] = useState(false);
   const [sourceChoices, setSourceChoices] = useState<SourceChoice[]>([]);
   const [renderMode, setRenderMode] = useState<QuestionRenderMode>('TRUE_FALSE');
-  const [structuredExp, setStructuredExplanation] = useState<StructuredExplanation | null>(null);
+  const [contract, setContract] = useState<LearningContentContract | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const startTimeRef = useRef<number>(Date.now());
@@ -52,8 +53,8 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         setRenderMode(classification.mode);
 
         // Build Explanation
-        const exp = buildStructuredExplanation(card, choices);
-        setStructuredExplanation(exp);
+        const exp = buildLearningContentContract(card, choices, null);
+        setContract(exp);
         setIsLoading(false);
     };
     loadData();
@@ -80,6 +81,9 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     setSelectedAnswer(selected);
     setHasAnswered(true);
     
+    const updatedContract = buildLearningContentContract(card, sourceChoices, selected);
+    setContract(updatedContract);
+    
     const finalRating = rating || (isCorrect ? 3 : 1);
 
     const eventParams: any = {
@@ -93,7 +97,9 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
       correct_answer: correctAnswer === undefined ? null : correctAnswer,
       response_time_ms: Date.now() - startTimeRef.current,
       rating: finalRating,
-      rating_source: rating ? 'explicit_user_rating' : 'boolean_default'
+      rating_source: rating ? 'explicit_user_rating' : 'boolean_default',
+      mistake_type: updatedContract.mistake_diagnosis?.mistake_type,
+      render_mode: updatedContract.render_mode
     };
 
     if (!isCorrect && repairUnit) {
@@ -233,17 +239,12 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
             )}
 
             {/* 解説セクション (構造化・Grounded) */}
-            {(selectedAnswer === correctAnswer || !repairUnit) && structuredExp && (
+            {(selectedAnswer === correctAnswer || !repairUnit) && (
                 <div className="bg-slate-900 text-white p-8 rounded-[40px] shadow-2xl border border-slate-800 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-sm font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                    <Zap size={16} /> 構造化解説 v3.7
+                    <Zap size={16} /> 詳細解説
                     </h3>
-                    <div className="flex gap-2">
-                        <span className="px-2 py-0.5 bg-slate-800 text-slate-400 text-[9px] font-black rounded border border-slate-700 uppercase tracking-tighter">
-                            Mode: {renderMode}
-                        </span>
-                    </div>
                 </div>
                 
                 <div className="space-y-8">
@@ -251,34 +252,38 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                         <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
                             <Target size={14} className="text-indigo-500" /> 法的結論
                         </div>
-                        <div className="text-lg font-bold border-l-4 border-indigo-500 pl-4">{structuredExp.conclusion}</div>
+                        <div className="text-lg font-bold border-l-4 border-indigo-500 pl-4">{contract?.core_rule}</div>
                     </div>
 
                     <div>
                         <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
                             <BookOpen size={14} className="text-indigo-500" /> 制度の本質と理由
                         </div>
-                        <div className="text-slate-300 leading-relaxed pl-4 whitespace-pre-wrap">{structuredExp.reason}</div>
+                        <div className="text-slate-300 leading-relaxed pl-4 border-l-4 border-slate-700 whitespace-pre-wrap">{contract?.why_this_is_correct}</div>
                     </div>
 
-                    {renderMode === 'MCQ' && structuredExp.choice_details && (
+                    {renderMode === 'MCQ' && contract?.choice_explanations && (
                         <div className="space-y-4">
                             <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
                                 <List size={14} className="text-indigo-500" /> 選択肢別解説
                             </div>
                             <div className="grid grid-cols-1 gap-3 pl-2">
-                                {structuredExp.choice_details.map(choice => (
+                                {contract.choice_explanations.map(choice => (
                                     <div key={choice.option_no} className={`p-4 rounded-2xl border ${choice.is_correct ? 'bg-emerald-900/20 border-emerald-500/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${choice.is_correct ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-400'}`}>
-                                                肢 {choice.option_no}
+                                        <div className="flex items-start gap-3">
+                                            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${choice.is_correct ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                                {choice.option_no}
                                             </span>
-                                            <span className={`text-[10px] font-bold ${choice.is_correct ? 'text-emerald-400' : 'text-slate-500'}`}>
-                                                {choice.is_correct ? '【正解】' : '【誤り】'}
-                                            </span>
+                                            <div className="space-y-2 flex-1">
+                                                <div className="text-xs text-slate-500">{choice.choice_text}</div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${choice.is_correct ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+                                                        {choice.judgment}
+                                                    </span>
+                                                    <span className="text-xs font-bold text-slate-200">{choice.reason}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="text-xs text-slate-400 mb-2 leading-tight">{choice.text}</div>
-                                        <div className="text-xs font-bold text-slate-200">{choice.explanation}</div>
                                     </div>
                                 ))}
                             </div>
@@ -290,21 +295,46 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                             <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
                                 <Shield size={14} className="text-indigo-500" /> 前提知識
                             </div>
-                            <div className="text-xs text-slate-400 leading-relaxed pl-4">{structuredExp.prerequisite}</div>
+                            <div className="text-xs text-slate-400 leading-relaxed pl-4">{contract?.prerequisite}</div>
                         </div>
                         <div className="bg-rose-500/10 p-4 rounded-2xl border border-rose-500/20">
                             <div className="text-xs font-black text-rose-400 uppercase mb-2 flex items-center gap-2">
                                 <AlertTriangle size={14} /> 試験の罠
                             </div>
-                            <div className="text-xs text-rose-200 leading-relaxed">{structuredExp.trap_point}</div>
+                            <div className="text-xs text-rose-200 leading-relaxed">{contract?.trap_point}</div>
+                        </div>
+                        <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">
+                            <div className="text-xs font-black text-amber-500 uppercase mb-2 flex items-center gap-2">
+                                <Lightbulb size={14} /> 覚え方 (Memory Hook)
+                            </div>
+                            <div className="text-xs text-amber-200 leading-relaxed">{contract?.memory_hook}</div>
+                        </div>
+                        <div>
+                            <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
+                                <Target size={14} className="text-indigo-500" /> 次回復習ポイント
+                            </div>
+                            <div className="text-xs text-slate-400 leading-relaxed pl-4">{contract?.next_review_focus}</div>
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10 flex justify-between items-center">
-                        <div className="text-[10px] font-black text-slate-600 uppercase italic">
-                            {structuredExp.source}
+                    <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                                <Database size={12} />
+                                {contract?.source_trace}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {repairUnit && (
+                                    <button 
+                                        onClick={() => setShowFullViewer(true)}
+                                        className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold px-2 py-1 rounded bg-indigo-900/30 border border-indigo-500/30 transition-colors"
+                                    >
+                                        この論点を深く理解する (Input Unit)
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                        <button onClick={handleNext} className="bg-white text-slate-900 px-10 py-4 rounded-2xl font-black text-lg hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shadow-glow">
+                        <button onClick={handleNext} className="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black text-lg hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shadow-xl shadow-slate-900/20 active:scale-95">
                             次の問題へ <ChevronRight size={20} />
                         </button>
                     </div>

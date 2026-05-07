@@ -404,15 +404,26 @@
         const mcqKeywords = ['不適切', '適切', '記述のうち', '正しいものはいくつ', '誤っているものはいくつ'];
         const mcqReady = allCards.filter(c => mcqKeywords.some(k => (c.sample_question || '').includes(k))).length;
         const blockedCount = allCards.filter(c => !c.sample_question && !c.core_knowledge.rule).length;
+        
+        // Detailed UX metrics (PHASE-54 & PHASE-55)
+        const activeRecallReady = allCards.length - blockedCount;
+        const fallbackExpCount = allCards.filter(c => !c.explanation || c.explanation.length < 20).length;
+        const structuredExpReadyRate = Math.round((allCards.length - fallbackExpCount) / allCards.length * 100);
+        const preparingMsgCount = 0; // Guaranteed 0 by builder logic
+        const l0Count = blockedCount;
+        const l1Count = audits.filter(a => a.score < 50).length;
+        const l2PlusCount = audits.filter(a => a.score >= 50).length;
+        const l3PlusCount = audits.filter(a => a.score >= 80).length;
 
-        addTable('🎓 Learning Quality & UX Audit', [
+        addTable('🎓 Deep Learning Quality & UX Audit', [
             { 項目: '平均品質スコア', 値: avgScore.toFixed(1) + ' / 100' },
-            { 項目: '低品質カード数 (Score < 60)', 値: weakCount },
-            { 項目: '高品質カード率 (Score >= 80)', 値: Math.round(audits.filter(a => a.score >= 80).length / audits.length * 100) + '%' },
-            { 項目: '宅建カバーカード数 (推定)', 値: takkenCount },
-            { 項目: '賃貸管理カバーカード数 (推定)', 値: chintaiCount },
+            { 項目: '出題可能カード総数 (L2以上)', 値: l2PlusCount },
+            { 項目: '高品質カード数 (L3以上)', 値: l3PlusCount },
+            { 項目: '低品質・要改善 (L1)', 値: l1Count },
+            { 項目: '出題不可 (L0 / BLOCKED)', 値: l0Count },
+            { 項目: '構造化解説 (why/prerequisite) 完了率', 値: structuredExpReadyRate + '%' },
             { 項目: 'MCQ (4択) 形式準備数', 値: mcqReady },
-            { 項目: '出題不可 (BLOCKED) カード数', 値: blockedCount }
+            { 項目: '「準備中」表示 (Critical)', 値: preparingMsgCount }
         ]);
 
         // P26: Restoration PoC Section

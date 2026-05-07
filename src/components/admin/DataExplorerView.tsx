@@ -9,6 +9,9 @@ import { generateCategorySuggestions, type CategoryCorrectionSuggestion } from '
 import { auditSingleCard, generateGlobalAuditReport, type AuditResult, type GlobalAuditReport } from '../../utils/learningQualityAudit';
 import { LEARNING_SCOPE_MAP } from '../../utils/learningCoverageMap';
 
+import { classifyQuestionRenderMode } from '../../utils/questionTypeClassifier';
+import { buildLearningContentContract } from '../../utils/explanationBuilder';
+
 interface DataExplorerViewProps {
   onBack: () => void;
 }
@@ -27,7 +30,12 @@ type FilterType =
   | 'missing_prerequisite'
   | 'no_source_trace'
   | 'chintai'
-  | 'takken';
+  | 'takken'
+  | 'mode_mcq'
+  | 'mode_tf'
+  | 'mode_blocked'
+  | 'quality_l0'
+  | 'quality_l1';
 
 export const DataExplorerView: React.FC<DataExplorerViewProps> = ({ onBack }) => {
   const [cards, setCards] = useState<UnderstandingCard[]>([]);
