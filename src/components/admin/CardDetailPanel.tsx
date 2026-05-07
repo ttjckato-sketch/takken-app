@@ -1,8 +1,9 @@
-import { X, AlertCircle, Info, Database, Shield, Tag, ChevronRight, Star, Brain, AlertTriangle } from 'lucide-react';
+import { X, AlertCircle, Info, Database, Shield, Tag, ChevronRight, Star, Brain, AlertTriangle, Lightbulb } from 'lucide-react';
 import { type UnderstandingCard, type RestorationCandidate } from '../../db';
 import { type CategoryCorrectionSuggestion } from '../../utils/categorySidecarReview';
 import { auditSingleCard } from '../../utils/learningQualityAudit';
 import { LEARNING_SCOPE_MAP } from '../../utils/learningCoverageMap';
+import { buildLearningContentContract } from '../../utils/explanationBuilder';
 
 interface CardDetailPanelProps {
   card: UnderstandingCard;
@@ -14,6 +15,7 @@ interface CardDetailPanelProps {
 export const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card, restoration, suggestion, onClose }) => {
   const audit = auditSingleCard(card);
   const matchedTopic = LEARNING_SCOPE_MAP.find(t => t.id === audit.matched_topic_id);
+  const feedbackPreview = buildLearningContentContract(card, [], !card.is_statement_true);
 
   return (
     <div className="flex flex-col h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-700 w-full md:w-[500px] overflow-hidden">
@@ -76,6 +78,32 @@ export const CardDetailPanel: React.FC<CardDetailPanelProps> = ({ card, restorat
                         {audit.recommended_fix.toUpperCase()}
                     </div>
                 </div>
+            </div>
+        </section>
+
+        {/* Feedback Engine Preview (v3.9) */}
+        <section className="bg-slate-800 rounded-3xl border border-slate-700 overflow-hidden shadow-xl">
+            <div className="bg-slate-700 px-4 py-2 flex items-center gap-2">
+                <Brain size={14} className="text-indigo-400" />
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-300">Feedback Engine Preview</h4>
+            </div>
+            <div className="p-5 space-y-4">
+                <div>
+                    <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Direct Answer Sentence</div>
+                    <p className="text-sm font-bold text-indigo-300 leading-relaxed">{feedbackPreview.direct_answer_sentence}</p>
+                </div>
+                {feedbackPreview.mistake_diagnosis && (
+                    <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-xl">
+                        <div className="text-[9px] text-rose-500 uppercase font-black mb-1 flex items-center gap-1">
+                            <AlertTriangle size={10} /> Simulated Mistake Diagnosis
+                        </div>
+                        <p className="text-xs font-bold text-rose-300 mb-2">{feedbackPreview.mistake_diagnosis.diagnosis_text}</p>
+                        <div className="flex items-center gap-1.5 text-rose-400 text-[10px] font-bold">
+                            <Lightbulb size={12} />
+                            <span>Action: {feedbackPreview.mistake_diagnosis.next_action}</span>
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
 

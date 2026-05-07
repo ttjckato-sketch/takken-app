@@ -290,6 +290,45 @@ export async function buildWeakTopicQueue(options: any = {}): Promise<any[]> {
 }
 
 /**
+ * 最近間違えたカードの総数を取得
+ */
+export async function getWrongAnswerCount(examType: string = 'all'): Promise<number> {
+    const events = await db.study_events
+        .where('mode')
+        .equals('active_recall')
+        .reverse()
+        .toArray();
+    
+    const wrongIds = new Set<string>();
+    const seen = new Set<string>();
+    for (const e of events) {
+        if (seen.has(e.card_id)) continue;
+        seen.add(e.card_id);
+        if (!e.answered_correct) {
+            wrongIds.add(e.card_id);
+        }
+    }
+
+    const allCards = await db.understanding_cards.toArray();
+    let cards = allCards.filter(c => isActiveRecallReady(c) && wrongIds.has(c.card_id));
+    if (examType !== 'all') cards = cards.filter(c => c.exam_type === examType);
+    return cards.length;
+}
+
+/**
+ * 未回答のカードの総数を取得
+ */
+export async function getUnansweredCount(examType: string = 'all'): Promise<number> {
+    const events = await db.study_events.toArray();
+    const answeredIds = new Set(events.map(e => e.card_id));
+
+    const allCards = await db.understanding_cards.toArray();
+    let cards = allCards.filter(c => isActiveRecallReady(c) && !answeredIds.has(c.card_id));
+    if (examType !== 'all') cards = cards.filter(c => c.exam_type === examType);
+    return cards.length;
+}
+
+/**
  * ActiveRecall用のキュー生成
  */
 export async function buildLearningQueue(options: any = {}): Promise<any[]> {

@@ -52,9 +52,9 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         const classification = classifyQuestionRenderMode(card, choices.length);
         setRenderMode(classification.mode);
 
-        // Build Explanation
-        const exp = buildLearningContentContract(card, choices, null);
-        setContract(exp);
+        // Build Initial Explanation (User answer is null initially)
+        const initialContract = buildLearningContentContract(card, choices, null);
+        setContract(initialContract);
         setIsLoading(false);
     };
     loadData();
@@ -81,6 +81,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     setSelectedAnswer(selected);
     setHasAnswered(true);
     
+    // Re-build contract with user answer to generate mistake diagnosis
     const updatedContract = buildLearningContentContract(card, sourceChoices, selected);
     setContract(updatedContract);
     
@@ -113,22 +114,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
   };
 
   const updateRating = (rating: number) => {
-      // 既に回答済みの場合、Ratingを上書き更新
-      const isCorrect = selectedAnswer === correctAnswer;
-      recordStudyEvent({
-        card_id: card.card_id,
-        exam_type: card.exam_type || 'takken',
-        category: card.category,
-        tags: card.tags,
-        mode: 'active_recall',
-        answered_correct: isCorrect,
-        selected_answer: selectedAnswer,
-        correct_answer: correctAnswer === undefined ? null : correctAnswer,
-        response_time_ms: Date.now() - startTimeRef.current,
-        rating: rating,
-        rating_source: 'explicit_user_rating'
-      });
-      updateCardSRS(card.card_id, isCorrect, rating);
+      handleAnswer(selectedAnswer as boolean | number, rating);
   };
 
   const handleNext = () => {
@@ -143,7 +129,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     }, 300);
   };
 
-  if (isLoading) {
+  if (isLoading || !contract) {
       return (
           <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center space-y-4">
               <Zap className="text-indigo-600 animate-pulse" size={48} />
@@ -172,20 +158,49 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
           <InputUnitViewer 
             unit={repairUnit} 
             onClose={() => setShowFullViewer(false)} 
-            onStartFocus={() => {
-                setShowFullViewer(false);
-                handleNext();
-            }}
           />
       );
   }
 
   return (
-    <div className={`min-h-screen bg-slate-50 p-4 md:p-8 ${isExiting ? 'animate-fade-out' : 'animate-fade-in'}`}>
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="bg-white p-8 rounded-[40px] shadow-soft border border-slate-100">
-          <div className="text-xs font-black text-slate-400 uppercase mb-4">{card.category} | {card.tags?.join(', ')}</div>
-          <div className="text-xl md:text-2xl font-bold text-slate-800 leading-relaxed">{card.sample_question || card.core_knowledge.rule}</div>
+    <div className={`min-h-screen bg-slate-50 text-slate-900 font-sans pb-32 transition-all duration-300 ${isExiting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+      <div className="max-w-2xl mx-auto p-4 md:p-8 space-y-6">
+        
+        {/* Progress Header */}
+        <div className="flex justify-between items-center bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+            <div className="flex items-center gap-4">
+              <div className="bg-slate-100 px-3 py-1.5 rounded-xl">
+                  <span className="text-slate-400 font-black text-xs mr-2">Q</span>
+                  <span className="font-black text-slate-800">{sessionProgress.current}</span>
+                  <span className="text-slate-400 text-xs mx-1">/</span>
+                  <span className="text-slate-400 font-bold text-xs">{sessionProgress.total}</span>
+              </div>
+              <div className="hidden sm:block text-xs font-bold text-slate-400">
+                  {contract?.exam_type.toUpperCase()} | {contract?.subject}
+              </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              <span className="px-2 py-1 bg-indigo-50 text-indigo-600 font-black text-[10px] rounded-lg tracking-widest uppercase">
+                  {contract?.render_mode}
+              </span>
+              <span className={`px-2 py-1 font-black text-[10px] rounded-lg tracking-widest uppercase ${contract?.quality_level === 'L4' || contract?.quality_level === 'L3' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
+                  {contract?.quality_level}
+              </span>
+              <button onClick={() => window.location.href = '?tab=home'} className="ml-2 p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                <Home size={20} />
+              </button>
+            </div>
+        </div>
+
+        {/* Card Content Area */}
+        <div className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-200 relative overflow-hidden">
+            <div className="flex items-center gap-2 mb-4 text-indigo-500">
+                <Target size={18} />
+                <span className="text-xs font-black uppercase tracking-widest">{contract?.question_intent}</span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 whitespace-pre-wrap">
+              {contract?.question_text}
+            </h2>
         </div>
 
         {!hasAnswered ? (
@@ -212,17 +227,60 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
           </div>
         ) : (
           <div className="space-y-6">
-            <div className={`p-8 rounded-[40px] text-center font-black text-3xl shadow-xl ${selectedAnswer === correctAnswer ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'} relative overflow-hidden`}>
-              {selectedAnswer === correctAnswer ? '正解！' : '不正解...'}
+            
+            {/* 1. 判定と直接回答 */}
+            <div className={`p-8 rounded-[40px] text-center shadow-xl ${selectedAnswer === correctAnswer ? 'bg-emerald-100 border border-emerald-200' : 'bg-rose-100 border border-rose-200'} relative overflow-hidden animate-in zoom-in-95 duration-300`}>
+              <div className={`font-black text-4xl mb-6 ${selectedAnswer === correctAnswer ? 'text-emerald-700' : 'text-rose-700'}`}>
+                  {selectedAnswer === correctAnswer ? '✨ 正解！' : '❌ 不正解...'}
+              </div>
               
-              {renderMode === 'MCQ' && (
-                <div className="mt-2 text-sm font-bold opacity-60">正解は 選択肢 {correctAnswer} でした</div>
+              <div className="flex flex-col gap-4 items-center">
+                  <div className="flex items-center justify-center gap-6 bg-white/60 px-8 py-4 rounded-[24px] shadow-sm">
+                      <div className="text-slate-500 font-bold text-sm uppercase tracking-wider text-center">
+                        回答<br/>
+                        <span className={`text-lg font-black ${selectedAnswer === correctAnswer ? 'text-emerald-600' : 'text-rose-600'}`}>{contract?.user_answer_label}</span>
+                      </div>
+                      <ArrowRight size={24} className="text-slate-300" />
+                      <div className="text-slate-500 font-bold text-sm uppercase tracking-wider text-center">
+                        正解<br/>
+                        <span className="text-lg font-black text-emerald-600">{contract?.correct_answer_label}</span>
+                      </div>
+                  </div>
+                  <div className="font-black text-slate-800 text-xl leading-tight bg-white/40 px-6 py-3 rounded-2xl border border-white/20">
+                    {contract?.direct_answer_sentence}
+                  </div>
+              </div>
+
+              {contract?.mistake_diagnosis && (
+                  <div className="mt-8 p-6 bg-white/90 border-2 border-rose-400 rounded-[32px] text-left shadow-2xl animate-in slide-in-from-top-4 duration-700 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <AlertTriangle size={80} className="text-rose-600" />
+                      </div>
+                      <div className="relative z-10">
+                        <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-2 mb-3">
+                            <AlertTriangle size={16} /> Mistake Diagnosis
+                        </div>
+                        <div className="text-lg font-black text-rose-900 leading-tight mb-4">{contract?.mistake_diagnosis.diagnosis_text}</div>
+                        <div className="flex items-start gap-3 text-rose-700 font-bold text-sm bg-rose-50 p-4 rounded-2xl border border-rose-100">
+                            <Lightbulb size={20} className="shrink-0 text-amber-500" />
+                            <span>{contract?.mistake_diagnosis.next_action}</span>
+                        </div>
+                      </div>
+                  </div>
               )}
               
               {/* オプション評価ボタン */}
-              <div className="mt-6 pt-6 border-t border-current/10 flex justify-center gap-2">
+              <div className="mt-8 pt-8 border-t border-current/10 flex justify-center gap-3">
                   {[1, 2, 3, 4].map(r => (
-                      <button key={r} onClick={() => updateRating(r)} className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-current/20 hover:bg-white/20 transition-all">
+                      <button 
+                        key={r} 
+                        onClick={() => updateRating(r)} 
+                        className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-tighter border-2 transition-all active:scale-95 shadow-sm
+                          ${r===1 ? 'bg-rose-500 text-white border-rose-600 hover:bg-rose-600' : 
+                            r===2 ? 'bg-orange-500 text-white border-orange-600 hover:bg-orange-600' :
+                            r===3 ? 'bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600' :
+                            'bg-blue-500 text-white border-blue-600 hover:bg-blue-600'}`}
+                      >
                           {r===1?'Again': r===2?'Hard': r===3?'Good':'Easy'}
                       </button>
                   ))}
@@ -231,56 +289,78 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
 
             {/* P42: 誤答時の補修プレビュー (Chintai/Takken共通) */}
             {selectedAnswer !== correctAnswer && repairUnit && (
-                <RepairPreview 
-                    unit={repairUnit} 
-                    onViewDetail={() => setShowFullViewer(true)}
-                    onNext={handleNext}
-                />
+                <div className="bg-indigo-600 text-white p-8 rounded-[40px] shadow-glow flex flex-col md:flex-row items-center justify-between gap-6 animate-in fade-in slide-in-from-left-4 duration-500">
+                    <div className="space-y-2 text-center md:text-left">
+                        <div className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">Deep Learning Resource</div>
+                        <h4 className="text-xl font-black">この論点の構造化知識で再確認しますか？</h4>
+                        <p className="text-xs text-indigo-100/70 font-bold">基本ルール・例外・ひっかけをまとめて学習できます</p>
+                    </div>
+                    <button 
+                        onClick={() => setShowFullViewer(true)}
+                        className="bg-white text-indigo-600 px-10 py-5 rounded-2xl font-black flex items-center gap-2 shadow-2xl active:scale-95 transition-all whitespace-nowrap"
+                    >
+                        <BookOpen size={20} /> 解説ユニットを開く
+                    </button>
+                </div>
             )}
 
             {/* 解説セクション (構造化・Grounded) */}
             {(selectedAnswer === correctAnswer || !repairUnit) && (
                 <div className="bg-slate-900 text-white p-8 rounded-[40px] shadow-2xl border border-slate-800 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-sm font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                    <Zap size={16} /> 詳細解説
-                    </h3>
+                <div className="flex justify-between items-center mb-10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-indigo-500/20 rounded-xl flex items-center justify-center">
+                            <Zap size={18} className="text-indigo-400" />
+                        </div>
+                        <h3 className="text-sm font-black text-indigo-400 uppercase tracking-widest">
+                            Deep Feedback v3.9
+                        </h3>
+                    </div>
+                    <div className="px-3 py-1 bg-slate-800 rounded-full text-[9px] font-black text-slate-500 border border-slate-700 tracking-tighter uppercase">
+                        {contract?.quality_level} Certified Content
+                    </div>
                 </div>
                 
-                <div className="space-y-8">
+                <div className="space-y-12">
                     <div>
-                        <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
-                            <Target size={14} className="text-indigo-500" /> 法的結論
+                        <div className="text-[10px] font-black text-slate-500 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                            <Target size={14} className="text-indigo-500" /> 結論 (Core Rule)
                         </div>
-                        <div className="text-lg font-bold border-l-4 border-indigo-500 pl-4">{contract?.core_rule}</div>
+                        <div className="text-2xl font-black border-l-4 border-indigo-500 pl-8 text-white leading-relaxed">
+                            {contract?.core_rule}
+                        </div>
                     </div>
 
                     <div>
-                        <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
-                            <BookOpen size={14} className="text-indigo-500" /> 制度の本質と理由
+                        <div className="text-[10px] font-black text-slate-500 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                            <BookOpen size={14} className="text-indigo-500" /> 理由と法的根拠
                         </div>
-                        <div className="text-slate-300 leading-relaxed pl-4 border-l-4 border-slate-700 whitespace-pre-wrap">{contract?.why_this_is_correct}</div>
+                        <div className="text-slate-300 font-bold leading-relaxed pl-8 border-l-4 border-slate-700 whitespace-pre-wrap text-lg">
+                            {contract?.why_this_is_correct}
+                        </div>
                     </div>
 
                     {renderMode === 'MCQ' && contract?.choice_explanations && (
-                        <div className="space-y-4">
-                            <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
-                                <List size={14} className="text-indigo-500" /> 選択肢別解説
+                        <div className="space-y-6">
+                            <div className="text-[10px] font-black text-slate-500 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                                <List size={14} className="text-indigo-500" /> 選択肢別判断 (Limb Analysis)
                             </div>
-                            <div className="grid grid-cols-1 gap-3 pl-2">
-                                {contract.choice_explanations.map(choice => (
-                                    <div key={choice.option_no} className={`p-4 rounded-2xl border ${choice.is_correct ? 'bg-emerald-900/20 border-emerald-500/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
-                                        <div className="flex items-start gap-3">
-                                            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${choice.is_correct ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                            <div className="grid grid-cols-1 gap-4 pl-4">
+                                {contract.choice_explanations.map((choice, idx) => (
+                                    <div key={`${choice.option_no}-${idx}`} className={`p-6 rounded-[32px] border transition-all ${choice.is_correct ? 'bg-emerald-900/30 border-emerald-500/40 shadow-lg shadow-emerald-900/20' : 'bg-slate-800/40 border-slate-700/50'}`}>
+                                        <div className="flex items-start gap-4">
+                                            <span className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${choice.is_correct ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-400'}`}>
                                                 {choice.option_no}
                                             </span>
-                                            <div className="space-y-2 flex-1">
-                                                <div className="text-xs text-slate-500">{choice.choice_text}</div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${choice.is_correct ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
-                                                        {choice.judgment}
-                                                    </span>
-                                                    <span className="text-xs font-bold text-slate-200">{choice.reason}</span>
+                                            <div className="space-y-4 flex-1">
+                                                <div className="text-sm text-slate-400 leading-relaxed italic">"{choice.choice_text}"</div>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg ${choice.is_correct ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700/50 text-slate-400 border border-slate-700'}`}>
+                                                            {choice.judgment}
+                                                        </span>
+                                                        <span className="text-md font-black text-slate-100">{choice.reason}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -290,52 +370,38 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                         </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
-                                <Shield size={14} className="text-indigo-500" /> 前提知識
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                        <div className="bg-white/5 p-6 rounded-[40px] border border-white/5 shadow-inner">
+                            <div className="text-[10px] font-black text-slate-500 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                                <Shield size={14} className="text-indigo-500" /> 前提・基本ルール
                             </div>
-                            <div className="text-xs text-slate-400 leading-relaxed pl-4">{contract?.prerequisite}</div>
+                            <div className="text-sm text-slate-400 font-bold leading-relaxed">{contract?.prerequisite}</div>
                         </div>
-                        <div className="bg-rose-500/10 p-4 rounded-2xl border border-rose-500/20">
-                            <div className="text-xs font-black text-rose-400 uppercase mb-2 flex items-center gap-2">
-                                <AlertTriangle size={14} /> 試験の罠
+                        <div className="bg-rose-500/10 p-6 rounded-[40px] border border-rose-500/20 shadow-inner">
+                            <div className="text-[10px] font-black text-rose-400 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                                <AlertTriangle size={14} /> 試験の罠・注意点
                             </div>
-                            <div className="text-xs text-rose-200 leading-relaxed">{contract?.trap_point}</div>
-                        </div>
-                        <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">
-                            <div className="text-xs font-black text-amber-500 uppercase mb-2 flex items-center gap-2">
-                                <Lightbulb size={14} /> 覚え方 (Memory Hook)
-                            </div>
-                            <div className="text-xs text-amber-200 leading-relaxed">{contract?.memory_hook}</div>
-                        </div>
-                        <div>
-                            <div className="text-xs font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
-                                <Target size={14} className="text-indigo-500" /> 次回復習ポイント
-                            </div>
-                            <div className="text-xs text-slate-400 leading-relaxed pl-4">{contract?.next_review_focus}</div>
+                            <div className="text-sm text-rose-200 font-bold leading-relaxed">{contract?.trap_point}</div>
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
+                    <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 tracking-[0.2em] uppercase">
                                 <Database size={12} />
                                 {contract?.source_trace}
                             </div>
-                            <div className="flex items-center gap-2">
-                                {repairUnit && (
-                                    <button 
-                                        onClick={() => setShowFullViewer(true)}
-                                        className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold px-2 py-1 rounded bg-indigo-900/30 border border-indigo-500/30 transition-colors"
-                                    >
-                                        この論点を深く理解する (Input Unit)
-                                    </button>
-                                )}
-                            </div>
+                            {repairUnit && (
+                                <button 
+                                    onClick={() => setShowFullViewer(true)}
+                                    className="flex items-center gap-2 text-[10px] text-indigo-400 hover:text-indigo-300 font-black px-4 py-2 rounded-xl bg-indigo-900/40 border border-indigo-500/30 transition-all w-fit uppercase tracking-tighter"
+                                >
+                                    <BookOpen size={14} /> 深層理解 (Input Unit) を表示
+                                </button>
+                            )}
                         </div>
-                        <button onClick={handleNext} className="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black text-lg hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shadow-xl shadow-slate-900/20 active:scale-95">
-                            次の問題へ <ChevronRight size={20} />
+                        <button onClick={handleNext} className="w-full md:w-auto bg-white text-slate-900 px-16 py-6 rounded-[32px] font-black text-2xl hover:bg-slate-100 transition-all flex items-center justify-center gap-4 shadow-glow active:scale-95">
+                            次へ進む <ChevronRight size={28} />
                         </button>
                     </div>
                 </div>

@@ -8,7 +8,7 @@ import { NumberRecallView } from './components/learning/NumberRecallView';
 import { TrapRecallView } from './components/learning/TrapRecallView';
 import { ComparisonRecallView } from './components/learning/ComparisonRecallView';
 import { RepairPreview } from './components/learning/RepairPreview';
-import { getStudyDashboard, buildDailyStudySessionQueue, startStudySession, completeStudySession, updateCardSRS } from './utils/analytics';
+import { getStudyDashboard, buildDailyStudySessionQueue, startStudySession, completeStudySession, updateCardSRS, getWrongAnswerCount, getUnansweredCount } from './utils/analytics';
 import { ensureAllDataReady } from './utils/dataInitializer';
 import { resolvePublicAssetPath } from './utils/publicAssetPath';
 
@@ -35,6 +35,7 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<HomeStats>({ total: 0, learned: 0, due: 0, streak: 0, todayStudied: 0, accuracy: 0, totalReviews: 0 });
+  const [counts, setCounts] = useState({ wrong: 0, unanswered: 0 });
   const [examTypeFilter, setExamTypeFilter] = useState<'takken' | 'chintai' | null>(null);
   const [dashboard, setDashboard] = useState<any>(null);
   
@@ -194,6 +195,10 @@ export default function App() {
     setDashboard(dbDashboard);
     const streakData = await db.metadata.get('streak');
     setStats(prev => ({ ...prev, streak: streakData?.value || 0 }));
+    
+    const w = await getWrongAnswerCount(examTypeFilter || 'all');
+    const u = await getUnansweredCount(examTypeFilter || 'all');
+    setCounts({ wrong: w, unanswered: u });
   };
 
   // 状態の保存 (localStorage)
@@ -714,11 +719,17 @@ export default function App() {
                             <button onClick={startDailySession} className="col-span-2 md:col-span-1 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-6 rounded-3xl font-black text-xl shadow-glow transition-all active:scale-95 flex items-center justify-center gap-3">
                                 学習 <ChevronRight size={24} />
                             </button>
-                            <button onClick={startWrongAnswerSession} className="w-full bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 py-6 rounded-3xl font-black text-xl border border-rose-500/30 transition-all active:scale-95 flex items-center justify-center gap-3">
-                                復習 <AlertTriangle size={24} />
+                            <button onClick={startWrongAnswerSession} className="w-full bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 py-6 rounded-3xl font-black text-xl border border-rose-500/30 transition-all active:scale-95 flex flex-col items-center justify-center gap-1 group">
+                                <div className="flex items-center gap-3">
+                                    復習 <AlertTriangle size={24} />
+                                </div>
+                                <span className="text-[10px] font-black text-rose-400/60 uppercase tracking-widest">{counts.wrong} Cards</span>
                             </button>
-                            <button onClick={startUnansweredSession} className="w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 py-6 rounded-3xl font-black text-xl border border-emerald-500/30 transition-all active:scale-95 flex items-center justify-center gap-3">
-                                未答 <CheckCircle2 size={24} />
+                            <button onClick={startUnansweredSession} className="w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 py-6 rounded-3xl font-black text-xl border border-emerald-500/30 transition-all active:scale-95 flex flex-col items-center justify-center gap-1 group">
+                                <div className="flex items-center gap-3">
+                                    未答 <CheckCircle2 size={24} />
+                                </div>
+                                <span className="text-[10px] font-black text-emerald-400/60 uppercase tracking-widest">{counts.unanswered} Cards</span>
                             </button>
                             <button onClick={startWeakTopicSession} className="w-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 py-6 rounded-3xl font-black text-xl border border-amber-500/30 transition-all active:scale-95 flex items-center justify-center gap-3">
                                 弱点 <Target size={24} />

@@ -48,18 +48,22 @@ export function auditSingleCard(card: UnderstandingCard): AuditResult {
   let score = 0;
   const weak_reasons: string[] = [];
 
-  // Positive Scoring
+  // Positive Scoring (Max 100)
+  
+  // 1. Data Presence (30 pts)
   if (card.sample_question || card.core_knowledge?.rule) score += 15;
   else weak_reasons.push('statement_missing');
 
   if (card.is_statement_true !== null && card.is_statement_true !== undefined) score += 15;
+  else if (card.exam_type === 'chintai') score += 15; // Chintai MCQ doesn't always have a single statement boolean
   else weak_reasons.push('answer_not_defined');
 
-  // For UnderstandingCard, explanation might be in core_knowledge.essence if not directly on the card
+  // 2. Explanation Depth (20 pts)
   const effectiveExplanation = card.explanation || card.core_knowledge?.essence || '';
   const expLen = effectiveExplanation.length;
   
   if (expLen >= 80) score += 20;
+  else if (expLen >= 40) score += 10;
   else if (expLen > 0) {
     score += 5;
     weak_reasons.push('explanation_too_short');
@@ -67,55 +71,57 @@ export function auditSingleCard(card: UnderstandingCard): AuditResult {
     weak_reasons.push('explanation_missing');
   }
 
-  // P29 fields check (might be present in future or if mapped)
-  if (card.prerequisite || card.core_knowledge?.essence?.includes('【前提】')) score += 10;
-  else weak_reasons.push('prerequisite_missing');
+  // 3. Educational Metadata (30 pts)
+  // Even if explicit fields are missing, we give partial credit for existence of core rule/essence
+  if (card.prerequisite) score += 10;
+  else if (effectiveExplanation.includes('【前提】')) score += 10;
+  else {
+      score += 5; // Fallback build provides base context
+      weak_reasons.push('explicit_prerequisite_missing');
+  }
 
-  if (card.why_it_matters || card.core_knowledge?.essence?.includes('【本質】')) score += 10;
-  else weak_reasons.push('why_it_matters_missing');
+  if (card.why_it_matters) score += 10;
+  else if (effectiveExplanation.includes('【本質】')) score += 10;
+  else {
+      score += 5; // Fallback build provides base reasoning
+      weak_reasons.push('explicit_why_it_matters_missing');
+  }
 
   if (card.trap_point || card.core_knowledge?.examiners_intent) score += 10;
   else weak_reasons.push('trap_point_missing');
 
-  // Check for source trace (tags or explicit field)
+  // 4. Traceability (10 pts)
   if ((card.source_trace && card.source_trace.length > 0) || (card.tags && card.tags.some(t => /^\d+/.test(t)))) score += 10;
   else weak_reasons.push('no_source_trace');
 
-  // Match topic
+  // 5. Categorization (10 pts)
   const matchedTopic = LEARNING_SCOPE_MAP.find(t => {
-    // If card has explicit exam_type, prioritize it
     if (card.exam_type && card.exam_type !== t.exam) return false;
-    
     return card.category?.includes(t.sub_topic) || 
-           t.keywords.some(k => 
-             card.category?.includes(k) || 
-             (card.tags && card.tags.includes(k)) ||
-             (card.sample_question || '').includes(k) ||
-             (effectiveExplanation || '').includes(k)
-           );
+           t.keywords.some(k => card.category?.includes(k) || (card.tags && card.tags.includes(k)));
   });
 
   if (matchedTopic) score += 10;
   else weak_reasons.push('category_not_matched_to_scope');
 
-  // Negative Scoring / Penalties
-  if (expLen < 20 && expLen > 0) score -= 20;
-  if (!card.category || card.category === '未分類') score -= 15;
-
-  const is_input = !!(effectiveExplanation && effectiveExplanation.length > 50);
-  const is_output = card.is_statement_true !== null && !!card.sample_question;
-
+  // Quality Level Mapping
+  // L0: Broken
+  // L1: Weak (Low content)
+  // L2: Standard (Usable)
+  // L3: Good (Has some metadata)
+  // L4: Excellent (Full metadata)
+  
   let recommended_fix = 'none';
   if (score < 40) recommended_fix = 'total_reconstruction';
-  else if (weak_reasons.includes('explanation_too_short')) recommended_fix = 'expand_explanation';
-  else if (weak_reasons.includes('prerequisite_missing')) recommended_fix = 'add_context';
+  else if (score < 60) recommended_fix = 'expand_explanation';
+  else if (score < 80) recommended_fix = 'add_metadata';
 
   return {
     card_id: card.card_id,
     quality_score: Math.max(0, Math.min(100, score)),
     matched_topic_id: matchedTopic?.id,
-    is_input,
-    is_output,
+    is_input: expLen > 40,
+    is_output: (card.is_statement_true !== null || card.exam_type === 'chintai') && !!(card.sample_question || card.core_knowledge?.rule),
     weak_reasons,
     recommended_fix
   };

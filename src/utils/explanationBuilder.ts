@@ -71,12 +71,14 @@ export function buildLearningContentContract(
   }
 
   // Choice Details
-  let choiceExplanations: ChoiceExplanation[] | undefined;
+  let choiceExplanations: ChoiceExplanation[] = [];
   if (mode === 'MCQ' && choices.length > 0) {
     choiceExplanations = choices.map(c => {
         let choiceExp = c.explanation || '';
         if (!choiceExp) {
-            choiceExp = c.is_exam_correct_option ? 'この記述が正解（本問の要求に合致）となります。' : 'この記述は本問の正解ではありません。正誤の理由を確認してください。';
+            choiceExp = c.is_exam_correct_option 
+                ? 'この記述が正解です。論点の核心的理由を確認し、知識を定着させましょう。' 
+                : 'この記述は誤り（または本問の正解ではない）です。どこが事実に反するかを確認してください。';
         }
         return {
             option_no: c.option_no,
@@ -87,6 +89,16 @@ export function buildLearningContentContract(
             reason: choiceExp
         };
     });
+  } else if (mode === 'MCQ') {
+      // Fallback choices if missing (should be rare)
+      choiceExplanations = [1, 2, 3, 4].map(n => ({
+          option_no: n,
+          choice_label: `選択肢 ${n}`,
+          choice_text: '詳細な選択肢データが現在ロードされていません。',
+          is_correct: false,
+          judgment: '【不明】',
+          reason: 'source_choicesの同期が必要です。'
+      }));
   }
 
   // Quality Audit

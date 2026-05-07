@@ -21,6 +21,17 @@ export function buildInputUnitSkeleton(card: any): Partial<InputUnit> {
     return {
         unit_id: `unit_${card.card_id || Math.random().toString(36).substr(2, 9)}`,
         title: card.category || 'Untitled Point',
+        category: card.category || '未分類',
+        conclusion: card.is_statement_true === true ? '原則として正しい（有効）です。' : (card.is_statement_true === false ? '原則として誤り（無効・制限あり）です。' : '論点の核心を確認してください。'),
+        principle: card.explanation || card.core_knowledge?.essence || '解説を読み込んで論点を整理しましょう。',
+        requirements: [],
+        exceptions: [],
+        cases: {},
+        trap_points: card.trap_point ? [card.trap_point] : [],
+        repair_explanation: {
+            short_note: card.core_knowledge?.rule || '基本ルールを再確認してください。',
+            common_mistake: card.trap_point || '試験でのひっかけや例外パターンに注意が必要です。'
+        },
         linked_tags: card.tags || [],
         linked_output_modes: linkedModes,
         source_trace: sourceTrace,

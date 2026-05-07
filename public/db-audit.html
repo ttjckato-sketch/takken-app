@@ -366,27 +366,41 @@
         const inputUnitAudit = Object.entries(inputUnitCatStats).map(([k, v]) => ({ カテゴリ: k, 件数: v }));
         addTable('📚 Input Unit カテゴリ分布', inputUnitAudit);
 
-        // Learning Quality Audit (Ported logic)
+        // Learning Quality Audit (Synchronized with v3.9 logic)
         const allCards = await db.understanding_cards.toArray();
         const audits = allCards.map(card => {
             let score = 0;
             const weak = [];
+            const effectiveExp = card.explanation || (card.core_knowledge && card.core_knowledge.essence) || '';
+            const expLen = effectiveExp.length;
+
             if (card.sample_question || (card.core_knowledge && card.core_knowledge.rule)) score += 15;
             else weak.push('text_missing');
-            if (card.is_statement_true !== null) score += 15;
+
+            if (card.is_statement_true !== null || card.exam_type === 'chintai') score += 15;
             else weak.push('answer_null');
-            const expLen = (card.explanation || '').length;
+
             if (expLen >= 80) score += 20;
-            else if (expLen > 0) score += 5;
-            if (card.prerequisite) score += 10;
-            else weak.push('no_prereq');
-            if (card.why_it_matters) score += 10;
-            else weak.push('no_why');
-            if (card.trap_point) score += 10;
+            else if (expLen >= 40) score += 10;
+            else if (expLen > 0) {
+                score += 5;
+                weak.push('short_exp');
+            } else weak.push('no_exp');
+
+            if (card.prerequisite || effectiveExp.includes('【前提】')) score += 10;
+            else score += 5; // Fallback credit
+
+            if (card.why_it_matters || effectiveExp.includes('【本質】')) score += 10;
+            else score += 5; // Fallback credit
+
+            if (card.trap_point || (card.core_knowledge && card.core_knowledge.examiners_intent)) score += 10;
             else weak.push('no_trap');
-            if (card.source_trace && card.source_trace.length > 0) score += 10;
+
+            if ((card.source_trace && card.source_trace.length > 0) || (card.tags && card.tags.some(t => /^\d+/.test(t)))) score += 10;
             else weak.push('no_source');
+
             if (card.category && card.category !== '未分類') score += 10;
+            
             return { id: card.card_id, score, weak };
         });
 
