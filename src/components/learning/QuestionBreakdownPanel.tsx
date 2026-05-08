@@ -5,9 +5,10 @@ import { decomposeQuestion } from '../../utils/questionDecomposer';
 interface QuestionBreakdownPanelProps {
   text: string;
   category: string;
+  mode?: 'before_answer' | 'after_answer';
 }
 
-export const QuestionBreakdownPanel: React.FC<QuestionBreakdownPanelProps> = ({ text, category }) => {
+export const QuestionBreakdownPanel: React.FC<QuestionBreakdownPanelProps> = ({ text, category, mode = 'after_answer' }) => {
   const breakdown = decomposeQuestion(text, category);
 
   return (
@@ -52,21 +53,25 @@ export const QuestionBreakdownPanel: React.FC<QuestionBreakdownPanelProps> = ({ 
         </div>
       </div>
 
-      <div className="pt-4 border-t border-slate-200">
-        <div className="text-[9px] font-black text-slate-400 uppercase flex items-center gap-1.5 mb-2">
-          <Info size={12} /> 出題の狙い (Intent)
-        </div>
-        <p className="text-sm font-bold text-slate-600 leading-relaxed">
-          {breakdown.intent}
-        </p>
-      </div>
+      {mode === 'after_answer' && (
+          <>
+            <div className="pt-4 border-t border-slate-200">
+              <div className="text-[9px] font-black text-slate-400 uppercase flex items-center gap-1.5 mb-2">
+                <Info size={12} /> 出題の狙い (Intent)
+              </div>
+              <p className="text-sm font-bold text-slate-600 leading-relaxed">
+                {breakdown.intent}
+              </p>
+            </div>
 
-      <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
-        <div className="text-[9px] font-black text-indigo-400 uppercase mb-1">論理構造</div>
-        <p className="text-xs font-bold text-indigo-700 leading-relaxed italic">
-          {breakdown.conclusion_summary}
-        </p>
-      </div>
+            <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
+              <div className="text-[9px] font-black text-indigo-400 uppercase mb-1">論理構造</div>
+              <p className="text-xs font-bold text-indigo-700 leading-relaxed italic">
+                {breakdown.conclusion_summary}
+              </p>
+            </div>
+          </>
+      )}
     </div>
   );
 };

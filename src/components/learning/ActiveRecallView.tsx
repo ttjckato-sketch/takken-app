@@ -10,6 +10,7 @@ import { classifyQuestionRenderMode, type QuestionRenderMode } from '../../utils
 import { buildLearningContentContract } from '../../utils/explanationBuilder';
 import { type LearningContentContract } from '../../utils/learningContentContract';
 import { QuestionBreakdownPanel } from './QuestionBreakdownPanel';
+import { RightsCaseDiagram } from './RightsCaseDiagram';
 import { GlossaryInline } from './GlossaryInline';
 import { LegalContextPanel } from './LegalContextPanel';
 import { SimilarQuestionsPanel } from './SimilarQuestionsPanel';
@@ -248,7 +249,8 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
             
             {/* P60: Glossary and Breakdown in Question Area */}
             <GlossaryInline text={contract?.question_text || ''} />
-            <QuestionBreakdownPanel text={contract?.question_text || ''} category={contract?.category || ''} />
+            <QuestionBreakdownPanel text={contract?.question_text || ''} category={contract?.category || ''} mode={hasAnswered ? "after_answer" : "before_answer"} />
+            <RightsCaseDiagram text={contract?.question_text || ''} category={contract?.category || ''} mode={hasAnswered ? "after_answer" : "before_answer"} />
         </div>
 
         {!hasAnswered ? (
@@ -277,30 +279,26 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
           <div className="space-y-6">
             
             {/* 1. 判定と直接回答 */}
-            <div className={`p-8 rounded-[40px] text-center shadow-xl ${selectedAnswer === correctAnswer ? 'bg-emerald-100 border border-emerald-200' : 'bg-rose-100 border border-rose-200'} relative overflow-hidden animate-in zoom-in-95 duration-300`}>
-              <div className={`font-black text-4xl mb-6 ${selectedAnswer === correctAnswer ? 'text-emerald-700' : 'text-rose-700'}`}>
-                  {selectedAnswer === correctAnswer ? '✨ 正解！' : '❌ 不正解...'}
-              </div>
-              
+            <div className={`p-8 rounded-3xl text-center shadow-lg ${selectedAnswer === correctAnswer ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} relative overflow-hidden animate-in zoom-in-95 duration-300`}>
               <div className="flex flex-col gap-4 items-center">
-                  <div className="flex items-center justify-center gap-6 bg-white/60 px-8 py-4 rounded-[24px] shadow-sm">
-                      <div className="text-slate-500 font-bold text-sm uppercase tracking-wider text-center">
-                        回答<br/>
-                        <span className={`text-lg font-black ${selectedAnswer === correctAnswer ? 'text-emerald-600' : 'text-rose-600'}`}>{contract?.user_answer_label}</span>
-                      </div>
-                      <ArrowRight size={24} className="text-slate-300" />
-                      <div className="text-slate-500 font-bold text-sm uppercase tracking-wider text-center">
-                        正解<br/>
-                        <span className="text-lg font-black text-emerald-600">{contract?.correct_answer_label}</span>
-                      </div>
-                  </div>
-                  <div className="font-black text-slate-800 text-xl leading-tight bg-white/40 px-6 py-3 rounded-2xl border border-white/20">
+                  {renderMode === 'MCQ' && (
+                    <div className="flex items-center justify-center gap-4 bg-white/80 px-6 py-2 rounded-xl shadow-sm border border-slate-100">
+                        <div className="text-slate-500 font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+                          あなたの選択: <span className={`text-sm font-black ${selectedAnswer === correctAnswer ? 'text-emerald-600' : 'text-rose-600'}`}>{contract?.user_answer_label}</span>
+                        </div>
+                        <ArrowRight size={14} className="text-slate-300" />
+                        <div className="text-slate-500 font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+                          正解: <span className="text-sm font-black text-emerald-600">{contract?.correct_answer_label}</span>
+                        </div>
+                    </div>
+                  )}
+                  <div className={`font-black text-xl md:text-2xl leading-tight px-4 py-2 ${selectedAnswer === correctAnswer ? 'text-emerald-800' : 'text-rose-800'}`}>
                     {contract?.direct_answer_sentence}
                   </div>
               </div>
 
               {contract?.mistake_diagnosis && (
-                  <div className="mt-8 p-6 bg-white/90 border-2 border-rose-400 rounded-[32px] text-left shadow-2xl animate-in slide-in-from-top-4 duration-700 relative overflow-hidden">
+                  <div className="mt-6 p-5 bg-white border border-rose-200 rounded-2xl text-left shadow-sm animate-in slide-in-from-top-4 duration-700 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-4 opacity-10">
                         <AlertTriangle size={80} className="text-rose-600" />
                       </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Layers, ChevronRight, Zap } from 'lucide-react';
+import { Layers, ChevronRight, Zap, Lightbulb } from 'lucide-react';
 import { type UnderstandingCard } from '../../db';
-import { findSimilarQuestions } from '../../utils/similarQuestionCluster';
+import { findSimilarQuestions, type SimilarQuestionResult } from '../../utils/similarQuestionCluster';
 
 interface SimilarQuestionsPanelProps {
   card: UnderstandingCard;
@@ -9,7 +9,7 @@ interface SimilarQuestionsPanelProps {
 }
 
 export const SimilarQuestionsPanel: React.FC<SimilarQuestionsPanelProps> = ({ card, onSelect }) => {
-  const [similarCards, setSimilarCards] = useState<UnderstandingCard[]>([]);
+  const [similarCards, setSimilarCards] = useState<SimilarQuestionResult[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -33,31 +33,35 @@ export const SimilarQuestionsPanel: React.FC<SimilarQuestionsPanelProps> = ({ ca
         </span>
       </div>
 
-      <div className="space-y-3">
-        {similarCards.map(c => (
-          <button 
-            key={c.card_id}
-            onClick={() => onSelect(c)}
-            className="w-full text-left p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 rounded-2xl transition-all group flex items-start gap-3"
-          >
-            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all shrink-0">
-              Q
+      <div className="space-y-4">
+        {similarCards.map(({ card: c, reasons }) => (
+          <div key={c.card_id} className="w-full text-left p-4 bg-slate-50 border border-slate-100 rounded-2xl group flex flex-col gap-3">
+            <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-400 shrink-0">
+                Q
+                </div>
+                <div className="space-y-1 flex-1">
+                <p className="text-xs font-bold text-slate-600 line-clamp-2 leading-relaxed">
+                    {c.sample_question || c.core_knowledge?.rule}
+                </p>
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    {reasons.slice(0, 2).map((r, idx) => (
+                        <span key={idx} className="text-[9px] font-black bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full border border-indigo-100">
+                            {r}
+                        </span>
+                    ))}
+                </div>
+                </div>
+                <button onClick={() => onSelect(c)} className="p-2 bg-indigo-50 hover:bg-indigo-600 text-indigo-500 hover:text-white rounded-xl transition-all active:scale-95">
+                    <ChevronRight size={16} />
+                </button>
             </div>
-            <div className="space-y-1 flex-1">
-              <p className="text-xs font-bold text-slate-600 line-clamp-2 leading-relaxed">
-                {c.sample_question || c.core_knowledge?.rule}
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-tighter">#{c.category}</span>
-              </div>
-            </div>
-            <ChevronRight size={16} className="text-slate-300 group-hover:text-indigo-400 mt-1" />
-          </button>
+          </div>
         ))}
       </div>
 
       <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex items-center gap-3">
-        <Zap size={16} className="text-amber-500" />
+        <Lightbulb size={16} className="text-amber-500 shrink-0" />
         <p className="text-[10px] font-bold text-amber-700 leading-tight">
           似た論点をまとめて解くことで、制度の「適用範囲」と「例外」の区別が明確になります。
         </p>
