@@ -1,14 +1,13 @@
-# TAKKEN OS (宅建学習アプリ) v3.6.2 Gold Stable
+# TAKKEN OS (宅建学習アプリ)
 
 [![Deploy GitHub Pages](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttjckato-sketch/takken-app/actions/workflows/deploy-pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 宅建（宅地建物取引士）および賃貸不動産経営管理士の資格取得を、脳科学と実務シミュレーションで支援するブラウザ完結型学習アプリケーションです。
 
-## 公開URL
-**[https://ttjckato-sketch.github.io/takken-app/](https://ttjckato-sketch.github.io/takken-app/)**
-
-最新リリース: [v3.6.2](https://github.com/ttjckato-sketch/takken-app/releases/tag/v3.6.2)
+- **Latest release**: [v2.0.3](https://github.com/ttjckato-sketch/takken-app/releases/tag/v2.0.3)
+- **GitHub Pages**: 準備中 (公開URL候補: [https://ttjckato-sketch.github.io/takken-app/](https://ttjckato-sketch.github.io/takken-app/))
+- **注意**: 本アプリは学習支援ツールであり、法令・制度の最終確認は必ず公的資料・法令データ提供システムをご参照ください。
 
 ---
 
