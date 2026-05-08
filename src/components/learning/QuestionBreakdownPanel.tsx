@@ -16,6 +16,11 @@ export const QuestionBreakdownPanel: React.FC<QuestionBreakdownPanelProps> = ({ 
       <div className="flex items-center gap-2 text-slate-500">
         <HelpCircle size={16} />
         <h4 className="text-[10px] font-black uppercase tracking-widest">Question Breakdown</h4>
+        {mode === 'before_answer' && (
+            <span className="text-[9px] font-black bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full ml-2">
+                読解補助
+            </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
