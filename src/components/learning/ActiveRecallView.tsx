@@ -9,6 +9,11 @@ import { InputUnitViewer } from './InputUnitViewer';
 import { classifyQuestionRenderMode, type QuestionRenderMode } from '../../utils/questionTypeClassifier';
 import { buildLearningContentContract } from '../../utils/explanationBuilder';
 import { type LearningContentContract } from '../../utils/learningContentContract';
+import { QuestionBreakdownPanel } from './QuestionBreakdownPanel';
+import { GlossaryInline } from './GlossaryInline';
+import { LegalContextPanel } from './LegalContextPanel';
+import { SimilarQuestionsPanel } from './SimilarQuestionsPanel';
+import { findSimilarQuestions } from '../../utils/similarQuestionCluster';
 
 interface SessionProgress { current: number; total: number; }
 interface CategoryProgress { total: number; learned: number; due: number; streak: number; todayStudied: number; accuracy: number; totalReviews: number; }
@@ -232,14 +237,18 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         </div>
 
         {/* Card Content Area */}
-        <div className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-200 relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-4 text-indigo-500">
+        <div className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-200 relative overflow-hidden space-y-6">
+            <div className="flex items-center gap-2 text-indigo-500">
                 <Target size={18} />
                 <span className="text-xs font-black uppercase tracking-widest">{contract?.question_intent}</span>
             </div>
             <h2 className="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 whitespace-pre-wrap">
               {contract?.question_text}
             </h2>
+            
+            {/* P60: Glossary and Breakdown in Question Area */}
+            <GlossaryInline text={contract?.question_text || ''} />
+            <QuestionBreakdownPanel text={contract?.question_text || ''} category={contract?.category || ''} />
         </div>
 
         {!hasAnswered ? (
@@ -363,6 +372,9 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                 </div>
                 
                 <div className="space-y-12">
+                    {/* P60: Legal Context (Why the system exists) */}
+                    <LegalContextPanel category={contract?.category || ''} />
+
                     <div>
                         <div className="text-[10px] font-black text-slate-500 uppercase mb-4 flex items-center gap-2 tracking-widest">
                             <Target size={14} className="text-indigo-500" /> 結論 (Core Rule)
@@ -410,6 +422,17 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                             </div>
                         </div>
                     )}
+
+                    {/* P60: Similar Questions Cluster */}
+                    <div className="pt-4 border-t border-white/5">
+                        <SimilarQuestionsPanel 
+                            card={card} 
+                            onSelect={(targetCard) => {
+                                // For now, just log. In a full implementation, we'd jump to this card.
+                                console.log('Jump to similar card:', targetCard.card_id);
+                            }} 
+                        />
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                         <div className="bg-white/5 p-6 rounded-[40px] border border-white/5 shadow-inner">

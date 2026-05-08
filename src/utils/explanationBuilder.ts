@@ -29,21 +29,33 @@ export function buildLearningContentContract(
   // Answer Labels
   const correctAnswerLabel = 
     mode === 'MCQ' && correctAnswer ? `選択肢 ${correctAnswer}` :
-    mode === 'TRUE_FALSE' && correctAnswer === true ? '正しい (◯)' :
-    mode === 'TRUE_FALSE' && correctAnswer === false ? '誤り (×)' : '不明';
+    mode === 'TRUE_FALSE' && correctAnswer === true ? '◯ (正しい)' :
+    mode === 'TRUE_FALSE' && correctAnswer === false ? '× (誤り)' : '不明';
 
   const userAnswerLabel = 
     userAnswer === null ? '未回答' :
     mode === 'MCQ' ? `選択肢 ${userAnswer}` :
-    mode === 'TRUE_FALSE' && userAnswer === true ? '正しい (◯)' :
-    mode === 'TRUE_FALSE' && userAnswer === false ? '誤り (×)' : '不明';
+    mode === 'TRUE_FALSE' && userAnswer === true ? '◯ (正しい)' :
+    mode === 'TRUE_FALSE' && userAnswer === false ? '× (誤り)' : '不明';
 
   // Direct Answer Sentence
   let directAnswerSentence = '';
   if (mode === 'MCQ') {
-      directAnswerSentence = `この問題の正解は「${correctAnswerLabel}」です。`;
+      const isNegative = (card.sample_question || '').includes('不適切') || (card.sample_question || '').includes('誤って');
+      directAnswerSentence = isNegative 
+        ? `正解は「${correctAnswerLabel}」です。この選択肢が最も「不適切」な記述となります。`
+        : `正解は「${correctAnswerLabel}」です。この選択肢が最も「適切」な記述となります。`;
   } else if (mode === 'TRUE_FALSE') {
-      directAnswerSentence = `この記述は「${correctAnswerLabel}」です。`;
+      const isCorrect = userAnswer === correctAnswer;
+      if (correctAnswer === true) {
+          directAnswerSentence = isCorrect 
+            ? 'あなたの判定は正解です！この問題文の内容は正しい（◯）記述です。'
+            : 'あなたの判定は不正解です。この問題文の内容は正しい（◯）記述です。';
+      } else {
+          directAnswerSentence = isCorrect
+            ? 'あなたの判定は正解です！この問題文には誤り（×）が含まれています。'
+            : 'あなたの判定は不正解です。この問題文には誤り（×）が含まれています。';
+      }
   } else {
       directAnswerSentence = '出題に必要なデータが不足しています。';
   }
@@ -61,14 +73,26 @@ export function buildLearningContentContract(
   const memoryHook = (card as any).memory_hook || '理由と結論をセットで声に出して覚えると定着しやすくなります。';
   const nextReviewFocus = '間違えたポイントや見落としたキーワードに注意して復習しましょう。';
 
-  // Source Trace
+  // 5. Source Trace & Law Warning
   let sourceTrace = '出典：過去問データベース（Raw Trace）';
+  let isOldLaw = false;
   if (card.source_trace && card.source_trace.length > 0) {
     sourceTrace = `出典：${card.source_trace.map(t => t.text || t.id).join(', ')}`;
+    // Simple year check for old law warning
+    if (sourceTrace.includes('201') || sourceTrace.includes('平成')) isOldLaw = true;
   } else if (card.card_id.includes('20')) {
     const match = card.card_id.match(/20\d{2}-\d{2}/);
-    if (match) sourceTrace = `出典：平成/令和 ${match[0]}年度 本試験`;
+    if (match) {
+        sourceTrace = `出典：平成/令和 ${match[0]}年度 本試験`;
+        const year = parseInt(match[0].split('-')[0]);
+        if (year < 2021) isOldLaw = true;
+    }
   }
+
+  if (isOldLaw) {
+      sourceTrace += ' ⚠️【旧制度由来】現行法規との差異に注意してください。';
+  }
+
 
   // Choice Details
   let choiceExplanations: ChoiceExplanation[] = [];

@@ -18,6 +18,7 @@ import { TAKKEN_PROTOTYPE_UNITS } from './utils/inputUnitPrototypes';
 import { DataExplorerView } from './components/admin/DataExplorerView';
 import { AISalvageView } from './components/admin/AISalvageView';
 import { RealityProjectionView } from './components/admin/RealityProjectionView';
+import { CategoryProgressDashboard } from './components/learning/CategoryProgressDashboard';
 
 type HomeStats = {
   total: number;
@@ -755,6 +756,26 @@ export default function App() {
                             <button onClick={startComparisonRecallTest} className="hidden md:flex w-full bg-white/10 hover:bg-white/20 text-white py-6 rounded-3xl font-black text-xl border border-white/20 transition-all active:scale-95 flex items-center justify-center gap-3">
                                 比較 <ArrowLeftRight size={24} className="text-amber-400" />
                             </button>
+                        </div>
+
+                        {/* P60: Category Progress Dashboard */}
+                        <div className="pt-10">
+                            <CategoryProgressDashboard 
+                                examType={examTypeFilter || 'all'} 
+                                onStartCategory={async (cat) => {
+                                    setLoading(true);
+                                    try {
+                                        const sessionId = await startStudySession(20, 'category_focus');
+                                        setCurrentSessionId(sessionId);
+                                        const { buildWeakTopicQueue } = await import('./utils/analytics');
+                                        const queue = await buildWeakTopicQueue({ topic: cat, limit: 20 });
+                                        const validCards = queue.map(c => ({ ...c, session_mode: 'active_recall' }));
+                                        setKnowledgeQueue(validCards);
+                                        setActiveKnowledgeCard(validCards[0]);
+                                        setCurrentTab('study_session');
+                                    } catch (e) { console.error(e); } finally { setLoading(false); }
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

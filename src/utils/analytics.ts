@@ -889,7 +889,7 @@ export async function calculateWeakTagsMetrics(): Promise<any> {
 }
 
 /**
- * 苦手克服特訓 (Focus Mode) の進捗を算出 (P31)
+ * 苦手克服特訓 (Focus Mode) の進捗を算出
  */
 export async function calculateFocusProgressMetrics(): Promise<any> {
     const focusSessions = await db.study_sessions.where('session_variant').equals('focus_10q').reverse().limit(10).toArray();
@@ -914,4 +914,45 @@ export async function calculateFocusProgressMetrics(): Promise<any> {
     }));
 
     return { tag_progress: resultList, generated_at: Date.now() };
+}
+
+/**
+ * 分野別の進捗統計を算出
+ */
+export async function calculateCategoryProgressMetrics(examType: string = 'all'): Promise<any[]> {
+    const allCards = await db.understanding_cards.toArray();
+    const allEvents = await db.study_events.toArray();
+    
+    // カテゴリごとのカードをグループ化
+    const categories = Array.from(new Set(allCards.map(c => c.category))).filter(Boolean);
+    
+    const stats = categories.map(cat => {
+        const catCards = allCards.filter(c => c.category === cat);
+        if (examType !== 'all' && catCards.length > 0 && catCards[0].exam_type !== examType) return null;
+        if (catCards.length === 0) return null;
+
+        const cardIds = new Set(catCards.map(c => c.card_id));
+        const catEvents = allEvents.filter(e => cardIds.has(e.card_id));
+        
+        const answeredCount = new Set(catEvents.map(e => e.card_id)).size;
+        const correctCount = catEvents.filter(e => e.answered_correct).length;
+        const totalAttempts = catEvents.length;
+        const accuracy = totalAttempts > 0 ? correctCount / totalAttempts : 0;
+        
+        // 弱点度 (AGAIN/HARDの割合が高い、または正答率が低い)
+        const againHardCount = catEvents.filter(e => (e.rating || 0) <= 2).length;
+        const weaknessScore = totalAttempts > 0 ? (againHardCount / totalAttempts) * (1 - accuracy) * 100 : 0;
+
+        return {
+            name: cat,
+            total: catCards.length,
+            answered: answeredCount,
+            unanswered: catCards.length - answeredCount,
+            accuracy,
+            weakness: weaknessScore,
+            exam_type: catCards[0].exam_type || 'takken'
+        };
+    }).filter(s => s !== null);
+
+    return stats.sort((a, b) => b!.weakness - a!.weakness);
 }
