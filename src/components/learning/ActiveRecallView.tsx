@@ -239,10 +239,12 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
 
         {/* Card Content Area */}
         <div className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-200 relative overflow-hidden space-y-6">
-            <div className="flex items-center gap-2 text-indigo-500">
-                <Target size={18} />
-                <span className="text-xs font-black uppercase tracking-widest">{contract?.question_intent}</span>
-            </div>
+            {hasAnswered && contract?.question_intent && (
+                <div className="flex items-center gap-2 text-indigo-500">
+                    <Target size={18} />
+                    <span className="text-xs font-black uppercase tracking-widest">{contract.question_intent}</span>
+                </div>
+            )}
             <h2 className="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 whitespace-pre-wrap">
               {contract?.question_text}
             </h2>
