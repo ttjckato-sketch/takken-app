@@ -428,7 +428,6 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                         <SimilarQuestionsPanel 
                             card={card} 
                             onSelect={(targetCard) => {
-                                // For now, just log. In a full implementation, we'd jump to this card.
                                 console.log('Jump to similar card:', targetCard.card_id);
                             }} 
                         />
@@ -447,6 +446,18 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                             </div>
                             <div className="text-sm text-rose-200 font-bold leading-relaxed">{contract?.trap_point}</div>
                         </div>
+                        <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">
+                            <div className="text-[10px] font-black text-amber-500 uppercase mb-2 flex items-center gap-2">
+                                <Lightbulb size={14} /> 覚え方 (Memory Hook)
+                            </div>
+                            <div className="text-xs text-amber-200 leading-relaxed">{contract?.memory_hook}</div>
+                        </div>
+                        <div>
+                            <div className="text-[10px] font-black text-slate-500 uppercase mb-2 flex items-center gap-2">
+                                <Target size={14} className="text-indigo-500" /> 次回復習ポイント
+                            </div>
+                            <div className="text-xs text-slate-400 leading-relaxed pl-4">{contract?.next_review_focus}</div>
+                        </div>
                     </div>
 
                     <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8">
@@ -464,9 +475,6 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                                 </button>
                             )}
                         </div>
-                        <button onClick={handleNext} className="w-full md:w-auto bg-white text-slate-900 px-16 py-6 rounded-[32px] font-black text-2xl hover:bg-slate-100 transition-all flex items-center justify-center gap-4 shadow-glow active:scale-95">
-                            次へ進む <ChevronRight size={28} />
-                        </button>
                     </div>
                 </div>
                 </div>
@@ -477,3 +485,4 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     </div>
   );
 }
+
