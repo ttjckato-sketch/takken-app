@@ -148,6 +148,163 @@ export interface HighQualityInputUnit {
     updated_at: number;
 }
 
+/**
+ * Source Reference - 法令・資料参照情報
+ */
+export interface SourceRef {
+    source_type: 'e_gov' | 'mlit' | 'moj' | 'maff' | 'retio' | 'official_exam' | 'other';
+    title: string;
+    url?: string;
+    law_name?: string;
+    article?: string;
+    checked_at?: number;
+    note?: string;
+}
+
+/**
+ * Key Phrase - 重要キーワード・フレーズ
+ */
+export interface KeyPhrase {
+    phrase: string;
+    meaning?: string;
+    trap?: string;
+    why_important?: string;
+    location_in_question?: string;
+}
+
+/**
+ * Trap Point - ひっかけポイント
+ */
+export interface TrapPoint {
+    trap: string;
+    why_trap: string;
+    how_to_avoid: string;
+}
+
+/**
+ * P30: Question Explanation - 問題別解説ストア
+ * 問題全体の読み方・論点・当てはめ・正解理由を保存する
+ */
+export interface QuestionExplanation {
+    id: string;
+    question_id?: string;
+    source_question_id?: string;
+    card_id?: string;
+    batch_id?: string;
+    category?: string;
+
+    // 問題分析
+    question_focus?: string;
+    question_type?: string;
+    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+    key_phrases?: KeyPhrase[];
+    facts_summary?: string;
+    issue_structure?: string;
+
+    // 適用ルール
+    applicable_rule?: string;
+    rule_source?: string;
+    article_or_section?: string;
+
+    // 当てはめと結論
+    application_to_question?: string;
+    correct_conclusion?: string;
+    why_this_answer?: string;
+
+    // 誤答分析
+    common_misread?: string;
+    why_user_wrong?: string;
+    trap_points?: TrapPoint[];
+
+    // 暗記支援
+    memory_hook?: string;
+    memory_hook_type?: 'mnemonic' | 'comparison' | 'one_liner' | 'formula';
+
+    // 関連付け
+    related_input_unit_id?: string;
+    related_input_unit_batch?: string;
+    source_refs?: SourceRef[];
+
+    // 品質管理
+    source_trace_grade: 'A' | 'B' | 'C' | 'D';
+    confidence: 'high' | 'medium' | 'low';
+    review_status: 'candidate' | 'auto_ok' | 'human_review_required' | 'rejected' | 'draft' | 'disabled' | 'label_conflict_suspected';
+    label_conflict_suspected: boolean;
+    label_conflict_reason?: string;
+    human_review_required: boolean;
+    human_review_notes?: string;
+    disabled: boolean;
+
+    // メタデータ
+    created_at: number;
+    updated_at: number;
+    created_by?: 'ai_generated' | 'human_created' | 'hybrid';
+}
+
+/**
+ * P30: Choice Explanation - 選択肢別解説ストア
+ * 選択肢単位で「なぜ〇/×か」「なぜユーザー回答が違うか」を保存する
+ */
+export interface ChoiceExplanation {
+    id: string;
+    choice_id?: string;
+    source_choice_id?: string;
+    question_id?: string;
+    source_question_id?: string;
+    card_id?: string;
+    batch_id?: string;
+    category?: string;
+
+    // 選択肢情報
+    statement_text?: string;
+    is_statement_true_snapshot?: boolean | null;
+    selected_answer_type?: 'true' | 'false' | 'option_1' | 'option_2' | 'option_3' | 'option_4' | 'neutral';
+
+    // 正誤判定と理由
+    is_correct?: boolean;
+    correct_answer_reason?: string;
+    why_true?: string;
+    why_false?: string;
+    why_user_wrong?: string;
+
+    // 当てはめ
+    application_to_statement?: string;
+    key_phrases?: KeyPhrase[];
+
+    // ルールと例外
+    rule?: string;
+    exception?: string;
+
+    // ひっかけ
+    trap?: string;
+    why_trap?: string;
+
+    // 比較
+    compare_with?: Array<{ option_no: number; difference: string }>;
+
+    // 暗記支援
+    one_line_memory?: string;
+
+    // 参照情報
+    source_refs?: SourceRef[];
+
+    // 品質管理
+    source_trace_grade: 'A' | 'B' | 'C' | 'D';
+    confidence: 'high' | 'medium' | 'low';
+    review_status: 'candidate' | 'auto_ok' | 'human_review_required' | 'rejected' | 'draft' | 'disabled' | 'label_conflict_suspected';
+    label_conflict_suspected: boolean;
+    label_conflict_reason?: string;
+    suspected_correct_answer?: boolean;
+    human_review_required: boolean;
+    human_review_notes?: string;
+    disabled: boolean;
+
+    // メタデータ
+    created_at: number;
+    updated_at: number;
+    created_by?: 'ai_generated' | 'human_created' | 'hybrid';
+}
+
 export interface ChintaiCluster { cluster_id: string; official_category: string; tags: string[]; canonical_statement: string; core_rule: string; variations_count: number; source_choice_ids: string[]; years: number[]; trap_patterns: string[]; confidence: 'high' | 'medium' | 'low'; }
 export interface RecoveredLearningAsset { asset_id: string; source_id: string; source_type: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; asset_type: 'memory_card' | 'number_card' | 'trap_card' | 'comparison_card' | 'explanation_note' | 'review_only' | 'discard'; question?: string; answer?: string; note?: string; source_text: string; confidence: 'high' | 'medium' | 'low'; recovery_reason: string; contradiction_risk: 'none' | 'low' | 'medium' | 'high'; usable_in_learning: boolean; created_at: number; mistake_count?: number; last_mistake_at?: number; quality_review_needed?: boolean; review_reason?: string; }
 export interface QualityImprovementSuggestion {
@@ -206,6 +363,8 @@ export class TakkenDatabase extends Dexie {
   memory_study_events!: Table<MemoryStudyEvent, string>;
   restoration_candidates!: Table<RestorationCandidate, string>;
   high_quality_input_units!: Table<HighQualityInputUnit, string>;
+  question_explanations!: Table<QuestionExplanation, string>;
+  choice_explanations!: Table<ChoiceExplanation, string>;
 
   constructor() {
     super('TakkenOS_DB');
@@ -263,6 +422,11 @@ export class TakkenDatabase extends Dexie {
     this.version(29).stores({
       restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
       high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
+    });
+
+    this.version(30).stores({
+      question_explanations: 'id, question_id, source_question_id, card_id, batch_id, category, review_status, source_trace_grade, confidence, disabled, label_conflict_suspected, human_review_required, created_at, updated_at',
+      choice_explanations: 'id, choice_id, source_choice_id, question_id, source_question_id, card_id, batch_id, category, review_status, source_trace_grade, confidence, disabled, label_conflict_suspected, human_review_required, created_at, updated_at'
     });
   }
 }

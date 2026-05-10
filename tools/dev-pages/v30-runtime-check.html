@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v30 Runtime Confirmation</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .container { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 12px; }
+        h2 { color: #555; margin-top: 32px; font-size: 18px; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        .status.pass { background: #4CAF50; color: white; }
+        .status.fail { background: #f44336; color: white; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f9f9f9; font-weight: 600; }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .readonly-notice { background: #e3f2fd; border-left: 4px solid #2196F3; padding: 12px; margin: 16px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>v30 Runtime Confirmation</h1>
+        <div class="readonly-notice">
+            <strong>Read-Only Check</strong><br>
+            IndexedDB状態確認のみ。データ書込なし。
+        </div>
+        <div id="results">Checking...</div>
+    </div>
+    <script type="module">
+        import { db } from '../src/db.ts';
+        const results = document.getElementById('results');
+        async function runChecks() {
+            let html = '<h2>Results:</h2><table>';
+            try {
+                const dbVersion = db.verno;
+                html += '<tr><td>dexie_version</td><td>' + dbVersion + '</td></tr>';
+                const hasQE = db.tables.some(t => t.name === 'question_explanations');
+                const hasCE = db.tables.some(t => t.name === 'choice_explanations');
+                html += '<tr><td>question_explanations_exists</td><td>' + (hasQE ? 'true' : 'false') + '</td></tr>';
+                html += '<tr><td>choice_explanations_exists</td><td>' + (hasCE ? 'true' : 'false') + '</td></tr>';
+                const qeCount = hasQE ? await db.question_explanations.count() : 'N/A';
+                const ceCount = hasCE ? await db.choice_explanations.count() : 'N/A';
+                html += '<tr><td>question_explanations_count</td><td>' + qeCount + '</td></tr>';
+                html += '<tr><td>choice_explanations_count</td><td>' + ceCount + '</td></tr>';
+                const hqiCount = await db.high_quality_input_units.count();
+                html += '<tr><td>high_quality_input_units_count</td><td>' + hqiCount + '</td></tr>';
+                html += '</table>';
+                const isPass = dbVersion === 30 && hasQE && hasCE && qeCount === 0 && ceCount === 0 && hqiCount === 20;
+                html += '<p>' + (isPass ? '<span class="status pass">A - PASS</span>' : '<span class="status fail">C - FAIL</span>') + '</p>';
+            } catch (e) {
+                html += '<tr><td colspan="2" class="error">' + e.message + '</td></tr></table>';
+            }
+            results.innerHTML = html;
+        }
+        runChecks();
+    </script>
+</body>
+</html>
