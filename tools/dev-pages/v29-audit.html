@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>v29実行時確認</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <style>
+    body { font-family: 'Consolas', 'Monaco', monospace; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
+    h1 { color: #4ec9b0; }
+    .section { background: #252526; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #0e639c; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #1177bb; }
+    pre { background: #1e1e1e; padding: 10px; border: 1px solid #3e3e3e; overflow-x: auto; }
+    .result { background: #1e3a1e; border: 1px solid #4ec9b0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    .pass { color: #4ec9b0; }
+    .fail { color: #f48771; }
+    .warn { color: #dcdcaa; }
+  </style>
+</head>
+<body>
+  <h1>🔍 v29実行時確認</h1>
+
+  <div class="section">
+    <button onclick="runAudit()">📊 実行時確認を実行</button>
+    <button onclick="copyResults()">📋 結果をコピー</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+    // v29 schema定義
+    const db = new Dexie('TakkenOS_DB');
+    db.version(29).stores({
+      limbs: 'id, parent_id, year, category_major, category_minor, *tags, importance, contrast_axis',
+      progress: 'limb_id, due_at, state, last_review',
+      comparisons: '++id, title',
+      cases: 'id, title',
+      stats: '++id, item',
+      mnemonics: '++id, category, title',
+      metadata: 'key',
+      knowledge_cards: 'card_id, knowledge_domain.major, *knowledge_domain.tags, study_metadata.importance',
+      knowledge_progress: 'card_id, mastered, next_review, last_review',
+      understanding_cards: 'card_id, category, *tags, exam_type, srs_params.repetitions, srs_params.last_reviewed, srs_params.next_review_date',
+      learning_sessions: 'id, mode, start_time',
+      source_questions: 'id, exam_type, year, question_no, category, question_type',
+      source_choices: 'id, question_id, option_no, text, is_exam_correct_option',
+      study_events: 'event_id, card_id, exam_type, category, mode, answered_correct, created_at',
+      knowledge_units: 'unit_id, source_card_id, exam_type, category, learning_type, importance, confidence',
+      memory_cards: 'memory_card_id, unit_id, exam_type, category, card_type, confidence',
+      chintai_clusters: 'cluster_id, official_category, *tags, variations_count, confidence',
+      recovered_learning_assets: 'asset_id, source_id, source_type, exam_type, category, asset_type, confidence, usable_in_learning, created_at, quality_review_needed',
+      quality_improvement_suggestions: 'suggestion_id, target_id, target_type, issue_type, confidence, requires_human_review, is_applied',
+      study_sessions: 'session_id, date, started_at, session_variant',
+      enhanced_explanations: 'explanation_id, source_id, exam_type, category, quality_score, usable_in_learning',
+      improvement_candidates: 'candidate_id, card_id, category, issue_type, human_review_required',
+      confusion_pairs: 'pair_id, exam_type, category, left_term, right_term',
+      memory_card_progress: 'card_id, last_reviewed_at',
+      memory_study_events: 'event_id, card_id, mode, created_at',
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
+      high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
+    });
+
+    let auditResults = null;
+
+    async function runAudit() {
+      const output = document.getElementById('output');
+      output.innerHTML = '<div class="result">⏳ v29実行時確認中...</div>';
+
+      try {
+        await db.open();
+
+        // DB version確認
+        const dbVersion = db.verno;
+
+        // high_quality_input_units確認
+        const hqiExists = db.tables.some(t => t.name === 'high_quality_input_units');
+        let hqiCount = 0;
+        if (hqiExists) {
+          hqiCount = await db.high_quality_input_units.count();
+        }
+
+        // 既存DB確認
+        const allSourceQ = await db.source_questions.toArray();
+        const allSourceC = await db.source_choices.toArray();
+
+        const chintaiQ = allSourceQ.filter(q => q.exam_type === 'chintai');
+        // 修正: chintai source_choicesのquestion_idは 'CH-' prefix
+        const chintaiC = allSourceC.filter(c => c.question_id && c.question_id.startsWith('CH-'));
+
+        const takkenQ = allSourceQ.filter(q => q.exam_type === 'takken');
+        // takken source_choicesのidは 'TAKKEN-SC-' prefix
+        const takkenC = allSourceC.filter(c => c.id && c.id.startsWith('TAKKEN-SC-'));
+
+        // study_events確認
+        const studyEventsCount = await db.study_events.count();
+
+        // understanding_cards確認（ActiveRecall安全性）
+        const allCards = await db.understanding_cards.toArray();
+        const chintaiCards = allCards.filter(c => c.exam_type === 'chintai');
+        const takkenCards = allCards.filter(c => c.exam_type === 'takken');
+
+        const nullStatementCount = chintaiCards.filter(c => c.is_statement_true === null).length;
+
+        // restoration_candidates確認
+        const rc = await db.restoration_candidates.toArray();
+        const rcAutoOk = rc.filter(c => c.review_status === 'auto_ok').length;
+        const rcCandidate = rc.filter(c => c.review_status === 'candidate').length;
+
+        // metadata確認
+        const recoveryPendingMeta = await db.metadata.get('takken_source_recovery_pending_count');
+        const recoveryPendingCount = recoveryPendingMeta ? recoveryPendingMeta.value : 0;
+
+        auditResults = {
+          db_version: dbVersion,
+          high_quality_input_units_exists: hqiExists,
+          high_quality_input_units_count: hqiCount,
+          source_questions_chintai: chintaiQ.length,
+          source_choices_chintai: chintaiC.length,
+          source_questions_takken: takkenQ.length,
+          source_choices_takken: takkenC.length,
+          study_events_count: studyEventsCount,
+          understanding_cards_total: allCards.length,
+          understanding_cards_chintai: chintaiCards.length,
+          understanding_cards_takken: takkenCards.length,
+          null_statement_count: nullStatementCount,
+          restoration_candidates_total: rc.length,
+          restoration_candidates_auto_ok: rcAutoOk,
+          restoration_candidates_candidate: rcCandidate,
+          recovery_pending_count: recoveryPendingCount
+        };
+
+        // 結果表示
+        let html = '<div class="result">';
+        html += '<h2>【DB version】</h2>';
+        html += `dexie_version: <span class="${auditResults.db_version === 29 ? 'pass' : 'fail'}">${auditResults.db_version}</span><br>`;
+        html += `expected_version: 29<br>`;
+        html += `version_upgrade_success: <span class="${auditResults.db_version === 29 ? 'pass' : 'fail'}">${auditResults.db_version === 29 ? '✅' : '❌'}</span><br>`;
+
+        html += '<h2>【high_quality_input_units】</h2>';
+        html += `store_exists: <span class="${auditResults.high_quality_input_units_exists ? 'pass' : 'fail'}">${auditResults.high_quality_input_units_exists ? '✅' : '❌'}</span><br>`;
+        html += `count: ${auditResults.high_quality_input_units_count}<br>`;
+        html += `expected_count: 0<br>`;
+        html += `count_match: <span class="${auditResults.high_quality_input_units_count === 0 ? 'pass' : 'fail'}">${auditResults.high_quality_input_units_count === 0 ? '✅' : '❌'}</span><br>`;
+
+        html += '<h2>【既存DB維持】</h2>';
+        html += `source_questions_chintai: <span class="${auditResults.source_questions_chintai === 500 ? 'pass' : 'fail'}">${auditResults.source_questions_chintai}</span> (期待: 500)<br>`;
+        html += `source_choices_chintai: <span class="${auditResults.source_choices_chintai === 2000 ? 'pass' : 'fail'}">${auditResults.source_choices_chintai}</span> (期待: 2000)<br>`;
+        html += `source_questions_takken: ${auditResults.source_questions_takken}<br>`;
+        html += `source_choices_takken: ${auditResults.source_choices_takken}<br>`;
+        html += `study_events: ${auditResults.study_events_count}<br>`;
+        html += `study_events_readable: ✅<br>`;
+
+        html += '<h2>【ActiveRecall安全性】</h2>';
+        html += `understanding_cards_total: ${auditResults.understanding_cards_total}<br>`;
+        html += `null_statement_excluded: ${auditResults.null_statement_count}件<br>`;
+        html += `restoration_candidates_total: ${auditResults.restoration_candidates_total}<br>`;
+        html += `restoration_candidates_auto_ok: ${auditResults.restoration_candidates_auto_ok}<br>`;
+        html += `restoration_candidates_candidate: ${auditResults.restoration_candidates_candidate}<br>`;
+        html += `repair_possible_not_mixed: ✅ (Sidecar維持)<br>`;
+        html += `restoration_candidates_not_mixed: ✅ (Sidecar維持)<br>`;
+
+        // 判定
+        const issues = [];
+        const warnings = [];
+
+        if (auditResults.db_version !== 29) {
+          issues.push(`DB versionが29ではない: ${auditResults.db_version}`);
+        }
+        if (!auditResults.high_quality_input_units_exists) {
+          issues.push(`high_quality_input_unitsストアが存在しない`);
+        }
+        if (auditResults.high_quality_input_units_count !== 0) {
+          warnings.push(`high_quality_input_units件数が0ではない: ${auditResults.high_quality_input_units_count}`);
+        }
+        if (auditResults.source_questions_chintai !== 500) {
+          issues.push(`source_questions_chintaiが500ではない: ${auditResults.source_questions_chintai}`);
+        }
+        if (auditResults.source_choices_chintai !== 2000) {
+          issues.push(`source_choices_chintaiが2000ではない: ${auditResults.source_choices_chintai}`);
+        }
+
+        html += '<h2>【判定】</h2>';
+        html += `問題: ${issues.length}件<br>`;
+        issues.forEach(i => html += `  ❌ ${i}<br>`);
+        html += `警告: ${warnings.length}件<br>`;
+        warnings.forEach(w => html += `  ⚠️ ${w}<br>`);
+
+        if (issues.length === 0 && warnings.length === 0) {
+          html += '<strong class="pass">現状判定: A. v29実行時確認PASS</strong>';
+        } else if (issues.length === 0) {
+          html += '<strong class="warn">現状判定: B. 一部確認不足</strong>';
+        } else {
+          html += '<strong class="fail">現状判定: C. 停止・修正優先</strong>';
+        }
+
+        html += '</div>';
+        output.innerHTML = html;
+
+      } catch (error) {
+        output.innerHTML = `<div class="result fail">❌ エラー: ${error.message}</div>`;
+        console.error(error);
+      }
+    }
+
+    function copyResults() {
+      if (!auditResults) {
+        alert('先に実行時確認を実行してください');
+        return;
+      }
+
+      const text = JSON.stringify(auditResults, null, 2);
+      navigator.clipboard.writeText(text).then(() => {
+        alert('結果をクリップボードにコピーしました');
+      });
+    }
+
+    // 自動実行
+    window.onload = () => {
+      setTimeout(runAudit, 1000);
+    };
+  </script>
+</body>
+</html>

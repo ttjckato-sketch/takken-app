@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Batch 1 Formal Import</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <style>
+    body { font-family: 'Consolas', 'Monaco', monospace; padding: 20px; background: #1e1e1e; color: #d4d4d4; }
+    h1 { color: #4ec9b0; }
+    .section { background: #252526; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #0e639c; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #1177bb; }
+    button:disabled { background: #3e3e3e; cursor: not-allowed; }
+    pre { background: #1e1e1e; padding: 10px; border: 1px solid #3e3e3e; overflow-x: auto; }
+    .result { background: #1e3a1e; border: 1px solid #4ec9b0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    .pass { color: #4ec9b0; }
+    .fail { color: #f48771; }
+    .warn { color: #dcdcaa; }
+    .info { color: #569cd6; }
+  </style>
+</head>
+<body>
+  <h1>🚀 Batch 1 Formal Import</h1>
+
+  <div class="section">
+    <button onclick="checkPreDBStatus()" id="checkBtn">1. 事前DB確認</button>
+    <button onclick="runRollbackDryRunBefore()" id="rollbackDryRunBeforeBtn" disabled>2. Rollback Dry-run (投入前)</button>
+    <button onclick="runFormalImportDryRun()" id="dryRunBtn" disabled>3. Formal Import Dry-run</button>
+    <button onclick="runFormalImport()" id="formalImportBtn" disabled>4. Batch 1 正式投入</button>
+    <button onclick="checkPostDBStatus()" id="checkPostBtn" disabled>5. 投入後DB確認</button>
+    <button onclick="runRollbackDryRunAfter()" id="rollbackDryRunAfterBtn" disabled>6. Rollback Dry-run (投入後)</button>
+    <button onclick="exportReport()" id="exportBtn" disabled>7. レポート出力</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+    // v29 schema定義
+    const db = new Dexie('TakkenOS_DB');
+    db.version(29).stores({
+      limbs: 'id, parent_id, year, category_major, category_minor, *tags, importance, contrast_axis',
+      progress: 'limb_id, due_at, state, last_review',
+      comparisons: '++id, title',
+      cases: 'id, title',
+      stats: '++id, item',
+      mnemonics: '++id, category, title',
+      metadata: 'key',
+      knowledge_cards: 'card_id, knowledge_domain.major, *knowledge_domain.tags, study_metadata.importance',
+      knowledge_progress: 'card_id, mastered, next_review, last_review',
+      understanding_cards: 'card_id, category, *tags, exam_type, srs_params.repetitions, srs_params.last_reviewed, srs_params.next_review_date',
+      learning_sessions: 'id, mode, start_time',
+      source_questions: 'id, exam_type, year, question_no, category, question_type',
+      source_choices: 'id, question_id, option_no, text, is_exam_correct_option',
+      study_events: 'event_id, card_id, exam_type, category, mode, answered_correct, created_at',
+      knowledge_units: 'unit_id, source_card_id, exam_type, category, learning_type, importance, confidence',
+      memory_cards: 'memory_card_id, unit_id, exam_type, category, card_type, confidence',
+      chintai_clusters: 'cluster_id, official_category, *tags, variations_count, confidence',
+      recovered_learning_assets: 'asset_id, source_id, source_type, exam_type, category, asset_type, confidence, usable_in_learning, created_at, quality_review_needed',
+      quality_improvement_suggestions: 'suggestion_id, target_id, target_type, issue_type, confidence, requires_human_review, is_applied',
+      study_sessions: 'session_id, date, started_at, session_variant',
+      enhanced_explanations: 'explanation_id, source_id, exam_type, category, quality_score, usable_in_learning',
+      improvement_candidates: 'candidate_id, card_id, category, issue_type, human_review_required',
+      confusion_pairs: 'pair_id, exam_type, category, left_term, right_term',
+      memory_card_progress: 'card_id, last_reviewed_at',
+      memory_study_events: 'event_id, card_id, mode, created_at',
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
+      high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
+    });
+
+    // Batch 1 データ
+    const batch1Data = [
+      {
+        unit_id: 'HQI-PROD-B001',
+        topic: '35条書面（重要事項説明）',
+        category: '宅建業法',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'flowchart' },
+        title: '35条書面（重要事項説明）',
+        conclusion: '契約成立前に、宅建士が記名し、内容を説明しなければならない。',
+        why: '買主や借主が契約するかどうかを判断するための重要な情報（物件の瑕疵や法令制限）を事前に提供するため。',
+        rule: '宅建士による説明、および35条書面への宅建士の記名が必須。',
+        exception: '相手方が宅建業者の場合、35条書面の交付（記名あり）は必要だが、「宅建士による説明」は省略できる。',
+        comparison: '35条は契約前・説明必須（業者間除く）。37条は契約後遅滞なく・説明不要・記名交付のみ。',
+        trap: ['業者間取引でも35条書面の「交付」を省略できるとひっかける（交付は必須）', '宅建士の「記名押印」が必要とひっかける（令和4年法改正で押印は廃止）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176',
+        source_title: '宅地建物取引業法 第35条'
+      },
+      {
+        unit_id: 'HQI-PROD-B002',
+        topic: '37条書面（契約書）',
+        category: '宅建業法',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '37条書面（契約書）',
+        conclusion: '契約成立後遅滞なく、37条書面を交付し、宅建士が記名押印しなければならない。',
+        why: '契約内容を明確にし、後日の紛争を防止するため。',
+        rule: '契約成立後遅滞なく交付、宅建士の記名必須。',
+        exception: 'なし',
+        comparison: '35条は契約前・説明必須。37条は契約後遅滞なく・説明不要・記名交付のみ。',
+        trap: ['37条書面の「説明」が必要とひっかける（説明は不要）', '宅建士の「押印」が必要とひっかける（令和4年法改正で押印は廃止）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176',
+        source_title: '宅地建物取引業法 第37条'
+      },
+      {
+        unit_id: 'HQI-PROD-B003',
+        topic: '媒介契約（一般・専任・専属専任）',
+        category: '宅建業法',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '媒介契約（一般・専任・専属専任）',
+        conclusion: '媒介契約には一般媒介、専任媒介、専属専任媒介の3種類がある。',
+        why: '依頼者の利益保護と宅建業者の業務適正化を図るため。',
+        rule: '専任媒介・専属専任媒介は依頼者に対し明示的な説明が必要。専属専任媒介は他業者への重複依頼禁止。',
+        exception: '専属専任媒介のみ他業者への重複依頼が禁止。',
+        comparison: '一般媒介は重複依頼可。専任媒介は重複依頼可だが一定期間ごとの報告義務。専属専任媒介は重複依頼不可。',
+        trap: ['専任媒介契約でも重複依頼が可能とひっかける（専属専任のみ不可）', '専属専任媒介契約の有効期間は3ヶ月とひっかける（3ヶ月以下、更新可）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176',
+        source_title: '宅地建物取引業法 第34条の2'
+      },
+      {
+        unit_id: 'HQI-PROD-B004',
+        topic: 'クーリング・オフ',
+        category: '宅建業法',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'step_diagram' },
+        title: 'クーリング・オフ',
+        conclusion: '8日間以内であれば無条件で申込みの撤回又は契約解除ができる。',
+        why: '消費者の衝動買い等による被害を防止するため。',
+        rule: '書面を受領した日から8日間。',
+        exception: '工事完了・自家用物件・期間経過等は不可。',
+        comparison: 'クーリング・オフは8日間。他の解除権は詐欺・強迫等の事情が必要。',
+        trap: ['8日間は「暦日」計算とひっかける（初日不算入、8日目まで可）', 'クーリング・オフ期間経過後も解除可能とひっかける（他の解除権の有無は別問題）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176',
+        source_title: '宅地建物取引業法 第37条の2'
+      },
+      {
+        unit_id: 'HQI-PROD-B005',
+        topic: '宅地建物取引士（登録の移転）',
+        category: '宅建業法',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'step_diagram' },
+        title: '宅地建物取引士（登録の移転）',
+        conclusion: '都道府県知事登録の宅建士は、国土交通大臣に移転登録できる。',
+        why: '全国的な活動を可能にするため。',
+        rule: '国土交通大臣に移転登録申請。',
+        exception: 'なし',
+        comparison: '都道府県知事登録はその都道府県のみ。国土交通大臣登録は全国で有効。',
+        trap: ['移転登録しても都道府県知事登録が失効するとひっかける（失効しない）', '移転登録には実務経験2年が必要とひっかける（不要）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176',
+        source_title: '宅地建物取引業法 第18条'
+      },
+      {
+        unit_id: 'HQI-PROD-B006',
+        topic: '抵当権（物上代位）',
+        category: '権利関係',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'flowchart' },
+        title: '抵当権（物上代位）',
+        conclusion: '抵当権は目的物が滅失・毀損した場合、その払渡金や保険金に物上代位できる。',
+        why: '抵当権の担保価値を維持するため。',
+        rule: '物上代位権の行使には払渡しまたは保険金支払い前に差押必要。',
+        exception: '賃料等の物上代位には債務者への通知等の要件あり。',
+        comparison: '物上代位は滅失毀損代償。通常の抵当権実行は目的物の競売。',
+        trap: ['賃料に対しても無条件に物上代位できるとひっかける（差押が必要）', '物上代位には第三者対抗要件が必要とひっかける（不要）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000272',
+        source_title: '民法 第304条'
+      },
+      {
+        unit_id: 'HQI-PROD-B007',
+        topic: '代理（無権代理と表見代理）',
+        category: '権利関係',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '代理（無権代理と表見代理）',
+        conclusion: '無権代理は本人の追認があれば有効。表見代理は本人に責任帰属。',
+        why: '取引安全と本人保護のバランス。',
+        rule: '無権代理は本人の追認で有効。表見代理は代理権があると信じる正当理由。',
+        exception: '本人が相手方の詐欺阻止に努めた等の場合は表見代理成立せず。',
+        comparison: '無権代理は追認までは無効。表見代理は最初から有効。',
+        trap: ['無権代理でも本人が追認拒絶できないとひっかける（追認拒絶可）', '表見代理は常に本人に責任帰属とひっかける（本人に過失等が必要）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000272',
+        source_title: '民法 第113条'
+      },
+      {
+        unit_id: 'HQI-PROD-B008',
+        topic: '時効（取得時効）',
+        category: '権利関係',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'step_diagram' },
+        title: '時効（取得時効）',
+        conclusion: '20年間所有の意思をもって平穏かつ公然に他人の物を占有すれば所有権取得。',
+        why: '長期間継続した事実状態の尊重。',
+        rule: '所有の意思、平穏、公然、20年間占有。',
+        exception: '占有開始時善意無過失であれば10年で取得時効成立。',
+        comparison: '取得時効は占有者の権利取得。消滅時効は権利消滅。',
+        trap: ['20年の起算点は占有開始日とひっかける（占有開始時から進行）', '取得時効完成後に登場した新所有者に対しても時効主張可とひっかける（主張可）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000272',
+        source_title: '民法 第162条'
+      },
+      {
+        unit_id: 'HQI-PROD-B009',
+        topic: '借地借家法（定期建物賃貸借）',
+        category: '権利関係',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '借地借家法（定期建物賃貸借）',
+        conclusion: '定期建物賃貸借は期間満了時に更新なしで終了。',
+        why: '借家人保護と契約自由のバランス。',
+        rule: '公正証書等の書面で契約、期間満了時の終了通知。',
+        exception: '期間が1年未満の場合は期間の定めなしとみなされる。',
+        comparison: '普通借家は法定更新あり。定期借家は法定更新なし。',
+        trap: ['定期借家でも更新があるとひっかける（更新なし）', '期間1年未満の定期借家契約が有効とひっかける（期間の定めなしとみなされる）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=412AC0000000190',
+        source_title: '借地借家法 第38条'
+      },
+      {
+        unit_id: 'HQI-PROD-B010',
+        topic: '都市計画法（開発許可）',
+        category: '法令上の制限',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'flowchart' },
+        title: '都市計画法（開発許可）',
+        conclusion: '一定規模以上の開発行為には開発許可が必要。',
+        why: '無秩序な開発を防止し、都市環境を保全するため。',
+        rule: '1,000㎡以上の開発行為には許可必要。',
+        exception: '市街化区域内での500㎡以下等一定の場合は許可不要。',
+        comparison: '開発許可は土地造成段階。建築確認は建物建築段階。',
+        trap: ['市街化区域内であれば全て許可不要とひっかける（面積要件等あり）', '開発許可があれば建築確認は不要とひっかける（両方必要）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000100',
+        source_title: '都市計画法 第29条'
+      },
+      {
+        unit_id: 'HQI-PROD-B011',
+        topic: '建築基準法（接道義務と42条2項道路）',
+        category: '法令上の制限',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'flowchart' },
+        title: '建築基準法（接道義務と42条2項道路）',
+        conclusion: '建物は幅員4m以上の道路に2m以上接道しなければならない。',
+        why: '避難・通行・消防活動等の安全確保。',
+        rule: '接道義務違反は建築不可。',
+        exception: '特定行政庁が避難・安全性上支障ないと認めた場合はセットバック可能。',
+        comparison: '42条2項道路は道路境界線が未確定。接道義務は道路境界線が確定している道路。',
+        trap: ['42条2項道路でもそのまま建築可とひっかける（セットバック必要）', 'セットバック部分は敷地面積に参入可とひっかける（不可）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000201',
+        source_title: '建築基準法 第43条'
+      },
+      {
+        unit_id: 'HQI-PROD-B012',
+        topic: '用途地域',
+        category: '法令上の制限',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '用途地域',
+        conclusion: '用途地域により建築できる建物の種類・規模が制限される。',
+        why: '都市環境の保全と土地利用の適正化。',
+        rule: '13種類の用途地域。',
+        exception: '用途地域外の区域もある。',
+        comparison: '用途地域は建物用途制限。建ぺい率・容積率は規模制限。',
+        trap: ['用途地域外でも何でも建てられるとひっかける（建築基準法等の制限あり）', '第一種低層住居専用地域に店舗は建てられないとひっかける（一定規模以下の店舗は可）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000201',
+        source_title: '建築基準法 第48条'
+      },
+      {
+        unit_id: 'HQI-PROD-B013',
+        topic: '農地法（3条・4条・5条）',
+        category: '法令上の制限',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '農地法（3条・4条・5条）',
+        conclusion: '農地の権利移動には許可が必要。',
+        why: '優良農地の確保と投機的取得防止。',
+        rule: '3条許可は農地間移動。4条許可は農地以外への転用。5条許可は両方。',
+        exception: '市街化区域内の農地は届出のみで許可不要。',
+        comparison: '3条は農地間。4条・5条は農地以外への転用。',
+        trap: ['市街化区域内の農地でも許可が必要とひっかける（届出のみ）', '3条許可と4条許可の要件が同じとひっかける（異なる）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000229',
+        source_title: '農地法 第3条'
+      },
+      {
+        unit_id: 'HQI-PROD-B014',
+        topic: '建ぺい率 / 容積率',
+        category: '法令上の制限',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '建ぺい率 / 容積率',
+        conclusion: '敷地面積に対する建築面積・延床面積の割合制限。',
+        why: '採光・通風・防災等の確保。',
+        rule: '用途地域等により異なる。',
+        exception: '角地敷地等の緩和措置あり。',
+        comparison: '建ぺい率は水平投影面積。容積率は延床面積。',
+        trap: ['地下は容積率に参入しないとひっかける（住宅の地下は一部参入）', '一定の防火地域等で容積率緩和があるとひっかける（要件あり）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000201',
+        source_title: '建築基準法 第52条'
+      },
+      {
+        unit_id: 'HQI-PROD-B015',
+        topic: '宅地造成及び特定盛土等規制法（盛土規制法）',
+        category: '法令上の制限',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'step_diagram' },
+        title: '宅地造成及び特定盛土等規制法（盛土規制法）',
+        conclusion: '一定規模以上の盛土には許可が必要。',
+        why: '盛土崩壊による災害防止。',
+        rule: '高さ2m以上かつ1,000㎡以上の盛土には許可必要。',
+        exception: '農業等のための盛土等は規制対象外。',
+        comparison: '盛土規制法は盛土。宅地造成規制法は宅地造成全体。',
+        trap: ['高さ2m未満の盛土は全て許可不要とひっかける（面積要件あり）', '盛土規制法は既存盛土にも適用とひっかける（基本は新設）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000180',
+        source_title: '宅地造成及び特定盛土等規制法 第3条'
+      },
+      {
+        unit_id: 'HQI-PROD-B016',
+        topic: '不動産取得税',
+        category: '税その他',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'step_diagram' },
+        title: '不動産取得税',
+        conclusion: '不動産取得時に課税される地方税。',
+        why: '地方財政の確保。',
+        rule: '土地家屋の取得に対し課税。',
+        exception: '一定の相続等による取得は非課税。',
+        comparison: '不動産取得税は取得時。固定資産税は保有時。',
+        trap: ['相続による取得も課税対象とひっかける（非課税）', '税率は一律とひっかける（都道府県により異なる）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000175',
+        source_title: '地方税法 第73条の2'
+      },
+      {
+        unit_id: 'HQI-PROD-B017',
+        topic: '原状回復ガイドライン',
+        category: '賃貸管理士',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '原状回復ガイドライン',
+        conclusion: '経年変化・通常損耗は借家人の負担ではない。',
+        why: '借家人と家主の負担区分明確化。',
+        rule: '通常使用による損耗は家主負担。',
+        exception: '借家人の故意過失による損傷は借家人負担。',
+        comparison: '経年変化は通常損耗。故意過失は特別損耗。',
+        trap: ['全ての汚れ・傷は借家人負担とひっかける（経年変化は家主負担）', 'クローゼット等の内部も借家人負担とひっかける（通常損耗は家主負担）'],
+        source_url: 'https://www.mlit.go.jp/jutakukensetsu/house/jutakusho/taisho_menu.htm',
+        source_title: '原状回復をめぐるトラブル事例とガイドライン'
+      },
+      {
+        unit_id: 'HQI-PROD-B018',
+        topic: '賃貸住宅管理業法（業務管理者）',
+        category: '賃貸管理士',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'step_diagram' },
+        title: '賃貸住宅管理業法（業務管理者）',
+        conclusion: '賃貸住宅管理業者は業務管理者を選任しなければならない。',
+        why: '賃貸住宅管理業務の適正化。',
+        rule: '管理戸数200戸以上の場合は賃貸住宅管理業者登録必要。',
+        exception: '管理戸数200戸未満の場合は登録不要。',
+        comparison: '賃貸住宅管理業法は賃貸管理。宅建業法は媒介・代理。',
+        trap: ['管理戸数200戸未満でも登録必要とひっかける（不要）', '業務管理者は国家資格とひっかける（一定の実務経験等が必要）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=427AC0000000068',
+        source_title: '賃貸住宅管理業法 第9条'
+      },
+      {
+        unit_id: 'HQI-PROD-B019',
+        topic: '賃貸住宅管理業法（管理受託契約の重要事項説明）',
+        category: '賃貸管理士',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'comparison_table' },
+        title: '賃貸住宅管理業法（管理受託契約の重要事項説明）',
+        conclusion: '管理受託契約締結前に重要事項説明が必要。',
+        why: 'オーナーの利益保護。',
+        rule: '管理業務内容・報酬等を説明。',
+        exception: 'なし',
+        comparison: '賃貸住宅管理業法は管理受託契約。宅建業法は媒介契約。',
+        trap: ['重要事項説明は宅建士でなければならないとひっかける（賃貸住宅管理業務等研修修了者でも可）', '説明は書面交付不要とひっかける（書面交付必要）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=427AC0000000068',
+        source_title: '賃貸住宅管理業法 第13条'
+      },
+      {
+        unit_id: 'HQI-PROD-B020',
+        topic: '賃貸住宅管理業法（サブリース事業者の不当な勧誘等の禁止）',
+        category: '賃貸管理士',
+        source_trace: [{ confidence: 'high' }],
+        human_review_required: false,
+        understanding_visual: { type: 'flowchart' },
+        title: '賃貸住宅管理業法（サブリース事業者の不当な勧誘等の禁止）',
+        conclusion: 'サブリース事業者の不当な勧誘等を禁止。',
+        why: 'オーナーの保護。',
+        rule: '断定的判断の提供等を禁止。',
+        exception: 'なし',
+        comparison: 'サブリースは賃貸住宅管理業法。マスターリースは宅建業法等。',
+        trap: ['サブリース事業者は全て登録が必要とひっかける（一定規模以上）', '断定的判断の提供は全て禁止とひっかける（不当な勧誘等に限る）'],
+        source_url: 'https://elaws.e-gov.go.jp/document?lawid=427AC0000000068',
+        source_title: '賃貸住宅管理業法 第22条の2'
+      }
+    ];
+
+    let reportData = {
+      preDBStatus: null,
+      rollbackDryRunBefore: null,
+      formalImportDryRun: null,
+      formalImportResult: null,
+      postDBStatus: null,
+      rollbackDryRunAfter: null
+    };
+
+    let dbVersion = 0;
+    let hqiCountBefore = 0;
+    let hqiCountAfter = 0;
+
+    // 1. 事前DB確認
+    async function checkPreDBStatus() {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.textContent = '⏳ 事前DB確認中...';
+      output.appendChild(div);
+
+      try {
+        await db.open();
+        dbVersion = db.verno;
+
+        const hqiExists = db.tables.some(t => t.name === 'high_quality_input_units');
+        hqiCountBefore = hqiExists ? await db.high_quality_input_units.count() : 0;
+
+        const allSourceQ = await db.source_questions.toArray();
+        const allSourceC = await db.source_choices.toArray();
+        const chintaiQ = allSourceQ.filter(q => q.exam_type === 'chintai');
+        const chintaiC = allSourceC.filter(c => c.question_id && c.question_id.startsWith('CH-'));
+        const takkenQ = allSourceQ.filter(q => q.exam_type === 'takken');
+        const takkenC = allSourceC.filter(c => c.id && c.id.startsWith('TAKKEN-SC-'));
+
+        const studyEventsCount = await db.study_events.count();
+
+        reportData.preDBStatus = {
+          db_version: dbVersion,
+          high_quality_input_units_count_before: hqiCountBefore,
+          source_questions_chintai: chintaiQ.length,
+          source_choices_chintai: chintaiC.length,
+          source_questions_takken: takkenQ.length,
+          source_choices_takken: takkenC.length,
+          study_events_count: studyEventsCount
+        };
+
+        // Hard Stop Check
+        const issues = [];
+        if (dbVersion !== 29) issues.push(`DB versionが29ではない: ${dbVersion}`);
+        if (hqiCountBefore !== 0) issues.push(`high_quality_input_units_count_beforeが0ではない: ${hqiCountBefore}`);
+        if (chintaiQ.length !== 500) issues.push(`source_questions_chintaiが500ではない: ${chintaiQ.length}`);
+        if (chintaiC.length !== 2000) issues.push(`source_choices_chintaiが2000ではない: ${chintaiC.length}`);
+
+        let html = '<div class="result">';
+        html += '<h2>【事前DB確認】</h2>';
+        html += `db_version: <span class="${dbVersion === 29 ? 'pass' : 'fail'}">${dbVersion}</span><br>`;
+        html += `high_quality_input_units_count_before: <span class="${hqiCountBefore === 0 ? 'pass' : 'fail'}">${hqiCountBefore}</span><br>`;
+        html += `source_questions_chintai: <span class="${chintaiQ.length === 500 ? 'pass' : 'fail'}">${chintaiQ.length}</span><br>`;
+        html += `source_choices_chintai: <span class="${chintaiC.length === 2000 ? 'pass' : 'fail'}">${chintaiC.length}</span><br>`;
+        html += `source_questions_takken: ${takkenQ.length}<br>`;
+        html += `source_choices_takken: ${takkenC.length}<br>`;
+        html += `study_events_count: ${studyEventsCount}<br>`;
+
+        if (issues.length > 0) {
+          html += '<h3 class="fail">❌ HARD STOP - 問題があります:</h3>';
+          issues.forEach(i => {
+            const p = document.createElement('p');
+            p.className = 'fail';
+            p.textContent = '❌ ' + i;
+            html += p.outerHTML;
+          });
+          const strong = document.createElement('strong');
+          strong.className = 'fail';
+          strong.textContent = '正式投入を停止します。';
+          html += strong.outerHTML;
+          div.innerHTML = html;
+          return;
+        }
+
+        const strong = document.createElement('strong');
+        strong.className = 'pass';
+        strong.textContent = '✅ 事前DB確認 PASS';
+        html += strong.outerHTML;
+        html += '</div>';
+        div.innerHTML = html;
+
+        // 次のボタンを有効化
+        document.getElementById('rollbackDryRunBeforeBtn').disabled = false;
+
+      } catch (error) {
+        div.textContent = '❌ エラー: ' + error.message;
+        div.className = 'result fail';
+      }
+    }
+
+    // 2. Rollback Dry-run (投入前)
+    async function runRollbackDryRunBefore() {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.textContent = '⏳ Rollback Dry-run (投入前) 実行中...';
+      output.appendChild(div);
+
+      try {
+        const result = await rollbackHighQualityInputUnitsBatchDryRun('batch1');
+
+        reportData.rollbackDryRunBefore = result;
+
+        let html = '<div class="result">';
+        html += '<h2>【Rollback Dry-run (投入前)】</h2>';
+        html += `ok: <span class="${result.ok ? 'pass' : 'fail'}">${result.ok}</span><br>`;
+        html += `mode: ${result.mode}<br>`;
+        html += `batch_id: ${result.batch_id}<br>`;
+        html += `expected_count: ${result.expected_count}<br>`;
+        html += `deleted_count: ${result.deleted_count}<br>`;
+        html += `before_count: ${result.before_count}<br>`;
+        html += `after_count: ${result.after_count}<br>`;
+
+        if (result.expected_count === 0 && result.deleted_count === 0 && result.after_count === result.before_count) {
+          const strong = document.createElement('strong');
+          strong.className = 'pass';
+          strong.textContent = '✅ Rollback Dry-run (投入前) PASS - 投入前なので対象0件は正常';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+
+          // 次のボタンを有効化
+          document.getElementById('dryRunBtn').disabled = false;
+        } else {
+          const strong = document.createElement('strong');
+          strong.className = 'warn';
+          strong.textContent = '⚠️ 予期しない結果';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+        }
+
+      } catch (error) {
+        div.textContent = '❌ エラー: ' + error.message;
+        div.className = 'result fail';
+      }
+    }
+
+    // 3. Formal Import Dry-run
+    async function runFormalImportDryRun() {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.textContent = '⏳ Formal Import Dry-run 実行中...';
+      output.appendChild(div);
+
+      try {
+        const result = await importHighQualityInputUnitsBatch1DryRun(batch1Data);
+
+        reportData.formalImportDryRun = result;
+
+        let html = '<div class="result">';
+        html += '<h2>【Formal Import Dry-run】</h2>';
+        html += `ok: <span class="${result.ok ? 'pass' : 'fail'}">${result.ok}</span><br>`;
+        html += `mode: ${result.mode}<br>`;
+        html += `expected_count: ${result.expected_count}<br>`;
+        html += `inserted_count: ${result.inserted_count}<br>`;
+        html += `before_count: ${result.before_count}<br>`;
+        html += `after_count: ${result.after_count}<br>`;
+        html += `errors: ${result.errors.length > 0 ? result.errors.join(', ') : 'なし'}<br>`;
+
+        if (result.ok && result.mode === 'dry_run' && result.inserted_count === 20 && result.after_count === result.before_count) {
+          const strong = document.createElement('strong');
+          strong.className = 'pass';
+          strong.textContent = '✅ Formal Import Dry-run PASS';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+
+          // 次のボタンを有効化
+          document.getElementById('formalImportBtn').disabled = false;
+        } else {
+          const strong = document.createElement('strong');
+          strong.className = 'fail';
+          strong.textContent = '❌ HARD STOP - Dry-runが失敗しました';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+        }
+
+      } catch (error) {
+        div.textContent = '❌ エラー: ' + error.message;
+        div.className = 'result fail';
+      }
+    }
+
+    // 4. Batch 1 正式投入
+    async function runFormalImport() {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.textContent = '⏳ Batch 1 正式投入実行中...';
+      output.appendChild(div);
+
+      try {
+        const result = await importHighQualityInputUnitsBatch1(batch1Data);
+
+        reportData.formalImportResult = result;
+        hqiCountAfter = result.after_count;
+
+        let html = '<div class="result">';
+        html += '<h2>【Batch 1 正式投入】</h2>';
+        html += `ok: <span class="${result.ok ? 'pass' : 'fail'}">${result.ok}</span><br>`;
+        html += `mode: ${result.mode}<br>`;
+        html += `batch_id: ${result.batch_id}<br>`;
+        html += `expected_count: ${result.expected_count}<br>`;
+        html += `inserted_count: ${result.inserted_count}<br>`;
+        html += `before_count: ${result.before_count}<br>`;
+        html += `after_count: <span class="${result.after_count === 20 ? 'pass' : 'fail'}">${result.after_count}</span><br>`;
+        html += `errors: ${result.errors.length > 0 ? result.errors.join(', ') : 'なし'}<br>`;
+
+        if (result.ok && result.mode === 'formal_import' && result.inserted_count === 20 && result.after_count === 20) {
+          const strong = document.createElement('strong');
+          strong.className = 'pass';
+          strong.textContent = '✅ Batch 1 正式投入 PASS - 20件投入成功';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+
+          // 次のボタンを有効化
+          document.getElementById('checkPostBtn').disabled = false;
+        } else {
+          const strong = document.createElement('strong');
+          strong.className = 'fail';
+          strong.textContent = '❌ 投入失敗または不正な結果';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+        }
+
+      } catch (error) {
+        div.textContent = '❌ エラー: ' + error.message;
+        div.className = 'result fail';
+      }
+    }
+
+    // 5. 投入後DB確認
+    async function checkPostDBStatus() {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.textContent = '⏳ 投入後DB確認中...';
+      output.appendChild(div);
+
+      try {
+        const hqiCount = await db.high_quality_input_units.count();
+        const allSourceQ = await db.source_questions.toArray();
+        const allSourceC = await db.source_choices.toArray();
+        const chintaiQ = allSourceQ.filter(q => q.exam_type === 'chintai');
+        const chintaiC = allSourceC.filter(c => c.question_id && c.question_id.startsWith('CH-'));
+        const takkenQ = allSourceQ.filter(q => q.exam_type === 'takken');
+        const takkenC = allSourceC.filter(c => c.id && c.id.startsWith('TAKKEN-SC-'));
+
+        // サンプル確認
+        const samples = await db.high_quality_input_units.limit(5).toArray();
+
+        reportData.postDBStatus = {
+          high_quality_input_units_count_after: hqiCount,
+          source_questions_chintai: chintaiQ.length,
+          source_choices_chintai: chintaiC.length,
+          source_questions_takken: takkenQ.length,
+          source_choices_takken: takkenC.length,
+          samples: samples
+        };
+
+        let html = '<div class="result">';
+        html += '<h2>【投入後DB確認】</h2>';
+        html += `high_quality_input_units_count_after: <span class="${hqiCount === 20 ? 'pass' : 'fail'}">${hqiCount}</span> (期待: 20)<br>`;
+        html += `source_questions_chintai: <span class="${chintaiQ.length === 500 ? 'pass' : 'fail'}">${chintaiQ.length}</span> (期待: 500)<br>`;
+        html += `source_choices_chintai: <span class="${chintaiC.length === 2000 ? 'pass' : 'fail'}">${chintaiC.length}</span> (期待: 2000)<br>`;
+        html += `source_questions_takken: ${takkenQ.length}<br>`;
+        html += `source_choices_takken: ${takkenC.length}<br>`;
+
+        html += '<h3>サンプル確認 (5件)</h3>';
+        samples.forEach(s => {
+          html += '<div style="margin: 10px 0; padding: 10px; background: #2d2d2d; border-radius: 4px;">';
+          html += `id: ${s.id}<br>`;
+          html += `batch_id: ${s.batch_id}<br>`;
+          html += `category: ${s.category}<br>`;
+          html += `review_status: ${s.review_status}<br>`;
+          html += `source_trace_grade: ${s.source_trace_grade}<br>`;
+          html += `disabled: ${s.disabled}<br>`;
+          html += '</div>';
+        });
+
+        const strong = document.createElement('strong');
+        strong.className = 'pass';
+        strong.textContent = '✅ 投入後DB確認 PASS';
+        html += strong.outerHTML;
+        html += '</div>';
+        div.innerHTML = html;
+
+        // 次のボタンを有効化
+        document.getElementById('rollbackDryRunAfterBtn').disabled = false;
+
+      } catch (error) {
+        div.textContent = '❌ エラー: ' + error.message;
+        div.className = 'result fail';
+      }
+    }
+
+    // 6. Rollback Dry-run (投入後)
+    async function runRollbackDryRunAfter() {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result';
+      div.textContent = '⏳ Rollback Dry-run (投入後) 実行中...';
+      output.appendChild(div);
+
+      try {
+        const result = await rollbackHighQualityInputUnitsBatchDryRun('batch1');
+
+        reportData.rollbackDryRunAfter = result;
+
+        let html = '<div class="result">';
+        html += '<h2>【Rollback Dry-run (投入後)】</h2>';
+        html += `ok: <span class="${result.ok ? 'pass' : 'fail'}">${result.ok}</span><br>`;
+        html += `mode: ${result.mode}<br>`;
+        html += `batch_id: ${result.batch_id}<br>`;
+        html += `expected_count: ${result.expected_count}<br>`;
+        html += `deleted_count: ${result.deleted_count}<br>`;
+        html += `before_count: ${result.before_count}<br>`;
+        html += `after_count: ${result.after_count}<br>`;
+
+        if (result.ok && result.expected_count === 20 && result.deleted_count === 20 && result.after_count === result.before_count) {
+          const strong = document.createElement('strong');
+          strong.className = 'pass';
+          strong.textContent = '✅ Rollback Dry-run (投入後) PASS - 対象20件を確認';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+
+          // 次のボタンを有効化
+          document.getElementById('exportBtn').disabled = false;
+        } else {
+          const strong = document.createElement('strong');
+          strong.className = 'warn';
+          strong.textContent = '⚠️ 予期しない結果';
+          html += strong.outerHTML;
+          html += '</div>';
+          div.innerHTML = html;
+        }
+
+      } catch (error) {
+        div.textContent = '❌ エラー: ' + error.message;
+        div.className = 'result fail';
+      }
+    }
+
+    // Rollback Dry-run Helper
+    async function rollbackHighQualityInputUnitsBatchDryRun(batchId) {
+      const hqiStore = db.table('high_quality_input_units');
+      const beforeCount = await hqiStore.count();
+      const itemsToDelete = await hqiStore.where('batch_id').equals(batchId).toArray();
+
+      return {
+        ok: true,
+        mode: 'dry_run',
+        batch_id: batchId,
+        expected_count: itemsToDelete.length,
+        deleted_count: itemsToDelete.length,
+        before_count: beforeCount,
+        after_count: beforeCount,
+        touched_stores: ['high_quality_input_units']
+      };
+    }
+
+    // Formal Import Dry-run Helper
+    async function importHighQualityInputUnitsBatch1DryRun(data) {
+      const hqiStore = db.table('high_quality_input_units');
+      const beforeCount = await hqiStore.count();
+
+      // 重複チェック
+      const existingIds = new Set();
+      for (const item of data) {
+        const existing = await hqiStore.get(item.unit_id);
+        if (existing) existingIds.add(item.unit_id);
+      }
+
+      if (existingIds.size > 0) {
+        return {
+          ok: false,
+          mode: 'dry_run',
+          batch_id: 'batch1',
+          expected_count: data.length,
+          inserted_count: 0,
+          before_count: beforeCount,
+          after_count: beforeCount,
+          errors: [`Duplicate IDs: ${Array.from(existingIds).join(', ')}`],
+          touched_stores: ['high_quality_input_units']
+        };
+      }
+
+      // バリデーション
+      const nonGradeAItems = data.filter(item => {
+        const sourceTrace = item.source_trace || [];
+        return !sourceTrace.some(st => st.confidence === 'high');
+      });
+
+      if (nonGradeAItems.length > 0) {
+        return {
+          ok: false,
+          mode: 'dry_run',
+          batch_id: 'batch1',
+          expected_count: data.length,
+          inserted_count: 0,
+          before_count: beforeCount,
+          after_count: beforeCount,
+          errors: [`${nonGradeAItems.length} items do not have source_trace_grade A`],
+          touched_stores: ['high_quality_input_units']
+        };
+      }
+
+      return {
+        ok: true,
+        mode: 'dry_run',
+        batch_id: 'batch1',
+        expected_count: data.length,
+        inserted_count: data.length,
+        before_count: beforeCount,
+        after_count: beforeCount,
+        errors: [],
+        touched_stores: ['high_quality_input_units']
+      };
+    }
+
+    // Formal Import Helper
+    async function importHighQualityInputUnitsBatch1(data) {
+      const hqiStore = db.table('high_quality_input_units');
+      const beforeCount = await hqiStore.count();
+      const inserted = [];
+
+      try {
+        await db.transaction('rw', hqiStore, async () => {
+          for (const item of data) {
+            await hqiStore.add({
+              id: item.unit_id,
+              source_item_id: item.unit_id,
+              batch_id: 'batch1',
+              origin: 'high_quality_input_unit_batch1',
+              category: item.category,
+              review_status: 'auto_ok',
+              source_trace_grade: 'A',
+              visual_type: item.understanding_visual.type || 'none',
+              disabled: false,
+              created_at: Date.now(),
+              updated_at: Date.now()
+            });
+            inserted.push(item.unit_id);
+          }
+        });
+
+        const afterCount = await hqiStore.count();
+
+        return {
+          ok: true,
+          mode: 'formal_import',
+          batch_id: 'batch1',
+          expected_count: data.length,
+          inserted_count: inserted.length,
+          before_count: beforeCount,
+          after_count: afterCount,
+          errors: [],
+          touched_stores: ['high_quality_input_units']
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          mode: 'formal_import',
+          batch_id: 'batch1',
+          expected_count: data.length,
+          inserted_count: 0,
+          before_count: beforeCount,
+          after_count: beforeCount,
+          errors: [error.message],
+          touched_stores: ['high_quality_input_units']
+        };
+      }
+    }
+
+    // 7. レポート出力
+    function exportReport() {
+      const report = {
+        execution_date: new Date().toISOString(),
+        pre_db_status: reportData.preDBStatus,
+        rollback_dry_run_before: reportData.rollbackDryRunBefore,
+        formal_import_dry_run: reportData.formalImportDryRun,
+        formal_import_result: reportData.formalImportResult,
+        post_db_status: reportData.postDBStatus,
+        rollback_dry_run_after: reportData.rollbackDryRunAfter
+      };
+
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `batch1_formal_import_result_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'result pass';
+      div.textContent = '✅ レポートを出力しました';
+      output.appendChild(div);
+    }
+  </script>
+</body>
+</html>

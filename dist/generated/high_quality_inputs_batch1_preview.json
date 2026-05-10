@@ -1,0 +1,73 @@
+{
+  "batch_id": "production_batch1_preview",
+  "origin": "ai_scaling_production_batch1_preview",
+  "generated_from": "HIGH_QUALITY_INPUT_SAMPLE300_QUALITY_AUDIT",
+  "items": [
+    {
+      "id": "HQI-PROD-B1-KC_宅建業法_35_1",
+      "source_item_id": "KC_宅建業法_35_1",
+      "title": "35条：登記された権利の要否",
+      "category": "宅建業法",
+      "conclusion": "売買でも貸借でも、登記された権利（所有権・抵当権等）は常に重要事項として説明必須。",
+      "trap_point": "「貸借の場合は登記の説明は不要」とするひっかけ（借主にも抵当権等のリスクは重要）。",
+      "correct_rule": "35条1項1号により、登記された権利は全類型で説明義務がある。",
+      "exam_reading_guide": "「貸借」の問題でも「登記」が出てきたら、37条（不要）ではなく35条（必要）のルールで答える。",
+      "visual_type": "comparison_matrix",
+      "comparison_matrix": {
+        "columns": ["売買・交換", "貸借"],
+        "rows": [
+          { "label": "登記された権利", "cells": ["説明必要", "説明必要"], "emphasis": "rule" }
+        ]
+      },
+      "source_trace": [
+        {
+          "source_type": "e-Gov",
+          "title": "宅地建物取引業法",
+          "law_or_doc": "宅建業法",
+          "article_or_section": "35条1項1号",
+          "url_or_reference": "https://elaws.e-gov.go.jp/",
+          "confidence": "high"
+        }
+      ],
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "source_trace_grade": "A",
+      "batch_id": "production_batch1_preview",
+      "origin": "ai_scaling_production_batch1_preview"
+    },
+    {
+      "id": "HQI-PROD-B1-KC_権利関係_Proxy_1",
+      "source_item_id": "KC_権利関係_Proxy_1",
+      "title": "代理：自己契約・双方代理",
+      "category": "権利関係",
+      "conclusion": "原則禁止だが、本人の許諾がある場合、または債務の履行については例外的に有効。",
+      "trap_point": "「本人の利益になるなら許諾なしでも有効」とするひっかけ（利益に関わらず許諾が必要）。",
+      "correct_rule": "民法108条により、許諾なしの自己契約・双方代理は無権代理とみなされる。",
+      "exam_reading_guide": "「許諾があるか」または「単なる債務の履行（登記申請等）か」の2点を確認する。",
+      "visual_type": "case_flow",
+      "case_flow": {
+        "columns": ["条件", "判定"],
+        "rows": [
+          { "label": "本人の許諾あり？", "cells": ["YES", "有効"], "emphasis": "rule" },
+          { "label": "債務の履行？", "cells": ["YES", "有効"], "emphasis": "rule" },
+          { "label": "上記以外", "cells": ["-", "無権代理"], "emphasis": "trap" }
+        ]
+      },
+      "source_trace": [
+        {
+          "source_type": "e-Gov",
+          "title": "民法",
+          "law_or_doc": "民法",
+          "article_or_section": "108条",
+          "url_or_reference": "https://elaws.e-gov.go.jp/",
+          "confidence": "high"
+        }
+      ],
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "source_trace_grade": "A",
+      "batch_id": "production_batch1_preview",
+      "origin": "ai_scaling_production_batch1_preview"
+    }
+  ]
+}

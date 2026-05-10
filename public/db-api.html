@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>DB API</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+</head>
+<body>
+  <pre id="result">Loading...</pre>
+
+  <script>
+    // v29 schema定義
+    const db = new Dexie('TakkenOS_DB');
+    db.version(29).stores({
+      limbs: 'id, parent_id, year, category_major, category_minor, *tags, importance, contrast_axis',
+      progress: 'limb_id, due_at, state, last_review',
+      comparisons: '++id, title',
+      cases: 'id, title',
+      stats: '++id, item',
+      mnemonics: '++id, category, title',
+      metadata: 'key',
+      knowledge_cards: 'card_id, knowledge_domain.major, *knowledge_domain.tags, study_metadata.importance',
+      knowledge_progress: 'card_id, mastered, next_review, last_review',
+      understanding_cards: 'card_id, category, *tags, exam_type, srs_params.repetitions, srs_params.last_reviewed, srs_params.next_review_date',
+      learning_sessions: 'id, mode, start_time',
+      source_questions: 'id, exam_type, year, question_no, category, question_type',
+      source_choices: 'id, question_id, option_no, text, is_exam_correct_option',
+      study_events: 'event_id, card_id, exam_type, category, mode, answered_correct, created_at',
+      knowledge_units: 'unit_id, source_card_id, exam_type, category, learning_type, importance, confidence',
+      memory_cards: 'memory_card_id, unit_id, exam_type, category, card_type, confidence',
+      chintai_clusters: 'cluster_id, official_category, *tags, variations_count, confidence',
+      recovered_learning_assets: 'asset_id, source_id, source_type, exam_type, category, asset_type, confidence, usable_in_learning, created_at, quality_review_needed',
+      quality_improvement_suggestions: 'suggestion_id, target_id, target_type, issue_type, confidence, requires_human_review, is_applied',
+      study_sessions: 'session_id, date, started_at, session_variant',
+      enhanced_explanations: 'explanation_id, source_id, exam_type, category, quality_score, usable_in_learning',
+      improvement_candidates: 'candidate_id, card_id, category, issue_type, human_review_required',
+      confusion_pairs: 'pair_id, exam_type, category, left_term, right_term',
+      memory_card_progress: 'card_id, last_reviewed_at',
+      memory_study_events: 'event_id, card_id, mode, created_at',
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
+      high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
+    });
+
+    async function getDBInfo() {
+      try {
+        await db.open();
+
+        const dbVersion = db.verno;
+        const hqiExists = db.tables.some(t => t.name === 'high_quality_input_units');
+        let hqiCount = 0;
+        if (hqiExists) {
+          hqiCount = await db.high_quality_input_units.count();
+        }
+
+        const allSourceQ = await db.source_questions.toArray();
+        const allSourceC = await db.source_choices.toArray();
+
+        const chintaiQ = allSourceQ.filter(q => q.exam_type === 'chintai');
+        const chintaiC = allSourceC.filter(c => c.question_id && c.question_id.startsWith('CHINTAI-SQ-'));
+
+        const takkenQ = allSourceQ.filter(q => q.exam_type === 'takken');
+        const takkenC = allSourceC.filter(c => c.id && c.id.startsWith('TAKKEN-SC-'));
+
+        const studyEventsCount = await db.study_events.count();
+
+        const allCards = await db.understanding_cards.toArray();
+        const chintaiCards = allCards.filter(c => c.exam_type === 'chintai');
+        const takkenCards = allCards.filter(c => c.exam_type === 'takken');
+
+        const nullStatementCount = chintaiCards.filter(c => c.is_statement_true === null).length;
+
+        const rc = await db.restoration_candidates.toArray();
+        const rcAutoOk = rc.filter(c => c.review_status === 'auto_ok').length;
+        const rcCandidate = rc.filter(c => c.review_status === 'candidate').length;
+
+        const recoveryPendingMeta = await db.metadata.get('takken_source_recovery_pending_count');
+        const recoveryPendingCount = recoveryPendingMeta ? recoveryPendingMeta.value : 0;
+
+        const result = {
+          db_version: dbVersion,
+          high_quality_input_units_exists: hqiExists,
+          high_quality_input_units_count: hqiCount,
+          source_questions_chintai: chintaiQ.length,
+          source_choices_chintai: chintaiC.length,
+          source_questions_takken: takkenQ.length,
+          source_choices_takken: takkenC.length,
+          study_events_count: studyEventsCount,
+          understanding_cards_total: allCards.length,
+          understanding_cards_chintai: chintaiCards.length,
+          understanding_cards_takken: takkenCards.length,
+          null_statement_count: nullStatementCount,
+          restoration_candidates_total: rc.length,
+          restoration_candidates_auto_ok: rcAutoOk,
+          restoration_candidates_candidate: rcCandidate,
+          recovery_pending_count: recoveryPendingCount,
+          timestamp: new Date().toISOString()
+        };
+
+        // JSONで出力
+        document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+
+        // Consoleにも出力
+        console.log('DB_INFO:', JSON.stringify(result));
+
+      } catch (error) {
+        document.getElementById('result').textContent = JSON.stringify({ error: error.message }, null, 2);
+        console.error('Error:', error);
+      }
+    }
+
+    // 自動実行
+    window.onload = getDBInfo;
+  </script>
+</body>
+</html>

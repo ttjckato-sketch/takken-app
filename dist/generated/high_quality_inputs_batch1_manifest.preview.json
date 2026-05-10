@@ -1,0 +1,16 @@
+{
+  "batch_id": "production_batch1_preview",
+  "item_count": 30,
+  "source": "HIGH_QUALITY_INPUT_SAMPLE300_QUALITY_AUDIT",
+  "storage_strategy": "json_seed_preview",
+  "apply_status": "dry_run_only",
+  "db_write_executed": false,
+  "rollback_key": "batch_id",
+  "expected_categories": {
+    "宅建業法": 10,
+    "権利関係": 8,
+    "法令上の制限": 6,
+    "税・その他": 4,
+    "賃貸管理士": 2
+  }
+}

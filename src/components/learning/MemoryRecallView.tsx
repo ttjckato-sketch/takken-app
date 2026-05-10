@@ -1,6 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Brain, Check, X, Eye, Zap } from 'lucide-react';
 import { recordStudyEvent, updateCardSRS } from '../../utils/analytics';
+import { UnderstandingSyncViewer } from './UnderstandingSyncViewer';
+import { TAKKEN_PROTOTYPE_UNITS } from '../../utils/inputUnitPrototypes';
+import { InputUnit } from '../../types/inputUnit';
 
 interface MemoryRecallViewProps {
   card: any;
@@ -10,6 +13,7 @@ interface MemoryRecallViewProps {
 
 export function MemoryRecallView({ card, onNext, sessionProgress }: MemoryRecallViewProps) {
   const [showAnswer, setShowAnswer] = useState(false);
+  const [syncUnit, setSyncUnit] = useState<InputUnit | null>(null);
   const startTimeRef = useRef(Date.now());
 
   const handleChoice = async (isCorrect: boolean, rating?: number) => {
@@ -35,6 +39,22 @@ export function MemoryRecallView({ card, onNext, sessionProgress }: MemoryRecall
     // SRS更新
     await updateCardSRS(cardId, isCorrect, finalRating);
 
+    // HQ-Sync: 正解かつTrapカードなら関連図解を探す
+    if (isCorrect && card.card_type === 'trap') {
+        const unit = TAKKEN_PROTOTYPE_UNITS.find(u => u.unit_id === card.unit_id);
+        if (unit) {
+            setSyncUnit(unit);
+            return; // 描画を優先
+        }
+    }
+
+    setShowAnswer(false);
+    onNext();
+    startTimeRef.current = Date.now();
+  };
+
+  const handleCloseSync = () => {
+    setSyncUnit(null);
     setShowAnswer(false);
     onNext();
     startTimeRef.current = Date.now();
@@ -42,6 +62,14 @@ export function MemoryRecallView({ card, onNext, sessionProgress }: MemoryRecall
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-500">
+      {syncUnit && (
+        <UnderstandingSyncViewer 
+          unit={syncUnit}
+          onClose={() => setSyncUnit(null)}
+          onNext={handleCloseSync}
+        />
+      )}
+
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-black uppercase tracking-widest">
           <Brain size={14} /> Memory Recall

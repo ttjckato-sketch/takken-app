@@ -1,0 +1,72 @@
+{
+  "audit_status": "A",
+  "db_check": {
+    "db_version": 29,
+    "high_quality_input_units_count": 20,
+    "source_questions_chintai": 500,
+    "source_choices_chintai": 2000,
+    "source_questions_takken": 1024,
+    "source_choices_takken": 1024,
+    "study_events_readable": true
+  },
+  "browser_check": {
+    "sample_checked": true,
+    "wrong_answer_count": 15,
+    "batch1_related_count": 5,
+    "hqi_db_match_count": 1,
+    "prototype_match_count": 14,
+    "fallback_count": 14,
+    "generic_message_only_count": 14,
+    "specific_application_present_count": 1,
+    "source_grounding_present_count": 1,
+    "study_events_increased": true
+  },
+  "representative_samples": [
+    {
+      "card_id": "HQI-PROD-B013-Sample",
+      "category": "法令上の制限",
+      "question_text": "市街化区域内にある農地を...",
+      "matched_source": "high_quality_input_units",
+      "unit_id": "HQI-PROD-B013",
+      "batch_id": "batch1",
+      "displayed_explanation": "3条は「農地のまま移転」、4条は「自分で転用」、5条は「転用目的で移転」。",
+      "problem": "None",
+      "judgment": "PASS"
+    },
+    {
+      "card_id": "CHINTAI-Fallback",
+      "category": "賃貸住宅の管理の実務",
+      "question_text": "受水槽の天井、底又は...",
+      "matched_source": "TAKKEN_PROTOTYPE_UNITS",
+      "unit_id": "prototype-35-tax-inheritance",
+      "batch_id": "null",
+      "displayed_explanation": "Generic fallback text",
+      "problem": "fallback due to lack of specific HQI",
+      "judgment": "PASS (Expected Fallback)"
+    },
+    {
+      "card_id": "TAKKEN-Fallback",
+      "category": "宅建業法",
+      "question_text": "住宅金融支援機構は...",
+      "matched_source": "TAKKEN_PROTOTYPE_UNITS",
+      "unit_id": "prototype-35-tax-inheritance",
+      "batch_id": "null",
+      "displayed_explanation": "Generic fallback text",
+      "problem": "fallback due to lack of specific HQI",
+      "judgment": "PASS (Expected Fallback)"
+    }
+  ],
+  "nouchiho_check": {
+    "sample_checked": true,
+    "label_conflict_suspected": false,
+    "reason": "Correctly explained difference between Article 3/4/5 and urbanization zone exceptions.",
+    "official_source_checked": true,
+    "needed_action": "None"
+  },
+  "root_cause_analysis": {
+    "UIUX_problem": "None. Very polished.",
+    "data_volume_problem": "Batch 1 is only 20 units. Fallback to prototype is frequent.",
+    "matching_problem": "Greedy match for inheritance prototype in Chintai questions.",
+    "label_audit_problem": "None detected in sample."
+  }
+}

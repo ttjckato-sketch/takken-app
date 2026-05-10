@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { Zap, AlertTriangle, ChevronRight, BookOpen, ShieldCheck, CheckCircle2, ArrowLeftRight } from 'lucide-react';
+import { Zap, AlertTriangle, ChevronRight, BookOpen, ShieldCheck, CheckCircle2, ArrowLeftRight, Lightbulb } from 'lucide-react';
 import { InputUnit } from '../../types/inputUnit';
+import { QuestionUnderstandingAid } from './QuestionUnderstandingAid';
 
 interface RepairPreviewProps {
     unit: InputUnit | null;
     onViewDetail: (unit: InputUnit) => void;
     onNext: () => void;
+    questionText?: string;
+    category?: string;
+    tags?: string[];
 }
 
-export const RepairPreview: React.FC<RepairPreviewProps> = ({ unit, onViewDetail, onNext }) => {
+export const RepairPreview: React.FC<RepairPreviewProps> = ({ unit, onViewDetail, onNext, questionText = '', category = '', tags = [] }) => {
     const [recheckAnswered, setRecheckAnswered] = useState(false);
     const [recheckCorrect, setRecheckAnsweredCorrect] = useState<boolean | null>(null);
+
+    const isHighQuality = unit?.understanding_visual !== undefined;
 
     const handleRecheck = (answer: string) => {
         const isCorrect = answer === unit?.check_question.answer;
@@ -20,32 +26,110 @@ export const RepairPreview: React.FC<RepairPreviewProps> = ({ unit, onViewDetail
 
     if (!unit) {
         return (
-            <div className="bg-indigo-900/10 border border-indigo-500/20 rounded-[32px] p-8 text-center space-y-4">
-                <div className="text-indigo-300 font-bold">詳細な構造化解説を生成しました。</div>
-                <p className="text-slate-400 text-xs leading-relaxed">
-                    この論点の核心的理由と法的結論を下の解説セクションで確認してください。<br/>
-                    試験でのひっかけポイントもまとめています。
-                </p>
-                <div className="flex justify-center gap-2 text-indigo-400 animate-bounce">
-                    <ChevronRight className="rotate-90" size={24} />
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-[32px] p-8 space-y-6">
+                {/* Fallbackヘッダー */}
+                <div className="text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2 text-amber-700 font-bold">
+                        <Lightbulb size={20} />
+                        <span>この問題の読み方ヒント</span>
+                    </div>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                        対応する詳しいInput Unitは整備中ですが、この問題は出題対象として安全な正誤データを持っています。
+                    </p>
+                </div>
+
+                {/* QuestionUnderstandingAidを表示 */}
+                <QuestionUnderstandingAid
+                    questionText={questionText}
+                    category={category}
+                    tags={tags}
+                    isExpandedDefault={true}
+                />
+
+                {/* 基本的な確認事項 */}
+                <div className="bg-white rounded-2xl p-6 border border-amber-100 space-y-4">
+                    <h4 className="text-xs font-black text-amber-800 uppercase tracking-wider">
+                        【この問題でまず見ること】
+                    </h4>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                        <li className="flex items-start gap-2">
+                            <span className="text-amber-500 font-bold">•</span>
+                            <span><strong>登場人物</strong>: A・B・甲・乙など、誰が登場するか整理してください</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-amber-500 font-bold">•</span>
+                            <span><strong>時系列</strong>: 契約前・契約後、登記の前後など、順序を確認してください</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-amber-500 font-bold">•</span>
+                            <span><strong>問われている制度</strong>: 35条・37条、代理・無権代理、詐欺・強迫など</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-amber-500 font-bold">•</span>
+                            <span><strong>注目語句</strong>: 契約前・契約後、善意・悪意、第三者、対抗、登記など</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {/* 次に確認すること */}
+                <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100 space-y-4">
+                    <h4 className="text-xs font-black text-blue-800 uppercase tracking-wider">
+                        【次に確認すること】
+                    </h4>
+                    <ul className="space-y-2 text-sm text-slate-700">
+                        <li className="flex items-start gap-2">
+                            <span className="text-blue-500 font-bold">•</span>
+                            <span>問題文の<strong>どの語句</strong>が正誤を決めているか確認してください</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <span className="text-blue-500 font-bold">•</span>
+                            <span>似た制度（35条vs37条、詐欺vs強迫など）と<strong>混同していないか</strong>確認してください</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {/* アクション */}
+                <div className="flex justify-center pt-4">
+                    <button
+                        onClick={onNext}
+                        className="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white py-3 px-6 rounded-2xl font-black shadow-lg transition-all active:scale-95"
+                    >
+                        次の問題へ進む <ChevronRight size={20} />
+                    </button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white border-2 border-rose-100 rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className={`bg-white border-2 rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 ${isHighQuality ? 'border-emerald-200' : 'border-rose-100'}`}>
             {/* Header */}
-            <div className="bg-rose-50 px-8 py-4 flex justify-between items-center border-b border-rose-100">
-                <div className="flex items-center gap-2 text-rose-600 font-black text-xs uppercase tracking-widest">
+            <div className={`${isHighQuality ? 'bg-emerald-50' : 'bg-rose-50'} px-8 py-4 flex justify-between items-center border-b ${isHighQuality ? 'border-emerald-100' : 'border-rose-100'}`}>
+                <div className={`flex items-center gap-2 font-black text-xs uppercase tracking-widest ${isHighQuality ? 'text-emerald-600' : 'text-rose-600'}`}>
                     <AlertTriangle size={14} /> 誤答補修インプット
                 </div>
-                <div className="flex items-center gap-1 bg-white px-2 py-0.5 rounded-full border border-rose-200 text-[9px] font-bold text-rose-400">
-                    <ShieldCheck size={10} /> source_trace: {unit.source_trace[0]?.text || 'OK'}
-                </div>
+                {isHighQuality && (
+                    <div className="flex items-center gap-1 bg-emerald-600 px-3 py-1 rounded-full text-[9px] font-black text-white shadow-sm animate-pulse">
+                        <Zap size={10} fill="currentColor" /> High Quality Deep Learning Available
+                    </div>
+                )}
+                {!isHighQuality && (
+                    <div className="flex items-center gap-1 bg-white px-2 py-0.5 rounded-full border border-rose-200 text-[9px] font-bold text-rose-400">
+                        <ShieldCheck size={10} /> source_trace: {unit.source_trace[0]?.text || 'OK'}
+                    </div>
+                )}
             </div>
 
             <div className="p-8 space-y-8">
+                {/* QuestionUnderstandingAid: 問題文読解補助 */}
+                {(questionText && questionText.length >= 50) && (
+                    <QuestionUnderstandingAid
+                        questionText={questionText}
+                        category={category}
+                        tags={tags}
+                        isExpandedDefault={false}
+                    />
+                )}
                 {/* Conclusion Mini Card */}
                 <div className="space-y-4">
                     <h3 className="text-2xl font-black text-slate-800 leading-tight">{unit.title}</h3>

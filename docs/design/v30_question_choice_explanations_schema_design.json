@@ -1,0 +1,407 @@
+{
+  "design_meta": {
+    "design_type": "V30_QUESTION_CHOICE_EXPLANATIONS_SCHEMA_DESIGN",
+    "design_date": "2026-05-10",
+    "designer": "AI Engineer (Claude / Gemini Pro)",
+    "version": "30",
+    "status": "COMPLETE"
+  },
+  "background": {
+    "current_issues": {
+      "sample_checked": 15,
+      "generic_message_only_count": 14,
+      "specific_application_present_count": 1,
+      "quality_A_count": 1,
+      "quality_C_count": 14
+    },
+    "root_causes": [
+      "high_quality_input_units は論点単位教材であり、個別問題の回答理由までは持っていない",
+      "fallback時に汎用文しか出ない",
+      "TAKKEN_PROTOTYPE_UNITS の誤マッチがある",
+      "source_choice / card_id 単位の解説データが存在しない"
+    ],
+    "design_purpose": "問題別の「なぜ〇/×か」を保存する、問題文への具体的な当てはめを保存する、選択肢別の解説を保存する"
+  },
+  "db_design": {
+    "new_db_version": 30,
+    "stores_to_add": [
+      "question_explanations",
+      "choice_explanations"
+    ],
+    "primary_keys": {
+      "question_explanations": "id",
+      "choice_explanations": "id"
+    },
+    "indexes": {
+      "question_explanations": [
+        "id",
+        "question_id",
+        "card_id",
+        "review_status",
+        "source_trace_grade",
+        "category",
+        "batch_id",
+        "disabled"
+      ],
+      "choice_explanations": [
+        "id",
+        "choice_id",
+        "source_choice_id",
+        "card_id",
+        "question_id",
+        "review_status",
+        "source_trace_grade",
+        "batch_id",
+        "disabled"
+      ]
+    },
+    "migration_policy": "既存データの変更なし。新規ストアの初期化のみ。",
+    "rollback_policy": "question_explanations, choice_explanations のデータは削除される。既存データは維持される。",
+    "existing_store_impact": "変更なし"
+  },
+  "question_explanations_schema": {
+    "primary_keys": {
+      "id": "string (format: QE-{card_id})",
+      "question_id": "string (understanding_cards.card_id)",
+      "source_question_id": "string? (source_questions.id)",
+      "card_id": "string (understanding_cards.card_id)"
+    },
+    "fields": {
+      "question_focus": "string (この問題は何を聞いているか)",
+      "question_type": "string (論点タイプ)",
+      "difficulty": "easy | medium | hard | expert",
+      "key_phrases": "Array<{phrase, why_important, location_in_question}>",
+      "facts_summary": "string (事実関係の整理)",
+      "issue_structure": "string (論点構造)",
+      "applicable_rule": "string (適用されるルール)",
+      "rule_source": "string (ルールの出典)",
+      "article_or_section": "string (条文項番)",
+      "application_to_question": "string (この問題文への具体的な当てはめ)",
+      "correct_conclusion": "string (正解の結論)",
+      "why_this_answer": "string (なぜ正解が〇/×なのか)",
+      "common_misread": "string (よくある誤読)",
+      "why_user_wrong": "string (なぜユーザーが誤答するのか)",
+      "trap_points": "Array<{trap, why_trap, how_to_avoid}>",
+      "memory_hook": "string (1行暗記)",
+      "memory_hook_type": "mnemonic | comparison | one_liner | formula",
+      "related_input_unit_id": "string? (high_quality_input_units.id)",
+      "related_input_unit_batch": "string? (batch_id of related HQI)",
+      "source_refs": "Array<{source_type, title, ref, article_or_section, checked_at, note}>",
+      "source_trace_grade": "A | B | C | D",
+      "confidence": "high | medium | low",
+      "review_status": "candidate | auto_ok | human_review_required | rejected",
+      "label_conflict_suspected": "boolean",
+      "label_conflict_reason": "string?",
+      "human_review_required": "boolean",
+      "human_review_notes": "string?",
+      "disabled": "boolean",
+      "created_at": "number",
+      "updated_at": "number",
+      "created_by": "ai_generated | human_created | hybrid",
+      "batch_id": "string?"
+    }
+  },
+  "choice_explanations_schema": {
+    "primary_keys": {
+      "id": "string (format: CE-{source_choice_id})",
+      "choice_id": "string (source_choices.id)",
+      "source_choice_id": "string (source_choices.id)",
+      "card_id": "string (understanding_cards.card_id)",
+      "question_id": "string (source_choices.question_id)"
+    },
+    "fields": {
+      "statement_text": "string (選択肢テキスト)",
+      "is_statement_true_snapshot": "boolean? (is_statement_true のスナップショット)",
+      "selected_answer_type": "true | false | option_1 | option_2 | option_3 | option_4 | neutral",
+      "correct_answer_reason": "string (正解の理由)",
+      "is_correct": "boolean (この選択肢が正解か)",
+      "why_true": "string (なぜ正しいのか)",
+      "why_false": "string (なぜ誤りなのか)",
+      "why_user_wrong": "string? (なぜユーザーが誤答するのか)",
+      "application_to_statement": "string (この選択肢文への当てはめ)",
+      "key_phrases": "Array<{phrase, meaning, trap}>",
+      "rule": "string (適用されるルール)",
+      "exception": "string? (例外がある場合)",
+      "trap": "string? (ひっかけ内容)",
+      "why_trap": "string? (なぜひっかけなのか)",
+      "compare_with": "Array<{option_no, difference}>?",
+      "one_line_memory": "string (1行暗記)",
+      "source_refs": "Array<{source_type, title, ref, article_or_section, checked_at, note}>",
+      "source_trace_grade": "A | B | C | D",
+      "confidence": "high | medium | low",
+      "review_status": "candidate | auto_ok | human_review_required | rejected",
+      "label_conflict_suspected": "boolean",
+      "label_conflict_reason": "string?",
+      "suspected_correct_answer": "boolean?",
+      "human_review_required": "boolean",
+      "human_review_notes": "string?",
+      "disabled": "boolean",
+      "created_at": "number",
+      "updated_at": "number",
+      "created_by": "ai_generated | human_created | hybrid",
+      "batch_id": "string?"
+    }
+  },
+  "data_linkage": {
+    "source_questions": {
+      "table": "source_questions (v1)",
+      "link_to": "question_explanations, choice_explanations",
+      "key": "source_question_id / question_id",
+      "policy": "Read-Only. 直接変更しない"
+    },
+    "source_choices": {
+      "table": "source_choices (v1)",
+      "link_to": "choice_explanations (v30)",
+      "key": "source_choice_id (Read-Only)",
+      "policy": "source_choices は直接変更しない"
+    },
+    "understanding_cards": {
+      "table": "understanding_cards (v1)",
+      "link_to": "question_explanations, choice_explanations",
+      "key": "card_id"
+    },
+    "high_quality_input_units": {
+      "table": "high_quality_input_units (v29)",
+      "link_to": "question_explanations (v30)",
+      "key": "related_input_unit_id",
+      "policy": "high_quality_input_units は論点教材として残す"
+    },
+    "memory_cards": {
+      "table": "memory_cards (v2)",
+      "link_to": "None",
+      "policy": "混ぜない"
+    },
+    "study_events": {
+      "table": "study_events (v27)",
+      "link_to": "None",
+      "policy": "混ぜない"
+    },
+    "restoration_candidates": {
+      "table": "restoration_candidates (v28)",
+      "link_to": "None",
+      "policy": "混ぜない"
+    }
+  },
+  "display_priority": {
+    "1": {
+      "source": "choice_explanations (v30)",
+      "match_score": 300,
+      "condition": "card_id 一致 && disabled = false"
+    },
+    "2": {
+      "source": "question_explanations (v30)",
+      "match_score": 250,
+      "condition": "card_id 一致 && disabled = false"
+    },
+    "3": {
+      "source": "high_quality_input_units (v29)",
+      "match_score": 200,
+      "condition": "category 一致 && disabled = false && review_status != rejected"
+    },
+    "4": {
+      "source": "TAKKEN_PROTOTYPE_UNITS",
+      "match_score": 100,
+      "condition": "tags or category 一致"
+    },
+    "5": {
+      "source": "最終fallback",
+      "match_score": 0,
+      "condition": "汎用ヒント"
+    }
+  },
+  "correct_vs_incorrect_display": {
+    "correct_display": {
+      "trigger": "userAnswer === correctAnswer",
+      "display_elements": [
+        "correct_conclusion",
+        "why_this_answer",
+        "memory_hook",
+        "related_input_unit_id"
+      ]
+    },
+    "incorrect_display": {
+      "trigger": "userAnswer !== correctAnswer",
+      "display_elements": [
+        "correct_conclusion",
+        "why_this_answer",
+        "why_user_wrong",
+        "common_misread",
+        "trap_points",
+        "application_to_statement",
+        "one_line_memory"
+      ]
+    }
+  },
+  "quality_standards": {
+    "quality_A_definition": {
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "application_to_question": "> 50文字",
+      "why_this_answer": "> 50文字",
+      "source_refs": ">= 1件",
+      "source_types": ["e_gov", "mlit", "moj", "maff", "retio"],
+      "label_conflict_suspected": false
+    },
+    "quality_B_definition": {
+      "source_trace_grade": "B",
+      "or_confidence": "medium",
+      "or_application_length": "> 20文字",
+      "or_why_length": "> 20文字",
+      "or_source_refs": ">= 1件"
+    },
+    "quality_C_definition": {
+      "source_trace_grade": "C or D",
+      "or_confidence": "low",
+      "or_application_length": "< 20文字",
+      "or_why_length": "< 20文字"
+    },
+    "label_conflict_suspected_definition": {
+      "condition": "label_conflict_suspected === true OR suspected_correct_answer !== is_statement_true_snapshot",
+      "action": "is_statement_true は直接変更しない"
+    },
+    "human_review_required_definition": {
+      "conditions": [
+        "label_conflict_suspected === true",
+        "source_trace_grade === C or D",
+        "confidence === low",
+        "review_status === human_review_required"
+      ]
+    },
+    "auto_ok_definition": {
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "source_refs": ">= 1件",
+      "application_to_question": ">= 30文字",
+      "why_this_answer": ">= 30文字",
+      "created_by": "hybrid"
+    }
+  },
+  "first_batch_policy": {
+    "recommended_count": "30-50件",
+    "priority_categories": [
+      {
+        "rank": 1,
+        "category": "農地法 3条・4条・5条",
+        "reason": "誤答が多い、用語が似ている、条文の当てはめが重要",
+        "count": 10
+      },
+      {
+        "rank": 2,
+        "category": "35条書面 / 37条書面",
+        "reason": "出題頻度が高い、タイミングの違い、記載事項の違い",
+        "count": 10
+      },
+      {
+        "rank": 3,
+        "category": "媒介契約",
+        "reason": "専任・専属専任の違い、報告義務",
+        "count": 5
+      },
+      {
+        "rank": 4,
+        "category": "クーリング・オフ",
+        "reason": "適用対象、期間",
+        "count": 5
+      },
+      {
+        "rank": 5,
+        "category": "詐欺・強迫",
+        "reason": "第三者保護の違い、対抗関係",
+        "count": 5
+      },
+      {
+        "rank": 6,
+        "category": "借地借家法",
+        "reason": "更新、対抗要件",
+        "count": 5
+      },
+      {
+        "rank": 7,
+        "category": "賃貸住宅管理業法",
+        "reason": "管理義務、重要事項説明",
+        "count": 5
+      }
+    ],
+    "source_priority": {
+      "e_gov": {
+        "priority": "HIGH",
+        "url": "https://elaws.e-gov.go.jp",
+        "description": "法令データ"
+      },
+      "mlit": {
+        "priority": "HIGH",
+        "url": "https://www.mlit.go.jp",
+        "description": "国土交通省"
+      },
+      "moj": {
+        "priority": "HIGH",
+        "url": "https://www.moj.go.jp",
+        "description": "法務省"
+      },
+      "maff": {
+        "priority": "MEDIUM",
+        "url": "https://www.maff.go.jp",
+        "description": "農林水産省"
+      },
+      "retio": {
+        "priority": "MEDIUM",
+        "url": "https://www.retio.jp",
+        "description": "主要予備校"
+      },
+      "official_exam": {
+        "priority": "HIGH",
+        "description": "公式過去問"
+      }
+    },
+    "ai_generated_items": {
+      "never_auto_confirm": [
+        "is_statement_true_snapshot",
+        "label_conflict_suspected",
+        "suspected_correct_answer",
+        "application_to_question",
+        "why_this_answer"
+      ],
+      "human_review_required": [
+        "source_trace_grade === C or D",
+        "confidence === low",
+        "label_conflict_suspected === true",
+        "created_by === ai_generated"
+      ]
+    }
+  },
+  "safety_policy": {
+    "source_choices_modified": false,
+    "is_statement_true_modified": false,
+    "study_events_modified": false,
+    "memory_cards_modified": false,
+    "restoration_candidates_modified": false,
+    "db_delete": false,
+    "db_clear": false,
+    "batch1_formal_import_rerun": false,
+    "rollback_formal_execution": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  },
+  "implementation_notes": {
+    "files_to_create": [
+      "src/types/explanationTypes.ts (新規)",
+      "src/utils/explanationMatcher.ts (新規)"
+    ],
+    "files_to_modify": [
+      "src/db.ts (v30 スキーマ追加)",
+      "src/utils/inputUnitRepairMatcher.ts (表示優先順位対応)",
+      "src/components/learning/RepairPreview.tsx (v30 解説表示対応)"
+    ],
+    "migration_required": true,
+    "rollback_required": true
+  },
+  "next_steps": [
+    "v30 スキーマの実装",
+    "v29 → v30 migration スクリプト作成",
+    "初回30-50件のデータ入力",
+    "表示優先順位の検証"
+  ]
+}

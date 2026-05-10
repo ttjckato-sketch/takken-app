@@ -93,7 +93,7 @@ export interface KnowledgeUnit {
     why_it_matters?: string;
     legal_protection?: string;
 }
-export interface MemoryCard { memory_card_id: string; unit_id: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; card_type: 'rule' | 'why' | 'exception' | 'number' | 'comparison' | 'trap'; question: string; answer: string; source_text: string; confidence: 'high' | 'medium' | 'low'; srs_params?: any; fsrs_state?: any; last_reviewed_at?: number; }
+export interface MemoryCard { memory_card_id: string; unit_id: string; exam_type: 'takken' | 'chintai'; category: string; tags: string[]; card_type: 'rule' | 'why' | 'exception' | 'number' | 'comparison' | 'trap'; question: string; answer: string; source_text: string; confidence: 'high' | 'medium' | 'low'; origin?: string; srs_params?: any; fsrs_state?: any; last_reviewed_at?: number; }
 
 export interface MemoryCardProgress { card_id: string; srs_params?: SRSParams; fsrs_state?: any; last_reviewed_at: number; }
 export interface MemoryStudyEvent { event_id: string; card_id: string; mode: string; answered_correct: boolean; response_time_ms: number; rating: number; created_at: number; }
@@ -127,6 +127,23 @@ export interface RestorationCandidate {
         note?: string;
     }>;
     review_status: 'candidate' | 'auto_ok' | 'human_review_required' | 'rejected';
+    created_at: number;
+    updated_at: number;
+}
+
+/**
+ * P29: High Quality Input Units - 旗艦論点ストア
+ */
+export interface HighQualityInputUnit {
+    id: string;
+    source_item_id: string;
+    batch_id: string;
+    origin: 'high_quality_input_unit' | 'high_quality_input_unit_batch1' | 'high_quality_input_unit_batch2' | 'high_quality_input_unit_batch3' | 'high_quality_input_unit_batch4' | 'high_quality_input_unit_batch5';
+    category: string;
+    review_status: 'candidate' | 'auto_ok' | 'human_review_required' | 'rejected';
+    source_trace_grade: 'A' | 'B' | 'C' | 'D';
+    visual_type: 'flowchart' | 'comparison_table' | 'step_diagram' | 'mnemonic' | 'none';
+    disabled: boolean;
     created_at: number;
     updated_at: number;
 }
@@ -188,6 +205,7 @@ export class TakkenDatabase extends Dexie {
   memory_card_progress!: Table<MemoryCardProgress, string>;
   memory_study_events!: Table<MemoryStudyEvent, string>;
   restoration_candidates!: Table<RestorationCandidate, string>;
+  high_quality_input_units!: Table<HighQualityInputUnit, string>;
 
   constructor() {
     super('TakkenOS_DB');
@@ -240,6 +258,11 @@ export class TakkenDatabase extends Dexie {
 
     this.version(28).stores({
       restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence'
+    });
+
+    this.version(29).stores({
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
+      high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
     });
   }
 }

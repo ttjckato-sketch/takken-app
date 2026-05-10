@@ -110,6 +110,11 @@
       restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence'
     });
 
+    db.version(29).stores({
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
+      high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
+    });
+
     const results = document.getElementById('results');
 
     function addStatus(type, message) {
@@ -343,6 +348,38 @@
         ];
         addTable('📊 DB実測件数 (v2.8)', basicStats);
 
+        // Memory Card Distribution (P41 Audit)
+        const mcTypeStats = {};
+        const mcOriginStats = {};
+        allMC.forEach(c => {
+            mcTypeStats[c.card_type] = (mcTypeStats[c.card_type] || 0) + 1;
+            const origin = c.origin || 'legacy';
+            mcOriginStats[origin] = (mcOriginStats[origin] || 0) + 1;
+        });
+        
+        addTable('🗂️ Memory Card タイプ別内訳', Object.entries(mcTypeStats).map(([k, v]) => ({ タイプ: k, 件数: v })));
+        addTable('📌 Memory Card Origin (出所) 内訳', [
+            { 出所: 'high_quality_input_unit (旗艦)', 件数: mcOriginStats['high_quality_input_unit'] || 0 },
+            { 出所: 'high_quality_input_unit_batch1 (B1)', 件数: mcOriginStats['high_quality_input_unit_batch1'] || 0 },
+            { 出所: 'high_quality_input_unit_batch2 (B2)', 件数: mcOriginStats['high_quality_input_unit_batch2'] || 0 },
+            { 出所: 'high_quality_input_unit_batch3 (B3)', 件数: mcOriginStats['high_quality_input_unit_batch3'] || 0 },
+            { 出所: 'high_quality_input_unit_batch4 (B4)', 件数: mcOriginStats['high_quality_input_unit_batch4'] || 0 },
+            { 出所: 'high_quality_input_unit_batch5 (B5)', 件数: mcOriginStats['high_quality_input_unit_batch5'] || 0 },
+            { 出所: 'legacy/other', 件数: Object.entries(mcOriginStats).reduce((acc, [k, v]) => (!k.startsWith('high_quality') ? acc + v : acc), 0) }
+        ]);
+
+        const latestMSE = await db.memory_study_events.orderBy('created_at').reverse().first();
+        if (latestMSE) {
+            addTable('⏱️ 最新 MemoryRecall イベント', [
+                { 
+                    event_id: latestMSE.event_id, 
+                    card_id: latestMSE.card_id, 
+                    answered_correct: latestMSE.answered_correct,
+                    created_at: new Date(latestMSE.created_at).toLocaleString()
+                }
+            ]);
+        }
+
         const takkenAudit = [
             { 項目: 'takken_safe_active_recall_pool', 実測値: 1024 },
             { 項目: 'takken_source_questions', 実測値: takkenQ },
@@ -406,13 +443,6 @@
 
         const avgScore = audits.length > 0 ? audits.reduce((s, a) => s + a.score, 0) / audits.length : 0;
         const weakCount = audits.filter(a => a.score < 60).length;
-
-        // Enhanced coverage check for HTML auditor
-        const takkenKeywords = ['業法', '免許', '媒介', '35条', '37条', '権利', '代理', '抵当', '制限', '建築'];
-        const chintaiKeywords = ['管理受託', 'サブリース', '維持保全', '敷金', '家賃', '滞納', '修繕', '特定賃貸借', '業務管理者', '管理業法'];
-        
-        const takkenCount = allCards.filter(c => c.exam_type === 'takken' || (takkenKeywords.some(k => (c.category || '').includes(k)) && c.exam_type !== 'chintai')).length;
-        const chintaiCount = allCards.filter(c => c.exam_type === 'chintai' || chintaiKeywords.some(k => (c.category || '').includes(k) || (c.sample_question || '').includes(k))).length;
 
         // UX Quality Gates
         const mcqKeywords = ['不適切', '適切', '記述のうち', '正しいものはいくつ', '誤っているものはいくつ'];
@@ -506,7 +536,7 @@
             };
 
             window.copyRCReport = () => {
-                const report = `【復元PoCレポート】\\n総数: ${rc}\\n内訳:\\n` + JSON.stringify(reasonStats, null, 2);
+                const report = `【復元PoCレポート】\n総数: ${rc}\n内訳:\n` + JSON.stringify(reasonStats, null, 2);
                 navigator.clipboard.writeText(report).then(() => alert('Copied!'));
             };
         }

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>QuestionUnderstandingAid 実ブラウザ確認（安全DOM版）</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <style>
+    body { font-family: 'Consolas', 'Monaco', monospace; padding: 20px; background: #f5f5f5; color: #333; }
+    h1 { color: #333; margin-bottom: 20px; }
+    .section { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
+    .sample-card { background: #f9f9f9; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+    .pass { color: #28a745; font-weight: bold; }
+    .fail { color: #dc3545; font-weight: bold; }
+    .warn { color: #ffc107; font-weight: bold; }
+    .info { color: #17a2b8; font-weight: bold; }
+    .glossary-item { background: #e7f3ff; padding: 10px; margin: 5px 0; border-radius: 3px; }
+    .party-item { background: #fff3cd; padding: 10px; margin: 5px 0; border-radius: 3px; }
+    .intent-item { background: #d4edda; padding: 10px; margin: 5px 0; border-radius: 3px; }
+    .trap-item { background: #f8d7da; padding: 10px; margin: 5px 0; border-radius: 3px; }
+    .phrase-item { background: #e2e3e5; padding: 8px; margin: 3px 0; border-radius: 3px; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+    button:hover { background: #0056b3; }
+    .stats { background: #e9ecef; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    pre { background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    .loading { color: #007bff; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>🔍 QuestionUnderstandingAid 実ブラウザ確認（安全DOM版）</h1>
+
+  <div class="section" id="controls">
+    <button id="runAuditBtn">📊 実カード確認を実行</button>
+    <button id="checkStudyEventsBtn">📈 study_events確認</button>
+    <button id="exportBtn">📋 結果をエクスポート</button>
+  </div>
+
+  <div class="stats" id="stats" style="display:none;"></div>
+
+  <div class="section" id="output">
+    <div class="loading">⏳ 「実カード確認を実行」ボタンを押してください</div>
+  </div>
+
+  <script>
+    // Audit results storage
+    let auditResults = null;
+    let studyEventsData = null;
+
+    // QuestionUnderstandingAid simulation (safe)
+    function detectParties(text) {
+      const parties = [];
+      const patterns = [
+        { code: 'A', role: '登場人物', description: '問題文中の当事者' },
+        { code: 'B', role: '登場人物', description: 'Aの相手方として出てくる可能性が高い人物' },
+        { code: 'C', role: '第三者', description: 'A・B以外の第三者として出てくる可能性が高い' },
+        { code: '甲', role: '一方当事者', description: '売主・貸主などに使われることが多い' },
+        { code: '乙', role: '相手方当事者', description: '買主・借主などに使われることが多い' },
+        { code: '丙', role: '第三者', description: '第三者として出ることが多い' },
+        { code: '売主', role: '売る側', description: '物件を売る側の当事者' },
+        { code: '買主', role: '買う側', description: '物件を買う側の当事者' },
+        { code: '貸主', role: '貸す側', description: '物件を貸す側の当事者' },
+        { code: '借主', role: '借りる側', description: '物件を借りる側の当事者' },
+        { code: '賃貸人', role: '貸す側', description: '賃貸借契約で物件を貸す側' },
+        { code: '賃借人', role: '借りる側', description: '賃貸借契約で物件を借りる側' },
+        { code: '宅建業者', role: '業者', description: '宅地建物取引業者の略' },
+        { code: '代理人', role: '代理を行う者', description: '本人の代わりに法律行為を行う' },
+        { code: '本人', role: '代理される者', description: '代理人によって代理される当事者' },
+        { code: '第三者', role: '当事者以外', description: '法律行為の当事者以外の者' }
+      ];
+      for (const pattern of patterns) {
+        if (text.indexOf(pattern.code) !== -1) {
+          parties.push(pattern);
+        }
+      }
+      return parties;
+    }
+
+    function detectGlossaryTerms(text) {
+      const terms = [];
+      const glossary = [
+        { term: '甲', definition: '一方当事者。売主・貸主などに使われることが多い。', category: '登場人物' },
+        { term: '乙', definition: '相手方当事者。買主・借主などに使われることが多い。', category: '登場人物' },
+        { term: '媒介', definition: '当事者の間に入り、契約成立を助けること。', category: '宅建業法' },
+        { term: '代理', definition: '本人の代わりに法律行為をすること。', category: '権利関係' },
+        { term: '善意', definition: 'ある事情を知らないこと。法律用語では「知らない」を意味する。', category: '権利関係' },
+        { term: '悪意', definition: 'ある事情を知っていること。法律用語では「知っている」を意味する。', category: '権利関係' },
+        { term: '対抗', definition: '第三者に自分の権利や法律関係を主張できること。', category: '権利関係' },
+        { term: '登記', definition: '権利関係などを公に示す制度。', category: '権利関係' },
+        { term: '取消し', definition: 'いったん有効な法律行為を後から無効にすること。', category: '権利関係' },
+        { term: '無効', definition: '最初から法律効果がないこと。', category: '権利関係' },
+        { term: '解除', definition: '有効に成立した契約を後から解消すること。', category: '権利関係' },
+        { term: '抵当権', definition: '債務の担保として不動産などに設定される権利。', category: '権利関係' },
+        { term: '重要事項説明', definition: '契約前に重要事項を説明する制度。35条書面による。', category: '宅建業法' },
+        { term: '37条書面', definition: '契約成立後に交付する契約内容を記載した書面。', category: '宅建業法' },
+        { term: 'クーリング・オフ', definition: '一定条件で契約を撤回・解除できる制度。', category: '宅建業法' },
+        { term: '専任媒介契約', definition: '1業者に専任で依頼する媒介契約。', category: '宅建業法' },
+        { term: '専属専任媒介契約', definition: '1業者に専属し、自己発見取引も不可な媒介契約。', category: '宅建業法' },
+        { term: '35条書面', definition: '契約成立前の重要事項説明書面。', category: '宅建業法' },
+        { term: '詐欺', definition: 'だまして意思表示させること。', category: '権利関係' },
+        { term: '強迫', definition: '脅して意思表示させること。', category: '権利関係' }
+      ];
+      for (const item of glossary) {
+        if (text.indexOf(item.term) !== -1) {
+          terms.push(item);
+        }
+      }
+      return terms;
+    }
+
+    function detectKeyPhrases(text) {
+      const phrases = [];
+      const keyPhraseList = [
+        { phrase: '契約前', importance: 'critical', meaning: '35条書面のタイミング。契約成立前を指す。' },
+        { phrase: '契約後', importance: 'critical', meaning: '37条書面のタイミング。契約成立後を指す。' },
+        { phrase: '善意', importance: 'critical', meaning: 'ある事情を知らないこと。' },
+        { phrase: '悪意', importance: 'critical', meaning: 'ある事情を知っていること。' },
+        { phrase: '第三者', importance: 'critical', meaning: '法律行為の当事者以外の者。' },
+        { phrase: '対抗', importance: 'critical', meaning: '第三者に権利を主張できるか。' },
+        { phrase: '登記', importance: 'critical', meaning: '権利関係の公示。' },
+        { phrase: '解除', importance: 'important', meaning: '契約を解消すること。' },
+        { phrase: '取消', importance: 'important', meaning: '法律行為を無効にすること。' },
+        { phrase: '代理', importance: 'important', meaning: '本人の代わりに法律行為を行う。' },
+        { phrase: '専任', importance: 'important', meaning: '1業者に専任して依頼。' },
+        { phrase: '専属専任', importance: 'important', meaning: '1業者に専属し自己発見取引も不可。' }
+      ];
+      for (const item of keyPhraseList) {
+        if (text.indexOf(item.phrase) !== -1) {
+          phrases.push(item);
+        }
+      }
+      return phrases;
+    }
+
+    function detectTrapNotices(text) {
+      const traps = [];
+      const trapPatterns = [
+        { pattern: ['35条', '37条'], message: '35条は契約前、37条は契約後を意識してください。' },
+        { pattern: ['専任', '専属専任'], message: '専属専任は自己発見取引ができない点に注意してください。' },
+        { pattern: ['善意', '悪意'], message: '法律用語では、善意は知らない、悪意は知っているという意味です。' },
+        { pattern: ['代理'], message: '本人・代理人・相手方の関係を整理してください。' },
+        { pattern: ['登記', '対抗'], message: '第三者に主張できるかを問う問題です。' },
+        { pattern: ['詐欺', '強迫'], message: '詐欺は善意無過失の第三者には対抗不可、強迫は誰にでも対抗可。' }
+      ];
+      for (const trap of trapPatterns) {
+        for (const pattern of trap.pattern) {
+          if (text.indexOf(pattern) !== -1) {
+            traps.push(trap);
+            break;
+          }
+        }
+      }
+      return traps;
+    }
+
+    function estimateQuestionIntent(text, parties, keyPhrases) {
+      let mainPoint = 'この問題は、法律知識を問う問題です。';
+      const keyPoints = [];
+
+      if (parties.length >= 3) {
+        mainPoint = 'この問題は、登場人物の法律関係を整理したうえで、判断する問題です。';
+        keyPoints.push('誰が誰に対して主張するかを整理してください。');
+      }
+
+      if (keyPhrases.some(function(p) { return p.phrase === '対抗' || p.phrase === '登記'; })) {
+        mainPoint = 'この問題は、第三者に対抗できるかを判断する問題です。';
+        keyPoints.push('対抗要件を満たしているか確認してください。');
+      }
+
+      if (keyPhrases.some(function(p) { return p.phrase === '契約前' || p.phrase === '契約後'; })) {
+        mainPoint = 'この問題は、契約前後のタイミングで義務が変わる点を問う問題です。';
+        keyPoints.push('35条（契約前）か37条（契約後）かを区別してください。');
+      }
+
+      if (keyPoints.length === 0) {
+        keyPoints.push('問題文のキーワードに注目してください。');
+      }
+
+      return { main_point: mainPoint, key_points: keyPoints };
+    }
+
+    // Safe DOM creation helpers
+    function createElement(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text) el.textContent = text;
+      return el;
+    }
+
+    function appendElement(parent, tag, className, text) {
+      const el = createElement(tag, className, text);
+      parent.appendChild(el);
+      return el;
+    }
+
+    function clearElement(element) {
+      while (element.firstChild) {
+        element.removeChild(element.firstChild);
+      }
+    }
+
+    // Main audit function
+    async function runAudit() {
+      const output = document.getElementById('output');
+      const statsDiv = document.getElementById('stats');
+      const statsContent = document.getElementById('stats-content');
+
+      clearElement(output);
+      appendElement(output, 'div', 'loading', '⏳ 実カード確認中...');
+      statsDiv.style.display = 'block';
+      clearElement(statsContent);
+
+      try {
+        const db = new Dexie('TakkenOS_DB');
+        db.version(29).stores({
+          understanding_cards: 'card_id, category, *tags, exam_type',
+          source_choices: 'id, question_id, option_no, text, is_exam_correct_option',
+          study_events: 'event_id, card_id, mode, created_at'
+        });
+
+        await db.open();
+
+        // Get real cards
+        const allCards = await db.understanding_cards.limit(30).toArray();
+        const takkenCards = allCards.filter(function(c) { return c.exam_type === 'takken'; });
+        const chintaiCards = allCards.filter(function(c) { return c.exam_type === 'chintai'; });
+
+        // Statistics
+        const realCardCount = allCards.filter(function(c) {
+          return c.card_id.indexOf('TAKKEN-') === 0 || c.card_id.indexOf('CHINTAI-') === 0;
+        }).length;
+        const testCardCount = allCards.length - realCardCount;
+
+        appendElement(statsContent, 'p', '', '総サンプル数: ' + allCards.length + '件');
+        appendElement(statsContent, 'p', '', '実カード数: ' + realCardCount + '件');
+        appendElement(statsContent, 'p', '', 'テストカード数: ' + testCardCount + '件');
+        appendElement(statsContent, 'p', '', '宅建カード: ' + takkenCards.length + '件');
+        appendElement(statsContent, 'p', '', '賃貸管理士カード: ' + chintaiCards.length + '件');
+
+        // Create results section
+        clearElement(output);
+        const section = appendElement(output, 'div', 'section', '');
+        appendElement(section, 'h2', '', '📊 実カード確認結果');
+
+        // Process each card
+        const samples = [];
+        const takkenSamples = takkenCards.slice(0, 5);
+        const chintaiSamples = chintaiCards.slice(0, 5);
+
+        for (var i = 0; i < takkenSamples.length + chintaiSamples.length; i++) {
+          const card = (i < takkenSamples.length) ? takkenSamples[i] : chintaiSamples[i - takkenSamples.length];
+          if (!card.sample_question) continue;
+
+          const questionText = card.sample_question;
+          const detectedParties = detectParties(questionText);
+          const detectedGlossary = detectGlossaryTerms(questionText);
+          const detectedKeyPhrases = detectKeyPhrases(questionText);
+          const detectedTraps = detectTrapNotices(questionText);
+          const questionIntent = estimateQuestionIntent(questionText, detectedParties, detectedKeyPhrases);
+
+          const hasUnderstandingAid = detectedParties.length > 0 || detectedGlossary.length > 0 || detectedKeyPhrases.length > 0 || detectedTraps.length > 0;
+
+          samples.push({
+            card_id: card.card_id,
+            exam_type: card.exam_type,
+            category: card.category,
+            question_text: questionText.substring(0, 80) + '...',
+            answered_correct: card.sample_answer,
+            has_understanding_aid: hasUnderstandingAid,
+            detectedParties: detectedParties.length,
+            detectedGlossary: detectedGlossary.length,
+            detectedKeyPhrases: detectedKeyPhrases.length,
+            detectedTraps: detectedTraps.length,
+            questionIntent: questionIntent.main_point
+          });
+
+          // Create sample card
+          const sampleCard = appendElement(section, 'div', 'sample-card', '');
+
+          appendElement(sampleCard, 'h3', '', 'カード: ' + card.card_id);
+          appendElement(sampleCard, 'p', '', '種別: ' + card.exam_type);
+          appendElement(sampleCard, 'p', '', 'カテゴリ: ' + card.category);
+          appendElement(sampleCard, 'p', '', '問題文: ' + questionText.substring(0, 100) + '...');
+          appendElement(sampleCard, 'p', '', '正解: ' + (card.sample_answer != null ? card.sample_answer.toString() : 'N/A'));
+
+          const statusSpan = createElement('span', hasUnderstandingAid ? 'pass' : 'warn',
+            hasUnderstandingAid ? '✅ QuestionUnderstandingAid表示あり' : '⚠️ QuestionUnderstandingAid表示なし');
+          appendElement(sampleCard, 'p', '', 'QuestionUnderstandingAid: ');
+          sampleCard.appendChild(statusSpan);
+
+          // Detected parties
+          if (detectedParties.length > 0) {
+            appendElement(sampleCard, 'h4', '', '登場人物整理:');
+            const partyDiv = createElement('div', '');
+            for (var j = 0; j < detectedParties.length; j++) {
+              const party = detectedParties[j];
+              const partyItem = createElement('div', 'party-item', '');
+              appendElement(partyItem, 'strong', '', party.code + ': ');
+              appendElement(partyItem, 'span', '', party.role + ' - ' + party.description);
+              partyDiv.appendChild(partyItem);
+            }
+            sampleCard.appendChild(partyDiv);
+          }
+
+          // Detected glossary
+          if (detectedGlossary.length > 0) {
+            appendElement(sampleCard, 'h4', '', '専門用語補足:');
+            const glossaryDiv = createElement('div', '');
+            for (var k = 0; k < detectedGlossary.length; k++) {
+              const term = detectedGlossary[k];
+              const glossaryItem = createElement('div', 'glossary-item', '');
+              appendElement(glossaryItem, 'strong', '', term.term + ': ');
+              appendElement(glossaryItem, 'span', '', term.definition);
+              glossaryDiv.appendChild(glossaryItem);
+            }
+            sampleCard.appendChild(glossaryDiv);
+          }
+
+          // Detected key phrases
+          if (detectedKeyPhrases.length > 0) {
+            appendElement(sampleCard, 'h4', '', '注目語句:');
+            const phraseDiv = createElement('div', '');
+            for (var m = 0; m < detectedKeyPhrases.length; m++) {
+              const phrase = detectedKeyPhrases[m];
+              const phraseItem = createElement('div', 'phrase-item', '');
+              appendElement(phraseItem, 'strong', '', phrase.phrase + ' (' + phrase.importance + '): ');
+              appendElement(phraseItem, 'span', '', phrase.meaning);
+              phraseDiv.appendChild(phraseItem);
+            }
+            sampleCard.appendChild(phraseDiv);
+          }
+
+          // Detected traps
+          if (detectedTraps.length > 0) {
+            appendElement(sampleCard, 'h4', '', 'ひっかけ注意:');
+            const trapDiv = createElement('div', '');
+            for (var n = 0; n < detectedTraps.length; n++) {
+              const trap = detectedTraps[n];
+              const trapItem = createElement('div', 'trap-item', '');
+              trapItem.textContent = trap.message;
+              trapDiv.appendChild(trapItem);
+            }
+            sampleCard.appendChild(trapDiv);
+          }
+
+          // Question intent
+          appendElement(sampleCard, 'p', '', '問題意図: ' + questionIntent.main_point);
+          if (questionIntent.key_points.length > 0) {
+            const keyPointsSpan = createElement('span', 'info', 'キーポイント: ' + questionIntent.key_points.join(', '));
+            sampleCard.appendChild(keyPointsSpan);
+          }
+        }
+
+        auditResults = {
+          timestamp: new Date().toISOString(),
+          stats: {
+            total_samples: allCards.length,
+            real_cards: realCardCount,
+            test_cards: testCardCount,
+            takken_cards: takkenCards.length,
+            chintai_cards: chintaiCards.length
+          },
+          samples: samples
+        };
+
+        await db.close();
+      } catch (error) {
+        clearElement(output);
+        const errorDiv = appendElement(output, 'div', 'section fail', '❌ エラー: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    async function checkStudyEvents() {
+      const output = document.getElementById('output');
+      clearElement(output);
+      appendElement(output, 'div', 'loading', '⏳ study_events確認中...');
+
+      try {
+        const db = new Dexie('TakkenOS_DB');
+        db.version(29).stores({
+          study_events: 'event_id, card_id, mode, created_at'
+        });
+
+        await db.open();
+
+        const allEvents = await db.study_events.toArray();
+        const eventCount = allEvents.length;
+        const latestEvents = allEvents.slice(-5);
+
+        clearElement(output);
+        const section = appendElement(output, 'div', 'section', '');
+        appendElement(section, 'h2', '', '📈 study_events確認');
+        appendElement(section, 'p', '', '総イベント数: ' + eventCount + '件');
+
+        if (latestEvents.length > 0) {
+          appendElement(section, 'h3', '', '最新5件のイベント:');
+          const pre = createElement('pre', '', '');
+          pre.textContent = JSON.stringify(latestEvents, null, 2);
+          section.appendChild(pre);
+
+          studyEventsData = {
+            event_count: eventCount,
+            latest_event: latestEvents[latestEvents.length - 1],
+            is_real_card: latestEvents[latestEvents.length - 1].card_id &&
+              (latestEvents[latestEvents.length - 1].card_id.indexOf('TAKKEN-') === 0 ||
+               latestEvents[latestEvents.length - 1].card_id.indexOf('CHINTAI-') === 0)
+          };
+
+          appendElement(section, 'p', '', '実カードID: ' + (studyEventsData.is_real_card ? '✅ はい' : '❌ いいえ'));
+        }
+
+        await db.close();
+      } catch (error) {
+        clearElement(output);
+        const errorDiv = appendElement(output, 'div', 'section fail', '❌ エラー: ' + error.message);
+        console.error(error);
+      }
+    }
+
+    function exportResults() {
+      if (!auditResults) {
+        alert('先に実カード確認を実行してください');
+        return;
+      }
+
+      const data = {
+        audit_results: auditResults,
+        study_events_data: studyEventsData
+      };
+
+      const text = JSON.stringify(data, null, 2);
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'question-understanding-aid-safe-dom-check.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Event listeners
+    document.getElementById('runAuditBtn').addEventListener('click', runAudit);
+    document.getElementById('checkStudyEventsBtn').addEventListener('click', checkStudyEvents);
+    document.getElementById('exportBtn').addEventListener('click', exportResults);
+  </script>
+</body>
+</html>

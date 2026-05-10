@@ -22,6 +22,37 @@ export interface CheckQuestion {
     explanation: string;
 }
 
+export interface UnderstandingVisual {
+    type: 'comparison_matrix' | 'case_flow' | 'rule_table' | 'calculation_flow';
+    title: string;
+    columns: string[];
+    rows: Array<{
+        label: string;
+        cells: string[];
+        emphasis?: 'trap' | 'rule' | 'neutral';
+    }>;
+}
+
+export interface CasePattern {
+    title: string;
+    situation: string;
+    conclusion: string;
+    reason: string;
+    exam_signal: string;
+}
+
+export interface TrapDetail {
+    trap: string;
+    why_wrong: string;
+    correct_rule: string;
+}
+
+export interface ExamReadingGuide {
+    signal: string;
+    check: string;
+    answer_pattern: string;
+}
+
 export interface RepairExplanation {
     short_note: string;
     diagram_hint?: string;
@@ -51,6 +82,13 @@ export interface InputUnit {
     };
     comparison: ComparisonRef[];
     trap_points: string[];
+    
+    // High-Quality Understanding Fields (PoC)
+    understanding_visual?: UnderstandingVisual;
+    case_patterns?: CasePattern[];
+    trap_details?: TrapDetail[];
+    exam_reading_guide?: ExamReadingGuide[];
+
     memory_hook?: string;
     check_question: CheckQuestion;
     repair_explanation: RepairExplanation;

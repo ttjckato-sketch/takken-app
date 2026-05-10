@@ -6,6 +6,7 @@ import { recordStudyEvent, updateCardSRS } from '../../utils/analytics';
 import { findRepairInputUnit } from '../../utils/inputUnitRepairMatcher';
 import { RepairPreview } from './RepairPreview';
 import { InputUnitViewer } from './InputUnitViewer';
+import { QuestionUnderstandingAid } from './QuestionUnderstandingAid';
 import { classifyQuestionRenderMode, type QuestionRenderMode } from '../../utils/questionTypeClassifier';
 import { buildLearningContentContract } from '../../utils/explanationBuilder';
 import { type LearningContentContract } from '../../utils/learningContentContract';
@@ -65,14 +66,17 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         setIsLoading(false);
     };
     loadData();
-    
-    // P42: 補修インプット候補を事前特定
-    const match = findRepairInputUnit({
-        cardId: card.card_id,
-        tags: card.tags,
-        category: card.category
-    });
-    setRepairUnit(match.unit);
+
+    // P42: 補修インプット候補を事前特定（v29: DB統合対応）
+    const loadRepairUnit = async () => {
+        const match = await findRepairInputUnit({
+            cardId: card.card_id,
+            tags: card.tags,
+            category: card.category
+        });
+        setRepairUnit(match.unit);
+    };
+    loadRepairUnit();
   }, [card.card_id, card.tags, card.category]);
 
   const correctAnswer = useMemo(() => {
@@ -300,19 +304,30 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
               </div>
 
               {contract?.mistake_diagnosis && (
-                  <div className="mt-6 p-5 bg-white border border-rose-200 rounded-2xl text-left shadow-sm animate-in slide-in-from-top-4 duration-700 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <AlertTriangle size={80} className="text-rose-600" />
-                      </div>
-                      <div className="relative z-10">
-                        <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-2 mb-3">
-                            <AlertTriangle size={16} /> Mistake Diagnosis
-                        </div>
-                        <div className="text-lg font-black text-rose-900 leading-tight mb-4">{contract?.mistake_diagnosis.diagnosis_text}</div>
-                        <div className="flex items-start gap-3 text-rose-700 font-bold text-sm bg-rose-50 p-4 rounded-2xl border border-rose-100">
-                            <Lightbulb size={20} className="shrink-0 text-amber-500" />
-                            <span>{contract?.mistake_diagnosis.next_action}</span>
-                        </div>
+                  <div className="mt-6 space-y-6">
+                      {/* QuestionUnderstandingAid: 問題文読解補助 */}
+                      <QuestionUnderstandingAid
+                          questionText={card.sample_question}
+                          category={card.category}
+                          tags={card.tags}
+                          isExpandedDefault={true}
+                      />
+
+                      {/* Mistake Diagnosis */}
+                      <div className="p-5 bg-white border border-rose-200 rounded-2xl text-left shadow-sm animate-in slide-in-from-top-4 duration-700 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <AlertTriangle size={80} className="text-rose-600" />
+                          </div>
+                          <div className="relative z-10">
+                            <div className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-2 mb-3">
+                                <AlertTriangle size={16} /> Mistake Diagnosis
+                            </div>
+                            <div className="text-lg font-black text-rose-900 leading-tight mb-4">{contract?.mistake_diagnosis.diagnosis_text}</div>
+                            <div className="flex items-start gap-3 text-rose-700 font-bold text-sm bg-rose-50 p-4 rounded-2xl border border-rose-100">
+                                <Lightbulb size={20} className="shrink-0 text-amber-500" />
+                                <span>{contract?.mistake_diagnosis.next_action}</span>
+                            </div>
+                          </div>
                       </div>
                   </div>
               )}
@@ -345,12 +360,80 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
                         <h4 className="text-xl font-black">この論点の構造化知識で再確認しますか？</h4>
                         <p className="text-xs text-indigo-100/70 font-bold">基本ルール・例外・ひっかけをまとめて学習できます</p>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setShowFullViewer(true)}
                         className="bg-white text-indigo-600 px-10 py-5 rounded-2xl font-black flex items-center gap-2 shadow-2xl active:scale-95 transition-all whitespace-nowrap"
                     >
                         <BookOpen size={20} /> 解説ユニットを開く
                     </button>
+                </div>
+            )}
+
+            {/* 誤答時のfallback表示 (repairUnitがない場合) */}
+            {selectedAnswer !== correctAnswer && !repairUnit && (
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-[32px] p-6 space-y-4 shadow-lg animate-in fade-in slide-in-from-left-4 duration-500">
+                    {/* Fallbackヘッダー */}
+                    <div className="flex items-center gap-2 text-amber-700 font-bold">
+                        <Lightbulb size={20} />
+                        <span>この問題の読み方ヒント</span>
+                    </div>
+
+                    {/* QuestionUnderstandingAidを表示 */}
+                    <QuestionUnderstandingAid
+                        questionText={card.sample_question}
+                        category={card.category}
+                        tags={card.tags}
+                        isExpandedDefault={true}
+                    />
+
+                    {/* 基本的な確認事項 */}
+                    <div className="bg-white rounded-2xl p-4 border border-amber-100 space-y-3">
+                        <h4 className="text-xs font-black text-amber-800 uppercase tracking-wider">
+                            【この問題でまず見ること】
+                        </h4>
+                        <ul className="space-y-2 text-sm text-slate-700">
+                            <li className="flex items-start gap-2">
+                                <span className="text-amber-500 font-bold">•</span>
+                                <span><strong>登場人物</strong>: A・B・甲・乙など、誰が登場するか整理してください</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-amber-500 font-bold">•</span>
+                                <span><strong>時系列</strong>: 契約前・契約後、登記の前後など、順序を確認してください</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-amber-500 font-bold">•</span>
+                                <span><strong>問われている制度</strong>: 35条・37条、代理・無権代理、詐欺・強迫など</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-amber-500 font-bold">•</span>
+                                <span><strong>注目語句</strong>: 契約前・契約後、善意・悪意、第三者、対抗、登記など</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* 次に確認すること */}
+                    <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100 space-y-3">
+                        <h4 className="text-xs font-black text-blue-800 uppercase tracking-wider">
+                            【次に確認すること】
+                        </h4>
+                        <ul className="space-y-2 text-sm text-slate-700">
+                            <li className="flex items-start gap-2">
+                                <span className="text-blue-500 font-bold">•</span>
+                                <span>問題文の<strong>どの語句</strong>が正誤を決めているか確認してください</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-blue-500 font-bold">•</span>
+                                <span>似た制度（35条vs37条、詐欺vs強迫など）と<strong>混同していないか</strong>確認してください</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* 注意書き */}
+                    <div className="bg-amber-100 rounded-xl p-3 border border-amber-200 text-center">
+                        <p className="text-xs text-amber-800 font-bold">
+                            対応する詳しいInput Unitは整備中ですが、この問題は出題対象として安全な正誤データを持っています。
+                        </p>
+                    </div>
                 </div>
             )}
 

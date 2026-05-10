@@ -5,6 +5,7 @@
 
 import { db, type UnderstandingCard } from '../db';
 import { resolvePublicAssetPath } from './publicAssetPath';
+import { promoteTrapCards } from './trapCardGenerator';
 
 export interface AnalogyData {
   card_id: string;
@@ -249,6 +250,7 @@ export async function integrateHighQualityData(): Promise<{
   analogies?: number;
   activeRecall?: number;
   cognitiveLoad?: number;
+  trapCardsAdded?: number;
 }> {
   try {
     // 並列ロード
@@ -257,6 +259,9 @@ export async function integrateHighQualityData(): Promise<{
       loadActiveRecallData(),
       loadCognitiveLoadData()
     ]);
+
+    // Trap カードの正式投入 (P41)
+    const trapResult = await promoteTrapCards();
 
     // 既存のUnderstandingCardを取得
     const allCards = await db.understanding_cards.toArray();
@@ -309,10 +314,11 @@ export async function integrateHighQualityData(): Promise<{
 
     return {
       success: true,
-      message: `高品質データ統合完了: アナロジー${analogiesIntegrated}件、アクティブリコール${activeRecallIntegrated}件、認知負荷${cognitiveLoadIntegrated}件`,
+      message: `高品質データ統合完了: アナロジー${analogiesIntegrated}件、アクティブリコール${activeRecallIntegrated}件、認知負荷${cognitiveLoadIntegrated}件、Trapカード${trapResult.added}件`,
       analogies: analogiesIntegrated,
       activeRecall: activeRecallIntegrated,
-      cognitiveLoad: cognitiveLoadIntegrated
+      cognitiveLoad: cognitiveLoadIntegrated,
+      trapCardsAdded: trapResult.added
     };
   } catch (error) {
     console.error('高品質データ統合エラー:', error);
