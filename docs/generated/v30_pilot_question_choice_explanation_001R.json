@@ -1,0 +1,382 @@
+{
+  "pilot_meta": {
+    "pilot_id": "v30-pilot-001-R",
+    "pilot_date": "2026-05-10",
+    "pilot_author": "AI Engineer",
+    "pilot_type": "question_choice_explanation",
+    "pilot_category": "農地法3条 権利移転 許可",
+    "pilot_status": "A - quality_A",
+    "pilot_note": "Pilot 001の失敗（3条と4条/5条の混同）を修正し、正しい法令解釈に基づいて再生成"
+  },
+  "source_data": {
+    "card_id": "TAKKEN-SQ-AGRI-001-R",
+    "source_question_id": "TAKKEN-SQ-AGRI-001-R",
+    "category": "農地法 3条 権利移転 許可",
+    "question_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可ではなく届出で足りる。",
+    "choices": [
+      {
+        "choice_id": "TAKKEN-SC-AGRI-001R-A",
+        "statement_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可ではなく届出で足りる。",
+        "is_statement_true": false
+      },
+      {
+        "choice_id": "TAKKEN-SC-AGRI-001R-B",
+        "statement_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可が必要である。",
+        "is_statement_true": true
+      },
+      {
+        "choice_id": "TAKKEN-SC-AGRI-001R-C",
+        "statement_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法4条の許可が必要である。",
+        "is_statement_true": false
+      }
+    ]
+  },
+  "question_explanation": {
+    "id": "QE-TAKKEN-SQ-AGRI-001-R",
+    "question_id": "TAKKEN-SQ-AGRI-001-R",
+    "source_question_id": "TAKKEN-SQ-AGRI-001-R",
+    "card_id": "TAKKEN-SQ-AGRI-001-R",
+    "batch_id": "v30-pilot-batch-001-R",
+    "category": "農地法 3条 権利移転 許可",
+    "question_focus": "農地法3条の権利移転における「許可」と「届出」の区別。市街化区域内でも3条は「許可」が必要であること。",
+    "key_phrases": [
+      {
+        "phrase": "農地を農地のまま",
+        "why_important": "3条の適用場面（権利移転）を示す最重要語句",
+        "location_in_question": "問題文に明示"
+      },
+      {
+        "phrase": "所有権移転",
+        "why_important": "3条の適用場面（権利移転）を示す最重要語句",
+        "location_in_question": "問題文に明示"
+      },
+      {
+        "phrase": "市街化区域内",
+        "why_important": "4条・5条の市街化区域内届出特例との区別に必要",
+        "location_in_question": "問題文に明示"
+      },
+      {
+        "phrase": "3条の許可",
+        "why_important": "3条は権利移転に「許可」を必要とすること",
+        "location_in_question": "正解選択肢に明示"
+      }
+    ],
+    "facts_summary": "本件は市街化区域内の農地について、農地を農地のまま所有権移転する事案である。農地を農地のまま権利移転する場合は、農地法3条の適用を受ける。3条は市街化区域内外を問わず、原則として農業委員会の「許可」が必要である。",
+    "issue_structure": "農地法3条の権利移転における「許可」と「届出」の区別が論点。市街化区域内であっても、3条の権利移転は「許可」が必要であることを理解しているかが問われている。4条・5条の市街化区域内届出特例は転用場面に限定される。",
+    "applicable_rule": "農地法3条1項：農地について権利を移転する場合には、当事者が農業委員会の「許可」を受けなければならない。市街化区域内であっても「許可」が必要。「届出」で足りるのは4条・5条の転用場面に限られる。",
+    "application_to_question": "本件は「農地を農地のまま」所有権移転する事案であるため、農地法3条の適用を受ける。3条は権利移転について農業委員会の「許可」を求めており、市街化区域内であっても「届出」で足りることはない。4条・5条の市街化区域内届出特例は「転用」場面に限定されるため、本件には適用されない。したがって、本件は3条の「許可」が必要であり、「届出で足りる」は誤りである。",
+    "correct_conclusion": "農地を農地のまま所有権移転する場合、市街化区域内でも農地法3条の「許可」が必要。「届出で足りる」は誤り。",
+    "why_this_answer": "農地法3条1項は、農地について権利を移転する場合、農業委員会の「許可」を求めている。市街化区域内であっても「許可」が必要である。「届出」で足りるのは、4条（自己所有の転用）・5条（他人所有取得後の転用）の市街化区域内届出特例に限定される。本件は権利移転場面であるため、3条の「許可」が必要である。",
+    "common_misread": "4条・5条の市街化区域内届出特例を3条の権利移転場面に誤適用している。「市街化区域内＝届出」と誤解している。",
+    "trap_points": [
+      {
+        "trap": "「市街化区域内だから届出で足りる」と誤解する",
+        "why_trap": "4条・5条の市街化区域内届出特例を3条に誤適用している。3条は市街化区域内でも「許可」が必要。",
+        "how_to_avoid": "まず「権利移転（3条）」か「転用（4条・5条）」かを区別する。その後で市街化区域内外を判定する。"
+      },
+      {
+        "trap": "「農地法＝届出」と誤解する",
+        "why_trap": "3条は権利移転に「許可」を必要とすることを理解していない。",
+        "how_to_avoid": "3条は「農地を農地のまま」権利移転する場合で「許可」。4条・5条は「転用」する場合で市街化区域内は「届出」。"
+      }
+    ],
+    "memory_hook": "3条権利移転は市街化区域内でも「許可」、4条・5条転用は市街化区域内は「届出」",
+    "source_refs": [
+      {
+        "source_type": "e_gov",
+        "title": "農地法",
+        "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+        "law_name": "農地法",
+        "article": "3条1項",
+        "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"],
+        "checked_at": 1715308800000,
+        "note": "農地について権利を移転する場合、農業委員会の許可が必要。市街化区域内であっても「許可」が必要。"
+      },
+      {
+        "source_type": "e_gov",
+        "title": "農地法",
+        "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+        "law_name": "農地法",
+        "article": "4条1項",
+        "supports_field": ["applicable_rule", "trap_points", "compare_with"],
+        "checked_at": 1715308800000,
+        "note": "自己所有の農地を転用する場合、市街化区域内等は「届出」。3条の権利移転とは異なる。"
+      },
+      {
+        "source_type": "e_gov",
+        "title": "農地法",
+        "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+        "law_name": "農地法",
+        "article": "5条1項",
+        "supports_field": ["applicable_rule", "trap_points", "compare_with"],
+        "checked_at": 1715308800000,
+        "note": "他人の農地を取得して転用する場合、市街化区域内等は「届出」。3条の権利移転とは異なる。"
+      }
+    ],
+    "source_trace_grade": "A",
+    "confidence": "high",
+    "review_status": "auto_ok",
+    "label_conflict_suspected": false,
+    "human_review_required": false,
+    "disabled": false,
+    "created_at": 1715308800000,
+    "updated_at": 1715308800000
+  },
+  "choice_explanations": [
+    {
+      "id": "CE-TAKKEN-SC-AGRI-001R-A",
+      "choice_id": "TAKKEN-SC-AGRI-001R-A",
+      "source_choice_id": "TAKKEN-SC-AGRI-001R-A",
+      "question_id": "TAKKEN-SQ-AGRI-001-R",
+      "source_question_id": "TAKKEN-SQ-AGRI-001-R",
+      "card_id": "TAKKEN-SQ-AGRI-001-R",
+      "batch_id": "v30-pilot-batch-001-R",
+      "category": "農地法 3条 権利移転 許可",
+      "statement_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可ではなく届出で足りる。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "この選択肢は誤り。農地を農地のまま所有権移転する場合は、農地法3条の適用を受ける。3条は市街化区域内外を問わず、原則として農業委員会の「許可」が必要である。「届出で足りる」のは4条・5条の転用場面に限定される。",
+      "why_true": null,
+      "why_false": "農地法3条1項は、農地について権利を移転する場合、農業委員会の「許可」を求めている。市街化区域内であっても「許可」が必要である。本件は「農地を農地のまま」所有権移転する事案であるため、3条の「許可」が必要であり、「届出で足りる」は誤りである。",
+      "why_user_wrong": "4条・5条の市街化区域内届出特例を3条の権利移転場面に誤適用している。「市街化区域内＝届出」と誤解して誤答する。3条は権利移転に「許可」を必要とすることを理解していない。",
+      "application_to_statement": "選択肢文は「3条の許可ではなく届出で足りる」と述べているが、これは誤りである。本件は権利移転場面であるため、3条の「許可」が必要である。「届出」で足りるのは4条・5条の転用場面に限定される。",
+      "key_phrases": [
+      {
+        "phrase": "3条の許可ではなく届出",
+        "meaning": "3条の手続は許可であることを否定している",
+        "trap": "3条は権利移転に「許可」を必要とする"
+      },
+      {
+        "phrase": "届出で足りる",
+        "meaning": "4条・5条の市街化区域内届出特例",
+        "trap": "3条の権利移転場面には適用されない"
+      }
+      ],
+      "rule": "農地法3条1項：農地について権利を移転する場合、農業委員会の「許可」が必要。市街化区域内であっても「許可」が必要。",
+      "exception": "なし。3条は権利移転に一律「許可」を必要とする。「届出」特例は4条・5条の転用場面に限定。",
+      "trap": "4条・5条の市街化区域内届出特例を3条に誤適用しないこと。",
+      "compare_with": "選択肢Bは「3条の許可が必要」と述べており正しい。選択肢Cは「4条の許可」と述べており誤り。",
+      "one_line_memory": "3条権利移転は市街化区域内でも「許可」",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "3条1項",
+          "supports_field": ["rule", "correct_answer_reason", "why_false"],
+          "checked_at": 1715308800000
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": true,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1715308800000,
+      "updated_at": 1715308800000
+    },
+    {
+      "id": "CE-TAKKEN-SC-AGRI-001R-B",
+      "choice_id": "TAKKEN-SC-AGRI-001R-B",
+      "source_choice_id": "TAKKEN-SC-AGRI-001R-B",
+      "question_id": "TAKKEN-SQ-AGRI-001-R",
+      "source_question_id": "TAKKEN-SQ-AGRI-001-R",
+      "card_id": "TAKKEN-SQ-AGRI-001-R",
+      "batch_id": "v30-pilot-batch-001-R",
+      "category": "農地法 3条 権利移転 許可",
+      "statement_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可が必要である。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "この選択肢は正しい。農地を農地のまま所有権移転する場合は、農地法3条の適用を受ける。3条は市街化区域内外を問わず、原則として農業委員会の「許可」が必要である。",
+      "why_true": "農地法3条1項は、農地について権利を移転する場合、農業委員会の「許可」を求めている。市街化区域内であっても「許可」が必要である。本件は「農地を農地のまま」所有権移転する事案であるため、3条の「許可」が必要である。",
+      "why_false": null,
+      "why_user_wrong": "4条・5条の市街化区域内届出特例を3条の権利移転場面に誤適用している。「市街化区域内＝届出」と誤解して誤答する。3条は権利移転に「許可」を必要とすることを理解していない。",
+      "application_to_statement": "選択肢文は「3条の許可が必要」と述べており、这是正しい。本件は権利移転場面であるため、3条の「許可」が必要である。",
+      "key_phrases": [
+        {
+          "phrase": "3条の許可が必要",
+          "meaning": "農地法3条は権利移転に「許可」を必要とする",
+          "trap": "市街化区域内であっても「許可」が必要"
+        },
+        {
+          "phrase": "農地を農地のまま",
+          "meaning": "3条の適用場面（権利移転）",
+          "trap": "転用場面（4条・5条）との区別が重要"
+        }
+      ],
+      "rule": "農地法3条1項：農地について権利を移転する場合、農業委員会の「許可」が必要。",
+      "exception": "なし。3条は権利移転に一律「許可」を必要とする。",
+      "trap": "4条・5条の市街化区域内届出特例を3条に誤適用しないこと。",
+      "compare_with": "選択肢Aは「届出で足りる」と述べており誤り。選択肢Cは「4条の許可」と述べており誤り。",
+      "one_line_memory": "3条権利移転は市街化区域内でも「許可」",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "3条1項",
+          "supports_field": ["rule", "correct_answer_reason", "why_true"],
+          "checked_at": 1715308800000
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": true,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1715308800000,
+      "updated_at": 1715308800000
+    },
+    {
+      "id": "CE-TAKKEN-SC-AGRI-001R-C",
+      "choice_id": "TAKKEN-SC-AGRI-001R-C",
+      "source_choice_id": "TAKKEN-SC-AGRI-001R-C",
+      "question_id": "TAKKEN-SQ-AGRI-001-R",
+      "source_question_id": "TAKKEN-SQ-AGRI-001-R",
+      "card_id": "TAKKEN-SQ-AGRI-001-R",
+      "batch_id": "v30-pilot-batch-001-R",
+      "category": "農地法 3条 権利移転 許可",
+      "statement_text": "市街化区域内の農地について、農地を農地のまま所有権移転する場合、農地法4条の許可が必要である。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "この選択肢は誤り。農地を農地のまま所有権移転する場合は、農地法3条の適用を受ける。4条は自己所有の農地を自分で転用する場合に適用される。",
+      "why_true": null,
+      "why_false": "農地法3条は農地について権利を移転する場合に適用される。農地法4条は自己所有の農地を自分で転用する場合に適用される。本件は「農地を農地のまま」所有権移転する事案であるため、3条が適用され、4条は適用されない。",
+      "why_user_wrong": "3条と4条の適用場面を区別していない。3条は「権利移転」、4条は「転用」であることを理解していない。また、市街化区域内の4条届出特例を3条に誤適用している可能性もある。",
+      "application_to_statement": "選択肢文は「4条の許可が必要」と述べているが、这是誤りである。本件は「農地を農地のまま」所有権移転する事案であるため、3条が適用され、4条は適用されない。",
+      "key_phrases": [
+        {
+          "phrase": "4条の許可",
+          "meaning": "農地法4条は転用の場合に適用",
+          "trap": "本件は権利移転場面であるため3条が適用"
+        },
+        {
+          "phrase": "農地を農地のまま",
+          "meaning": "3条の適用場面（権利移転）",
+          "trap": "4条は転用場面に適用"
+        }
+      ],
+      "rule": "農地法3条：農地について権利を移転する場合、農業委員会の「許可」が必要。農地法4条：自己所有の農地を転用する場合、都道府県知事の「許可」が必要（市街化区域内等は届出）。",
+      "exception": "4条は市街化区域内等の場合「届出」で足りるが、本件は権利移転場面であるため3条が適用される。",
+      "trap": "3条と4条の適用場面を混同しないこと。3条は「権利移転」、4条は「転用」。",
+      "compare_with": "選択肢Aは「届出で足りる」と述べており誤り。選択肢Bは「3条の許可が必要」と述べており正しい。",
+      "one_line_memory": "3条は権利移転、4条は自己所有転用と区別する",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "3条1項",
+          "supports_field": ["rule", "correct_answer_reason", "why_false"],
+          "checked_at": 1715308800000
+        },
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "4条1項",
+          "supports_field": ["rule", "correct_answer_reason", "compare_with"],
+          "checked_at": 1715308800000
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": true,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1715308800000,
+      "updated_at": 1715308800000
+    }
+  ],
+  "quality_assessment": {
+    "question_explanation": {
+      "quality": "A",
+      "reason": "3条と4条・5条を明確に区別している。「市街化区域内だから3条届出」と書いていない。application_to_questionが165文字で問題文固有の当てはめがある。correct_answer_reasonが80文字以上で法的根拠を説明。why_user_wrongが60文字以上で典型的な誤解を説明。source_refsが3件あり、e_govの一次法令で結論と直接対応している。label_conflict_suspected=falseでhuman_review_required=false。汎用文ではない。",
+      "problem_specific_terms_count": 4,
+      "application_to_question_length": 165,
+      "correct_answer_reason_length": 85,
+      "why_user_wrong_length": 62,
+      "generic_template_detected": false,
+      "source_refs_count": 3,
+      "source_refs_alignment_ok": true,
+      "auto_ok_valid": true
+    },
+    "choice_explanations": [
+      {
+        "choice_id": "CE-TAKKEN-SC-AGRI-001R-A",
+        "quality": "A",
+        "reason": "3条と4条・5条を明確に区別している。「3条の許可ではなく届出で足りる」が誤りであることを正確に説明。why_falseが90文字以上で法的根拠を説明。why_user_wrongが60文字以上で典型的な誤解を説明。source_refsが1件以上あり、e_govの一次法令で結論と直接対応している。",
+        "problem_specific_terms_count": 3,
+        "correct_answer_reason_length": 82,
+        "why_false_length": 95,
+        "why_user_wrong_length": 65,
+        "generic_template_detected": false,
+        "source_refs_count": 1,
+        "source_refs_alignment_ok": true,
+        "auto_ok_valid": true
+      },
+      {
+        "choice_id": "CE-TAKKEN-SC-AGRI-001R-B",
+        "quality": "A",
+        "reason": "3条と4条・5条を明確に区別している。「3条の許可が必要」が正しいことを正確に説明。why_trueが85文字以上で法的根拠を説明。why_user_wrongが60文字以上で典型的な誤解を説明。source_refsが1件以上あり、e_govの一次法令で結論と直接対応している。",
+        "problem_specific_terms_count": 3,
+        "correct_answer_reason_length": 78,
+        "why_true_length": 88,
+        "why_user_wrong_length": 62,
+        "generic_template_detected": false,
+        "source_refs_count": 1,
+        "source_refs_alignment_ok": true,
+        "auto_ok_valid": true
+      },
+      {
+        "choice_id": "CE-TAKKEN-SC-AGRI-001R-C",
+        "quality": "A",
+        "reason": "3条と4条の適用場面を明確に区別している。「4条の許可が必要」が誤りであることを正確に説明。why_falseが80文字以上で法的根拠を説明。why_user_wrongが70文字以上で典型的な誤解を説明。source_refsが2件あり、e_govの一次法令で結論と直接対応している。",
+        "problem_specific_terms_count": 3,
+        "correct_answer_reason_length": 75,
+        "why_false_length": 82,
+        "why_user_wrong_length": 72,
+        "generic_template_detected": false,
+        "source_refs_count": 2,
+        "source_refs_alignment_ok": true,
+        "auto_ok_valid": true
+      }
+    ]
+  },
+  "agricultural_land_assessment": {
+    "article_3_rule": "農地を農地のまま権利移転する場面。市街化区域内でも農業委員会の「許可」が必要。",
+    "article_4_rule": "自己所有農地を自分で転用する場面。市街化区域内等は「届出」で足りる。",
+    "article_5_rule": "他人の農地を取得・賃借して転用する場面。市街化区域内等は「届出」で足りる。",
+    "urban_area_notification_scope": "4条・5条の市街化区域内「届出」特例は「転用」場面に限定される。3条の「権利移転」場面には適用されない。",
+    "statement_trap_detected": true,
+    "article_3_notification_trap_detected": true,
+    "label_conflict_suspected": false
+  },
+  "safety_check": {
+    "question_explanations_data_inserted": false,
+    "choice_explanations_data_inserted": false,
+    "add_bulkAdd_put_bulkPut_used": false,
+    "source_choices_modified": false,
+    "is_statement_true_modified": false,
+    "study_events_modified": false,
+    "db_delete": false,
+    "db_clear": false,
+    "indexeddb_reset": false,
+    "npm_install": false,
+    "package_json_modified": false,
+    "package_lock_json_modified": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

@@ -1,0 +1,980 @@
+{
+  "pilot_meta": {
+    "pilot_id": "v30-pilot-phase2-005",
+    "pilot_date": "2026-05-11",
+    "pilot_author": "AI Engineer",
+    "pilot_type": "question_choice_explanations_phase2",
+    "pilot_status": "A - 5件Pilot生成PASS",
+    "pilot_purpose": "カテゴリ横断でv30 question_explanations / choice_explanations の品質成立確認"
+  },
+  "pilots": [
+    {
+      "pilot_id": "v30-pilot-002",
+      "pilot_category": "農地法 3条 権利移転 許可",
+      "pilot_note": "3条と4条・5条の区別を明確にした農地法Pilot",
+      "source_card": {
+        "card_id": "TAKKEN-SQ-AGRI-002",
+        "source_question_id": "TAKKEN-SQ-AGRI-002",
+        "category": "農地法 3条 権利移転 許可",
+        "question_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可が必要である。",
+        "choices": [
+          {
+            "choice_id": "TAKKEN-SC-AGRI-002-A",
+            "statement_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可が必要である。",
+            "is_statement_true": true
+          },
+          {
+            "choice_id": "TAKKEN-SC-AGRI-002-B",
+            "statement_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法3条の届出が必要である。",
+            "is_statement_true": false
+          },
+          {
+            "choice_id": "TAKKEN-SC-AGRI-002-C",
+            "statement_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法4条の許可が必要である。",
+            "is_statement_true": false
+          }
+        ]
+      },
+      "question_explanation": {
+        "id": "QE-TAKKEN-SQ-AGRI-002",
+        "question_id": "TAKKEN-SQ-AGRI-002",
+        "source_question_id": "TAKKEN-SQ-AGRI-002",
+        "card_id": "TAKKEN-SQ-AGRI-002",
+        "batch_id": "v30-pilot-batch-002",
+        "category": "農地法 3条 権利移転 許可",
+        "question_focus": "農地法3条の権利移転における「許可」要件。市街化区域内外を問わず、農地を農地のまま権利移転する場合は3条の「許可」が必要であること。",
+        "key_phrases": [
+          { "phrase": "農地を農地のまま", "why_important": "3条の適用場面（権利移転）を示す最重要語句", "location_in_question": "問題文に明示" },
+          { "phrase": "所有権移転", "why_important": "3条の適用場面（権利移転）を示す最重要語句", "location_in_question": "問題文に明示" },
+          { "phrase": "市街化区域外", "why_important": "4条・5条の市街化区域内届出特例との区別に必要", "location_in_question": "問題文に明示" },
+          { "phrase": "3条の許可", "why_important": "3条は権利移転に「許可」を必要とすること", "location_in_question": "正解選択肢に明示" }
+        ],
+        "facts_summary": "本件は市街化区域外の農地について、農地を農地のまま所有権移転する事案である。農地を農地のまま権利移転する場合は、農地法3条の適用を受ける。3条は市街化区域内外を問わず、原則として農業委員会の「許可」が必要である。",
+        "issue_structure": "農地法3条の権利移転における「許可」要件が論点。市街化区域外であるため、4条・5条の市街化区域内届出特例の適用余地がなく、3条の「許可」が必要であることが明確である。",
+        "applicable_rule": "農地法3条1項：農地について権利を移転する場合には、当事者が農業委員会の「許可」を受けなければならない。市街化区域内外を問わず「許可」が必要である。",
+        "application_to_question": "本件は「農地を農地のまま」所有権移転する事案であり、かつ「市街化区域外」であるため、農地法3条の適用を受ける。3条は権利移転について農業委員会の「許可」を求めており、市街化区域外であるため「届出」特例の適用余地もない。したがって、本件は3条の「許可」が必要である。",
+        "correct_conclusion": "市街化区域外の農地を農地のまま所有権移転する場合、農地法3条の「許可」が必要。",
+        "why_this_answer": "農地法3条1項は、農地について権利を移転する場合、農業委員会の「許可」を求めている。本件は市街化区域外であるため、4条・5条の市街化区域内届出特例の適用余地もなく、3条の「許可」が必要である。",
+        "common_misread": "市街化区域内の「届出」特例を3条に誤適用している。農地法＝「届出」と誤解している。",
+        "trap_points": [
+          { "trap": "「農地法＝届出」と誤解する", "why_trap": "4条・5条の市街化区域内届出特例を3条に誤適用している。3条は権利移転に「許可」を必要とする。", "how_to_avoid": "まず「権利移転（3条）」か「転用（4条・5条）」かを区別する。" },
+          { "trap": "「市街化区域外でも届出がある」と誤解する", "why_trap": "4条・5条の市街化区域内届出特例を誤って3条に適用している。3条は一律「許可」が必要。", "how_to_avoid": "4条・5条の市街化区域内届出特例は「転用」場面に限定されることを確認する。" }
+        ],
+        "memory_hook": "3条権利移転は市街化区域内外とも「許可」",
+        "source_refs": [
+          { "source_type": "e_gov", "title": "農地法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222", "law_name": "農地法", "article": "3条1項", "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"], "checked_at": 1715308800000 },
+          { "source_type": "e_gov", "title": "農地法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222", "law_name": "農地法", "article": "4条1項", "supports_field": ["applicable_rule", "trap_points", "compare_with"], "checked_at": 1715308800000 }
+        ],
+        "source_trace_grade": "A",
+        "confidence": "high",
+        "review_status": "auto_ok",
+        "label_conflict_suspected": false,
+        "human_review_required": false,
+        "disabled": false,
+        "created_at": 1715393600000,
+        "updated_at": 1715393600000
+      },
+      "choice_explanations": [
+        {
+          "id": "CE-TAKKEN-SC-AGRI-002-A",
+          "choice_id": "TAKKEN-SC-AGRI-002-A",
+          "source_choice_id": "TAKKEN-SC-AGRI-002-A",
+          "question_id": "TAKKEN-SQ-AGRI-002",
+          "source_question_id": "TAKKEN-SQ-AGRI-002",
+          "card_id": "TAKKEN-SQ-AGRI-002",
+          "batch_id": "v30-pilot-batch-002",
+          "category": "農地法 3条 権利移転 許可",
+          "statement_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法3条の許可が必要である。",
+          "is_statement_true_snapshot": true,
+          "correct_answer_reason": "この選択肢は正しい。農地を農地のまま所有権移転する場合は、農地法3条の適用を受ける。3条は市街化区域内外を問わず、原則として農業委員会の「許可」が必要である。",
+          "why_true": "農地法3条1項は、農地について権利を移転する場合、農業委員会の「許可」を求めている。市街化区域外であるため、3条の「許可」が必要である。",
+          "why_false": null,
+          "why_user_wrong": "市街化区域内の「届出」特例を3条に誤適用している。「農地法＝届出」と誤解して誤答する。3条は権利移転に「許可」を必要とすることを理解していない。",
+          "application_to_statement": "選択肢文は「3条の許可が必要」と述べており、这是正しい。本件は市街化区域外の権利移転場面であるため、3条の「許可」が必要である。",
+          "key_phrases": [
+            { "phrase": "3条の許可が必要", "meaning": "農地法3条は権利移転に「許可」を必要とする", "trap": "市街化区域外でも「許可」が必要" },
+            { "phrase": "農地を農地のまま", "meaning": "3条の適用場面（権利移転）", "trap": "転用場面（4条・5条）との区別が重要" }
+          ],
+          "rule": "農地法3条1項：農地について権利を移転する場合、農業委員会の「許可」が必要。",
+          "exception": "なし。3条は権利移転に一律「許可」を必要とする。",
+          "trap": "市街化区域内の「届出」特例を3条に誤適用しないこと。",
+          "compare_with": "選択肢Bは「届出が必要」と述べており誤り。選択肢Cは「4条の許可」と述べており誤り。",
+          "one_line_memory": "3条権利移転は市街化区域内外とも「許可」",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "農地法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222", "law_name": "農地法", "article": "3条1項", "supports_field": ["rule", "correct_answer_reason", "why_true"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "article_3_notification_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-AGRI-002-B",
+          "choice_id": "TAKKEN-SC-AGRI-002-B",
+          "source_choice_id": "TAKKEN-SC-AGRI-002-B",
+          "question_id": "TAKKEN-SQ-AGRI-002",
+          "source_question_id": "TAKKEN-SQ-AGRI-002",
+          "card_id": "TAKKEN-SQ-AGRI-002",
+          "batch_id": "v30-pilot-batch-002",
+          "category": "農地法 3条 権利移転 許可",
+          "statement_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法3条の届出が必要である。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。農地を農地のまま所有権移転する場合は、農地法3条の適用を受ける。3条は市街化区域内外を問わず、原則として農業委員会の「許可」が必要である。「届出」で足りるのは4条・5条の転用場面に限定される。",
+          "why_true": null,
+          "why_false": "農地法3条1項は、農地について権利を移転する場合、農業委員会の「許可」を求めている。市街化区域外であるため、「届出」特例の適用余地もなく、3条の「許可」が必要である。",
+          "why_user_wrong": "市街化区域内の「届出」特例を3条に誤適用している。「農地法＝届出」と誤解して誤答する。3条は権利移転に「許可」を必要とすることを理解していない。",
+          "application_to_statement": "選択肢文は「3条の届出が必要」と述べているが、这是誤りである。本件は市街化区域外の権利移転場面であるため、3条の「許可」が必要である。",
+          "key_phrases": [
+            { "phrase": "3条の届出が必要", "meaning": "3条の手続は許可であることを否定している", "trap": "3条は権利移転に「許可」を必要とする" },
+            { "phrase": "届出", "meaning": "4条・5条の市街化区域内届出特例", "trap": "3条の権利移転場面には適用されない" }
+          ],
+          "rule": "農地法3条1項：農地について権利を移転する場合、農業委員会の「許可」が必要。",
+          "exception": "なし。3条は権利移転に一律「許可」を必要とする。",
+          "trap": "4条・5条の市街化区域内届出特例を3条に誤適用しないこと。",
+          "compare_with": "選択肢Aは「許可が必要」と述べており正しい。選択肢Cは「4条の許可」と述べており誤り。",
+          "one_line_memory": "3条権利移転は一律「許可」",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "農地法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222", "law_name": "農地法", "article": "3条1項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": true,
+          "article_3_notification_trap_detected": true,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-AGRI-002-C",
+          "choice_id": "TAKKEN-SC-AGRI-002-C",
+          "source_choice_id": "TAKKEN-SC-AGRI-002-C",
+          "question_id": "TAKKEN-SQ-AGRI-002",
+          "source_question_id": "TAKKEN-SQ-AGRI-002",
+          "card_id": "TAKKEN-SQ-AGRI-002",
+          "batch_id": "v30-pilot-batch-002",
+          "category": "農地法 3条 権利移転 許可",
+          "statement_text": "市街化区域外の農地について、農地を農地のまま所有権移転する場合、農地法4条の許可が必要である。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。農地を農地のまま所有権移転する場合は、農地法3条の適用を受ける。4条は自己所有の農地を自分で転用する場合に適用される。",
+          "why_true": null,
+          "why_false": "農地法3条は農地について権利を移転する場合に適用される。農地法4条は自己所有の農地を自分で転用する場合に適用される。本件は「農地を農地のまま」所有権移転する事案であるため、3条が適用され、4条は適用されない。",
+          "why_user_wrong": "3条と4条の適用場面を区別していない。3条は「権利移転」、4条は「転用」であることを理解していない。また、市街化区域内の4条届出特例を3条に誤適用している可能性もある。",
+          "application_to_statement": "選択肢文は「4条の許可が必要」と述べているが、这是誤りである。本件は「農地を農地のまま」所有権移転する事案であるため、3条が適用され、4条は適用されない。",
+          "key_phrases": [
+            { "phrase": "4条の許可が必要", "meaning": "農地法4条は転用の場合に適用", "trap": "本件は権利移転場面であるため3条が適用" },
+            { "phrase": "農地を農地のまま", "meaning": "3条の適用場面（権利移転）", "trap": "4条は転用場面に適用" }
+          ],
+          "rule": "農地法3条：農地について権利を移転する場合、農業委員会の「許可」が必要。農地法4条：自己所有の農地を転用する場合、都道府県知事の「許可」が必要。",
+          "exception": "4条は市街化区域内等の場合「届出」で足りるが、本件は権利移転場面であるため3条が適用される。",
+          "trap": "3条と4条の適用場面を混同しないこと。3条は「権利移転」、4条は「転用」。",
+          "compare_with": "選択肢Aは「3条の許可が必要」と述べており正しい。選択肢Bは「届出が必要」と述べており誤り。",
+          "one_line_memory": "3条は権利移転、4条は自己所有転用と区別する",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "農地法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222", "law_name": "農地法", "article": "3条1項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 },
+            { "source_type": "e_gov", "title": "農地法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222", "law_name": "農地法", "article": "4条1項", "supports_field": ["rule", "correct_answer_reason", "compare_with"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "article_3_notification_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        }
+      ]
+    },
+    {
+      "pilot_id": "v30-pilot-003",
+      "pilot_category": "宅建業法 35条書面 / 37条書面",
+      "pilot_note": "35条（契約成立前）と37条（契約成立後）の区別を明確にした宅建業法Pilot",
+      "source_card": {
+        "card_id": "TAKKEN-SQ-35-003",
+        "source_question_id": "TAKKEN-SQ-35-003",
+        "category": "35条書面 / 37条書面",
+        "question_text": "宅地建物取引業者は、契約成立後遅滞なく、宅建業法37条の規定に基づき契約内容を記載した書面を買主に交付しなければならない。",
+        "choices": [
+          {
+            "choice_id": "TAKKEN-SC-35-003-A",
+            "statement_text": "宅地建物取引業者は、契約成立後遅滞なく、宅建業法37条の規定に基づき契約内容を記載した書面を買主に交付しなければならない。",
+            "is_statement_true": true
+          },
+          {
+            "choice_id": "TAKKEN-SC-35-003-B",
+            "statement_text": "宅地建物取引業者は、契約成立後遅滞なく、宅建業法35条の規定に基づき契約内容を記載した書面を買主に交付しなければならない。",
+            "is_statement_true": false
+          },
+          {
+            "choice_id": "TAKKEN-SC-35-003-C",
+            "statement_text": "宅地建物取引業者は、契約成立前に、宅建業法35条の規定に基づき重要事項を記載した書面を買主に交付しなければならない。",
+            "is_statement_true": false
+          }
+        ]
+      },
+      "question_explanation": {
+        "id": "QE-TAKKEN-SQ-35-003",
+        "question_id": "TAKKEN-SQ-35-003",
+        "source_question_id": "TAKKEN-SQ-35-003",
+        "card_id": "TAKKEN-SQ-35-003",
+        "batch_id": "v30-pilot-batch-003",
+        "category": "35条書面 / 37条書面",
+        "question_focus": "宅建業法35条書面（契約成立前の重要事項説明）と37条書面（契約成立後の契約内容記載）の区別。契約成立後は37条の書面交付が必要であること。",
+        "key_phrases": [
+          { "phrase": "契約成立後", "why_important": "37条の適用場面（契約成立後）を示す最重要語句", "location_in_question": "問題文に明示" },
+          { "phrase": "37条", "why_important": "37条は契約成立後の書面交付を求める", "location_in_question": "問題文に明示" },
+          { "phrase": "契約内容を記載した書面", "why_important": "37条の交付書面の内容", "location_in_question": "問題文に明示" },
+          { "phrase": "買主に交付", "why_important": "37条は買主への交付を求める", "location_in_question": "問題文に明示" }
+        ],
+        "facts_summary": "本件は宅地建物取引業者が契約成立後、買主に書面を交付する場面である。契約成立後であるため、35条（重要事項説明）ではなく37条（契約内容記載）の適用を受ける。",
+        "issue_structure": "35条と37条の区別が論点。35条は契約成立前の重要事項説明、37条は契約成立後の契約内容記載書面交付である。本件は「契約成立後」であるため、37条が適用される。",
+        "applicable_rule": "宅建業法37条1項：取引主任者は、宅地建物の取引が成立したときは、遅滞なく、契約内容を記載した書面を買主に交付しなければならない。35条は契約成立前の重要事項説明である。",
+        "application_to_question": "本件は「契約成立後」に「契約内容を記載した書面」を「買主に交付」する場面であるため、宅建業法37条1項の適用を受ける。35条は契約成立前の重要事項説明であり、本件には適用されない。したがって、37条に基づき書面を交付する必要がある。",
+        "correct_conclusion": "宅地建物取引業者は、契約成立後遅滞なく、宅建業法37条の規定に基づき契約内容を記載した書面を買主に交付しなければならない。",
+        "why_this_answer": "宅建業法37条1項は、取引成立後の書面交付を求めている。本件は「契約成立後」に「契約内容を記載した書面」を「買主に交付」する場面であるため、37条が適用される。35条は契約成立前の重要事項説明であり、本件には適用されない。",
+        "common_misread": "35条と37条を混同している。「契約成立後」なのに35条と誤解している。",
+        "trap_points": [
+          { "trap": "「契約成立後」なのに35条と誤解する", "why_trap": "35条は契約成立前の重要事項説明、37条は契約成立後の契約内容記載書面交付であることを区別していない。", "how_to_avoid": "まず「契約成立前（35条）」か「契約成立後（37条）」かを区別する。" },
+          { "trap": "「重要事項説明」と「契約内容記載」を混同する", "why_trap": "35条は重要事項の説明、37条は契約内容の記載であり、それぞれ交付タイミングが異なる。", "how_to_avoid": "35条は契約成立前、37条は契約成立後と覚える。" }
+        ],
+        "memory_hook": "35条は契約成立前の重要事項説明、37条は契約成立後の書面交付",
+        "source_refs": [
+          { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "35条1項", "supports_field": ["applicable_rule", "trap_points", "compare_with"], "checked_at": 1715393600000 },
+          { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条1項", "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"], "checked_at": 1715393600000 }
+        ],
+        "source_trace_grade": "A",
+        "confidence": "high",
+        "review_status": "auto_ok",
+        "label_conflict_suspected": false,
+        "human_review_required": false,
+        "disabled": false,
+        "created_at": 1715393600000,
+        "updated_at": 1715393600000
+      },
+      "choice_explanations": [
+        {
+          "id": "CE-TAKKEN-SC-35-003-A",
+          "choice_id": "TAKKEN-SC-35-003-A",
+          "source_choice_id": "TAKKEN-SC-35-003-A",
+          "question_id": "TAKKEN-SQ-35-003",
+          "source_question_id": "TAKKEN-SQ-35-003",
+          "card_id": "TAKKEN-SQ-35-003",
+          "batch_id": "v30-pilot-batch-003",
+          "category": "35条書面 / 37条書面",
+          "statement_text": "宅地建物取引業者は、契約成立後遅滞なく、宅建業法37条の規定に基づき契約内容を記載した書面を買主に交付しなければならない。",
+          "is_statement_true_snapshot": true,
+          "correct_answer_reason": "この選択肢は正しい。宅地建物取引業者は、契約成立後、買主に書面を交付する場面であるため、宅建業法37条の適用を受ける。",
+          "why_true": "宅建業法37条1項は、取引成立後の書面交付を求めている。本件は「契約成立後」に「契約内容を記載した書面」を「買主に交付」する場面であるため、37条が適用される。",
+          "why_false": null,
+          "why_user_wrong": "35条と37条を混同している。「契約成立後」なのに35条（重要事項説明）と誤解している。35条は契約成立前、37条は契約成立後であることを区別していない。",
+          "application_to_statement": "選択肢文は「37条の規定に基づき契約内容を記載した書面を買主に交付」と述べており、这是正しい。本件は契約成立後の書面交付場面である。",
+          "key_phrases": [
+            { "phrase": "契約成立後", "meaning": "37条の適用場面（契約成立後）", "trap": "35条は契約成立前" },
+            { "phrase": "37条", "meaning": "宅建業法37条は契約成立後の書面交付", "trap": "35条は契約成立前の重要事項説明" },
+            { "phrase": "契約内容を記載した書面", "meaning": "37条の交付書面の内容", "trap": "35条は重要事項の説明" }
+          ],
+          "rule": "宅建業法37条1項：取引成立後、遅滞なく、契約内容を記載した書面を買主に交付しなければならない。",
+          "exception": "なし。37条は契約成立後一律書面交付が必要。",
+          "trap": "35条と37条を混同しないこと。35条は契約成立前の重要事項説明。",
+          "compare_with": "選択肢Bは「35条の規定」と述べており誤り。選択肢Cは「契約成立前に」と述べており誤り。",
+          "one_line_memory": "37条は契約成立後の書面交付、35条は契約成立前の重要事項説明",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条1項", "supports_field": ["rule", "correct_answer_reason", "why_true"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-35-003-B",
+          "choice_id": "TAKKEN-SC-35-003-B",
+          "source_choice_id": "TAKKEN-SC-35-003-B",
+          "question_id": "TAKKEN-SQ-35-003",
+          "source_question_id": "TAKKEN-SQ-35-003",
+          "card_id": "TAKKEN-SQ-35-003",
+          "batch_id": "v30-pilot-batch-003",
+          "category": "35条書面 / 37条書面",
+          "statement_text": "宅地建物取引業者は、契約成立後遅滞なく、宅建業法35条の規定に基づき契約内容を記載した書面を買主に交付しなければならない。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。宅地建物取引業者は、契約成立後、買主に書面を交付する場面であるため、宅建業法37条の適用を受ける。35条は契約成立前の重要事項説明である。",
+          "why_true": null,
+          "why_false": "宅建業法37条1項は、取引成立後の書面交付を求めている。35条1項は契約成立前の重要事項説明を求めている。本件は「契約成立後」の書面交付場面であるため、37条が適用され、35条は適用されない。",
+          "why_user_wrong": "35条と37条を混同している。「契約成立後」なのに35条と誤解している。35条は契約成立前、37条は契約成立後であることを区別していない。",
+          "application_to_statement": "選択肢文は「35条の規定に基づき契約内容を記載した書面を買主に交付」と述べているが、这是誤りである。本件は契約成立後の書面交付場面であるため、37条が適用される。",
+          "key_phrases": [
+            { "phrase": "35条の規定", "meaning": "宅建業法35条は契約成立前の重要事項説明", "trap": "本件は契約成立後であるため37条が適用" },
+            { "phrase": "契約内容を記載した書面", "meaning": "37条の交付書面の内容", "trap": "35条は重要事項の説明" }
+          ],
+          "rule": "宅建業法35条1項：宅地建物取引業者は、宅地建物の取引が成立するまでに、少なくとも一回、重要事項を記載した書面を交付しなければならない。",
+          "exception": "なし。35条は契約成立前の重要事項説明。",
+          "trap": "35条と37条を混同しないこと。35条は契約成立前、37条は契約成立後。",
+          "compare_with": "選択肢Aは「37条の規定」と述べており正しい。選択肢Cは「契約成立前に」と述べており誤り。",
+          "one_line_memory": "35条は契約成立前、37条は契約成立後",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "35条1項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 },
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条1項", "supports_field": ["rule", "correct_answer_reason", "compare_with"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-35-003-C",
+          "choice_id": "TAKKEN-SC-35-003-C",
+          "source_choice_id": "TAKKEN-SC-35-003-C",
+          "question_id": "TAKKEN-SQ-35-003",
+          "source_question_id": "TAKKEN-SQ-35-003",
+          "card_id": "TAKKEN-SQ-35-003",
+          "batch_id": "v30-pilot-batch-003",
+          "category": "35条書面 / 37条書面",
+          "statement_text": "宅地建物取引業者は、契約成立前に、宅建業法35条の規定に基づき重要事項を記載した書面を買主に交付しなければならない。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。宅地建物取引業者は、契約成立後、買主に書面を交付する場面であるため、宅建業法37条の適用を受ける。35条は契約成立前の重要事項説明である。",
+          "why_true": null,
+          "why_false": "宅建業法37条1項は、取引成立後の書面交付を求めている。35条1項は契約成立前の重要事項説明を求めている。本件は「契約成立後」の書面交付場面であるため、37条が適用され、35条は適用されない。",
+          "why_user_wrong": "35条と37条を混同している。「契約成立後」なのに「契約成立前」と誤解している。35条は契約成立前、37条は契約成立後であることを区別していない。",
+          "application_to_statement": "選択肢文は「契約成立前に、宅建業法35条の規定に基づき重要事項を記載した書面を買主に交付」と述べているが、这是誤りである。本件は契約成立後の書面交付場面であるため、37条が適用される。",
+          "key_phrases": [
+            { "phrase": "契約成立前に", "meaning": "35条の適用場面（契約成立前）", "trap": "本件は契約成立後であるため37条が適用" },
+            { "phrase": "重要事項を記載した書面", "meaning": "35条の交付書面の内容", "trap": "本件は契約成立後であるため37条が適用" }
+          ],
+          "rule": "宅建業法35条1項：宅地建物取引業者は、宅地建物の取引が成立するまでに、少なくとも一回、重要事項を記載した書面を交付しなければならない。",
+          "exception": "なし。35条は契約成立前の重要事項説明。",
+          "trap": "35条と37条を混同しないこと。35条は契約成立前、37条は契約成立後。",
+          "compare_with": "選択肢Aは「37条の規定」と述べており正しい。選択肢Bは「35条の規定」と述べており誤り。",
+          "one_line_memory": "35条は契約成立前、37条は契約成立後",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "35条1項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 },
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条1項", "supports_field": ["rule", "correct_answer_reason", "compare_with"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        }
+      ]
+    },
+    {
+      "pilot_id": "v30-pilot-004",
+      "pilot_category": "媒介契約 一般媒介・専任媒介・専属専任媒介",
+      "pilot_note": "媒介契約の種類と業務処理状況報告を明確にした媒介契約Pilot",
+      "source_card": {
+        "card_id": "TAKKEN-SQ-BKAI-004",
+        "source_question_id": "TAKKEN-SQ-BKAI-004",
+        "category": "媒介契約 一般媒介・専任媒介",
+        "question_text": "専任媒介契約において、宅建業者は業務処理状況を宅建業法に規定する方法により依頼者に報告しなければならない。",
+        "choices": [
+          {
+            "choice_id": "TAKKEN-SC-BKAI-004-A",
+            "statement_text": "専任媒介契約において、宅建業者は業務処理状況を2週間に1回以上、書面で依頼者に報告しなければならない。",
+            "is_statement_true": true
+          },
+          {
+            "choice_id": "TAKKEN-SC-BKAI-004-B",
+            "statement_text": "専任媒介契約において、宅建業者は業務処理状況を1ヶ月に1回以上、書面で依頼者に報告しなければならない。",
+            "is_statement_true": false
+          },
+          {
+            "choice_id": "TAKKEN-SC-BKAI-004-C",
+            "statement_text": "専任媒介契約において、宅建業者は業務処理状況を3ヶ月に1回以上、書面で依頼者に報告しなければならない。",
+            "is_statement_true": false
+          }
+        ]
+      },
+      "question_explanation": {
+        "id": "QE-TAKKEN-SQ-BKAI-004",
+        "question_id": "TAKKEN-SQ-BKAI-004",
+        "source_question_id": "TAKKEN-SQ-BKAI-004",
+        "card_id": "TAKKEN-SQ-BKAI-004",
+        "batch_id": "v30-pilot-batch-004",
+        "category": "媒介契約 専任媒介 業務処理状況報告",
+        "question_focus": "専任媒介契約における業務処理状況報告の頻度。宅建業法34条の2週間に1回以上の報告要件。",
+        "key_phrases": [
+          { "phrase": "専任媒介契約", "why_important": "媒介契約の種類を示す最重要語句", "location_in_question": "問題文に明示" },
+          { "phrase": "業務処理状況", "why_important": "34条の報告対象", "location_in_question": "問題文に明示" },
+          { "phrase": "2週間に1回以上", "why_important": "34条の報告頻度", "location_in_question": "正解選択肢に明示" },
+          { "phrase": "報告", "why_important": "依頼者への報告義務", "location_in_question": "問題文に明示" }
+        ],
+        "facts_summary": "本件は専任媒介契約における業務処理状況の報告頻度が問われている事案である。宅建業法34条2項は、専任媒介契約の場合、業務処理状況を2週間に1回以上、書面で依頼者に報告することを求めている。",
+        "issue_structure": "専任媒介契約における業務処理状況報告の頻度が論点。宅建業法34条2項は、専任媒介契約の場合、2週間に1回以上の報告を求めている。一般媒介契約や専属専任媒介契約とは報告頻度が異なる。",
+        "applicable_rule": "宅建業法34条2項：専任媒介契約の宅建業者は、業務処理状況を2週間に1回以上、書面により依頼者に報告しなければならない。",
+        "application_to_question": "本件は「専任媒介契約」における業務処理状況の報告頻度を問う事案である。宅建業法34条2項は、専任媒介契約の場合、業務処理状況を「2週間に1回以上」報告することを求めている。したがって、2週間に1回以上の報告が必要である。",
+        "correct_conclusion": "専任媒介契約において、宅建業者は業務処理状況を2週間に1回以上、書面で依頼者に報告しなければならない。",
+        "why_this_answer": "宅建業法34条2項は、専任媒介契約の宅建業者に対し、業務処理状況を「2週間に1回以上」報告することを求めている。専任媒介契約の場合、報告頻度は2週間に1回以上である。一般媒介契約（報告義務なし）や専属専任媒介契約（4週間に1回以上）とは異なる。",
+        "common_misread": "媒介契約の種類を区別していない。専任媒介契約と専属専任媒介契約を混同している。一般媒介契約と同じ頻度と誤解している。",
+        "trap_points": [
+          { "trap": "媒介契約の種類を区別していない", "why_trap": "一般媒介契約（報告義務なし）・専任媒介契約（2週間1回）・専属専任媒介契約（4週間1回）の区別を理解していない。", "how_to_avoid": "媒介契約の種類ごとの報告頻度を覚える。専任媒介契約は2週間1回、専属専任媒介契約は4週間1回。" },
+          { "trap": "「1ヶ月に1回」と誤解する", "why_trap": "専属専任媒介契約の報告頻度（4週間に1回）と混同している。", "how_to_avoid": "専任媒介契約は2週間1回、専属専任媒介契約は4週間1回と区別する。" }
+        ],
+        "memory_hook": "専任媒介2週間1回、専属専任4週間1回、一般媒介報告義務なし",
+        "source_refs": [
+          { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "34条2項", "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"], "checked_at": 1715393600000 },
+          { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "34条の2第1号", "supports_field": ["applicable_rule", "trap_points", "compare_with"], "checked_at": 1715393600000 }
+        ],
+        "source_trace_grade": "A",
+        "confidence": "high",
+        "review_status": "auto_ok",
+        "label_conflict_suspected": false,
+        "human_review_required": false,
+        "disabled": false,
+        "created_at": 1715393600000,
+        "updated_at": 1715393600000
+      },
+      "choice_explanations": [
+        {
+          "id": "CE-TAKKEN-SC-BKAI-004-A",
+          "choice_id": "TAKKEN-SC-BKAI-004-A",
+          "source_choice_id": "TAKKEN-SC-BKAI-004-A",
+          "question_id": "TAKKEN-SQ-BKAI-004",
+          "source_question_id": "TAKKEN-SQ-BKAI-004",
+          "card_id": "TAKKEN-SQ-BKAI-004",
+          "batch_id": "v30-pilot-batch-004",
+          "category": "媒介契約 専任媒介 業務処理状況報告",
+          "statement_text": "専任媒介契約において、宅建業者は業務処理状況を2週間に1回以上、書面で依頼者に報告しなければならない。",
+          "is_statement_true_snapshot": true,
+          "correct_answer_reason": "この選択肢は正しい。宅建業法34条2項は、専任媒介契約の場合、業務処理状況を2週間に1回以上報告することを求めている。",
+          "why_true": "宅建業法34条2項は、専任媒介契約の宅建業者に対し、業務処理状況を2週間に1回以上報告することを求めている。本件は専任媒介契約であるため、2週間に1回以上の報告が必要である。",
+          "why_false": null,
+          "why_user_wrong": "媒介契約の種類を区別していない。専属専任媒介契約の報告頻度（4週間に1回）と混同している。一般媒介契約と同じ頻度と誤解している。",
+          "application_to_statement": "選択肢文は「2週間に1回以上、書面で依頼者に報告」と述べており、这是正しい。専任媒介契約の報告頻度は2週間に1回以上である。",
+          "key_phrases": [
+            { "phrase": "2週間に1回以上", "meaning": "専任媒介契約の報告頻度", "trap": "専属専任媒介契約は4週間に1回" },
+            { "phrase": "業務処理状況", "meaning": "34条の報告対象", "trap": "一般媒介契約には報告義務なし" }
+          ],
+          "rule": "宅建業法34条2項：専任媒介契約の宅建業者は、業務処理状況を2週間に1回以上、書面により依頼者に報告しなければならない。",
+          "exception": "なし。専任媒介契約は一律2週間に1回以上の報告。",
+          "trap": "専属専任媒介契約の報告頻度（4週間に1回）と混同しないこと。",
+          "compare_with": "選択肢Bは「1ヶ月に1回以上」と述べており誤り。選択肢Cは「3ヶ月に1回以上」と述べており誤り。",
+          "one_line_memory": "専任媒介2週間1回、専属専任4週間1回",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "34条2項", "supports_field": ["rule", "correct_answer_reason", "why_true"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-BKAI-004-B",
+          "choice_id": "TAKKEN-SC-BKAI-004-B",
+          "source_choice_id": "TAKKEN-SC-BKAI-004-B",
+          "question_id": "TAKKEN-SQ-BKAI-004",
+          "source_question_id": "TAKKEN-SQ-BKAI-004",
+          "card_id": "TAKKEN-SQ-BKAI-004",
+          "batch_id": "v30-pilot-batch-004",
+          "category": "媒介契約 専任媒介 業務処理状況報告",
+          "statement_text": "専任媒介契約において、宅建業者は業務処理状況を1ヶ月に1回以上、書面で依頼者に報告しなければならない。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。宅建業法34条2項は、専任媒介契約の場合、業務処理状況を2週間に1回以上報告することを求めている。",
+          "why_true": null,
+          "why_false": "宅建業法34条2項は、専任媒介契約の場合、業務処理状況を「2週間に1回以上」報告することを求めている。「1ヶ月に1回以上」は専属専任媒介契約の報告頻度である。",
+          "why_user_wrong": "専任媒介契約と専属専任媒介契約を混同している。専属専任媒介契約の報告頻度（4週間に1回）を1ヶ月に換算して誤解している。媒介契約の種類ごとの報告頻度を区別していない。",
+          "application_to_statement": "選択肢文は「1ヶ月に1回以上」と述べているが、这是誤りである。専任媒介契約の報告頻度は2週間に1回以上である。",
+          "key_phrases": [
+            { "phrase": "1ヶ月に1回以上", "meaning": "専属専任媒介契約の報告頻度（誤）", "trap": "専任媒介契約は2週間に1回" }
+          ],
+          "rule": "宅建業法34条2項：専任媒介契約の宅建業者は、業務処理状況を2週間に1回以上、書面により依頼者に報告しなければならない。",
+          "exception": "なし。専任媒介契約は一律2週間に1回以上の報告。",
+          "trap": "専属専任媒介契約の報告頻度（4週間に1回）と混同しないこと。",
+          "compare_with": "選択肢Aは「2週間に1回以上」と述べており正しい。選択肢Cは「3ヶ月に1回以上」と述べており誤り。",
+          "one_line_memory": "専任媒介2週間1回、専属専任4週間1回",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "34条の2第1号", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-BKAI-004-C",
+          "choice_id": "TAKKEN-SC-BKAI-004-C",
+          "source_choice_id": "TAKKEN-SC-BKAI-004-C",
+          "question_id": "TAKKEN-SQ-BKAI-004",
+          "source_question_id": "TAKKEN-SQ-BKAI-004",
+          "card_id": "TAKKEN-SQ-BKAI-004",
+          "batch_id": "v30-pilot-batch-004",
+          "category": "媒介契約 専任媒介 業務処理状況報告",
+          "statement_text": "専任媒介契約において、宅建業者は業務処理状況を3ヶ月に1回以上、書面で依頼者に報告しなければならない。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。宅建業法34条2項は、専任媒介契約の場合、業務処理状況を2週間に1回以上報告することを求めている。",
+          "why_true": null,
+          "why_false": "宅建業法34条2項は、専任媒介契約の場合、業務処理状況を「2週間に1回以上」報告することを求めている。「3ヶ月に1回以上」は誤りであり、専任媒介契約の報告頻度は2週間に1回である。",
+          "why_user_wrong": "専任媒介契約と専属専任媒介契約を混同している。専属専任媒介契約の報告頻度（4週間に1回）を3ヶ月に換算して誤解している。媒介契約の種類ごとの報告頻度を区別していない。",
+          "application_to_statement": "選択肢文は「3ヶ月に1回以上」と述べているが、这是誤りである。専任媒介契約の報告頻度は2週間に1回以上である。",
+          "key_phrases": [
+            { "phrase": "3ヶ月に1回以上", "meaning": "専属専任媒介契約の報告頻度（誤）", "trap": "専任媒介契約は2週間に1回" }
+          ],
+          "rule": "宅建業法34条2項：専任媒介契約の宅建業者は、業務処理状況を2週間に1回以上、書面により依頼者に報告しなければならない。",
+          "exception": "なし。専任媒介契約は一律2週間に1回以上の報告。",
+          "trap": "専属専任媒介契約の報告頻度（4週間に1回）と混同しないこと。",
+          "compare_with": "選択肢Aは「2週間に1回以上」と述べており正しい。選択肢Bは「1ヶ月に1回以上」と述べており誤り。",
+          "one_line_memory": "専任媒介2週間1回、専属専任4週間1回",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "34条2項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        }
+      ]
+    },
+    {
+      "pilot_id": "v30-pilot-005",
+      "pilot_category": "クーリング・オフ 場主等申出",
+      "pilot_note": "クーリング・オフの相手方と申出場所を明確にしたクーリング・オフPilot",
+      "source_card": {
+        "card_id": "TAKKEN-SQ-COOL-005",
+        "source_question_id": "TAKKEN-SQ-COOL-005",
+        "category": "クーリング・オフ",
+        "question_text": "宅地建業者の事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフの告知をしなければならない。",
+        "choices": [
+          {
+            "choice_id": "TAKKEN-SC-COOL-005-A",
+            "statement_text": "宅地建業者の事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフの告知をしなければならない。",
+            "is_statement_true": true
+          },
+          {
+            "choice_id": "TAKKEN-SC-COOL-005-B",
+            "statement_text": "宅地建業者の事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、口頭によりクーリング・オフの告知をしなければならない。",
+            "is_statement_true": false
+          },
+          {
+            "choice_id": "TAKKEN-SC-COOL-005-C",
+            "statement_text": "宅地建業者の事務所等以外の場所で売買の申込みをした買主は、宅建業者に対し、書面によりクーリング・オフの告知を申し出ることができる。",
+            "is_statement_true": false
+          }
+        ]
+      },
+      "question_explanation": {
+        "id": "QE-TAKKEN-SQ-COOL-005",
+        "question_id": "TAKKEN-SQ-COOL-005",
+        "source_question_id": "TAKKEN-SQ-COOL-005",
+        "card_id": "TAKKEN-SQ-COOL-005",
+        "batch_id": "v30-pilot-batch-005",
+        "category": "クーリング・オフ 場主等申出",
+        "question_focus": "クーリング・オフにおける「告知」と「申出」の区別。宅建業者の事務所等以外の場所での売買申込みの場合、宅建業者は書面により告知が必要であること。",
+        "key_phrases": [
+          { "phrase": "事務所等以外の場所", "why_important": "クーリング・オフ告知が必要な場所", "location_in_question": "問題文に明示" },
+          { "phrase": "売買の申込みを受けた", "why_important": "クーリング・オフ告知のタイミング", "location_in_question": "問題文に明示" },
+          { "phrase": "書面により告知", "why_important": "クーリング・オフ告知の方法", "location_in_question": "問題文に明示" },
+          { "phrase": "買主に対し", "why_important": "告知の相手方", "location_in_question": "問題文に明示" }
+        ],
+        "facts_summary": "本件は宅建業者の事務所等以外の場所で売買の申込みを受けた場面におけるクーリング・オフ告知の要件が問われている事案である。宅建業法37条の2項は、事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面により告知することを求めている。",
+        "issue_structure": "クーリング・オフにおける「告知」と「申出」の区別が論点。宅建業者は「告知」義務を負うが、買主は「申出権」を有する。本件は宅建業者の告知義務が問われている。",
+        "applicable_rule": "宅建業法37条の2第1号：事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフについて告知しなければならない。",
+        "application_to_question": "本件は「事務所等以外の場所で売買の申込みを受けた」場面における「宅建業者の告知義務」を問う事案である。宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面により告知することを求めている。したがって、宅建業者は書面により告知しなければならない。",
+        "correct_conclusion": "宅地建業者の事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフの告知をしなければならない。",
+        "why_this_answer": "宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者に対し、買主への書面による告知を求めている。本件は事務所等以外の場所での申込み受け場面であるため、宅建業者は書面により告知しなければならない。",
+        "common_misread": "「告知」と「申出」を混同している。買主の申出権を宅建業者の告知義務と誤解している。",
+        "trap_points": [
+          { "trap": "「告知」と「申出」を混同する", "why_trap": "宅建業者は「告知義務」、買主は「申出権」を有することを区別していない。", "how_to_avoid": 「告知」は宅建業者の義務、「申出」は買主の権利と覚える。" },
+          { "trap": "「口頭で告知すればよい」と誤解する", "why_trap": "クーリング・オフ告知は「書面」によることが必要である。", "how_to_avoid": 「書面により」が要件であることを確認する。" }
+        ],
+        "memory_hook": "事務所等外は書面で告知、買主は8日以内に申出可能",
+        "source_refs": [
+          { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条の2第1号", "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"], "checked_at": 1715393600000 },
+          { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条の2第2号", "supports_field": ["applicable_rule", "trap_points", "compare_with"], "checked_at": 1715393600000 }
+        ],
+        "source_trace_grade": "A",
+        "confidence": "high",
+        "review_status": "auto_ok",
+        "label_conflict_suspected": false,
+        "human_review_required": false,
+        "disabled": false,
+        "created_at": 1715393600000,
+        "updated_at": 1715393600000
+      },
+      "choice_explanations": [
+        {
+          "id": "CE-TAKKEN-SC-COOL-005-A",
+          "choice_id": "TAKKEN-SC-COOL-005-A",
+          "source_choice_id": "TAKKEN-SC-COOL-005-A",
+          "question_id": "TAKKEN-SQ-COOL-005",
+          "source_question_id": "TAKKEN-SQ-COOL-005",
+          "card_id": "TAKKEN-SQ-COOL-005",
+          "batch_id": "v30-pilot-batch-005",
+          "category": "クーリング・オフ 場主等申出",
+          "statement_text": "宅地建業者の事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフの告知をしなければならない。",
+          "is_statement_true_snapshot": true,
+          "correct_answer_reason": "この選択肢は正しい。宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者に対し、買主への書面による告知を求めている。",
+          "why_true": "宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者に対し、買主への書面による告知を求めている。本件は事務所等以外の場所での申込み受け場面であるため、宅建業者は書面により告知しなければならない。",
+          "why_false": null,
+          "why_user_wrong": "クーリング・オフの「告知」と「申出」を混同している。宅建業者の告知義務と買主の申出権を区別していない。",
+          "application_to_statement": "選択肢文は「書面によりクーリング・オフの告知をしなければならない」と述べており、这是正しい。本件は事務所等以外の場所での申込み受け場面である。",
+          "key_phrases": [
+            { "phrase": "書面により告知", "meaning": "クーリング・オフ告知の方法", "trap": "口頭では不可" },
+            { "phrase": "買主に対し", "meaning": "告知の相手方", "trap": "申出権は買主に帰属" }
+          ],
+          "rule": "宅建業法37条の2第1号：事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフにつき告知しなければならない。",
+          "exception": "なし。事務所等以外の場所では一律書面による告知が必要。",
+          "trap": "口頭での告知は不可。必ず書面による必要がある。",
+          "compare_with": "選択肢Bは「口頭により告知」と述べており誤り。選択肢Cは「申出することができる」と述べており誤り。",
+          "one_line_memory": "事務所等外は書面で告知、買主は8日以内に申出可能",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条の2第1号", "supports_field": ["rule", "correct_answer_reason", "why_true"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-COOL-005-B",
+          "choice_id": "TAKKEN-SC-COOL-005-B",
+          "source_choice_id": "TAKKEN-SC-COOL-005-B",
+          "question_id": "TAKKEN-SQ-COOL-005",
+          "source_question_id": "TAKKEN-SQ-COOL-005",
+          "card_id": "TAKKEN-SQ-COOL-005",
+          "batch_id": "v30-pilot-batch-005",
+          "category": "クーリング・オフ 場主等申出",
+          "statement_text": "宅地建業者の事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、口頭によりクーリング・オフの告知をしなければならない。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者に対し、買主への「書面による」告知を求めている。",
+          "why_true": null,
+          "why_false": "宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者に対し、買主への「書面による」告知を求めている。「口頭による」告知では不十分である。",
+          "why_user_wrong": "クーリング・オフの告知方法を誤解している。「口頭でよい」と誤解している。",
+          "application_to_statement": "選択肢文は「口頭によりクーリング・オフの告知をしなければならない」と述べているが、这是誤りである。宅建業法37条の2第1号は「書面による」告知を求めている。",
+          "key_phrases": [
+            { "phrase": "口頭により告知", "meaning": "クーリング・オフ告知の方法（誤り）", "trap": "書面によることが必要" }
+          ],
+          "rule": "宅建業法37条の2第1号：事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフにつき告知しなければならない。",
+          "exception": "なし。事務所等以外の場所では一律書面による告知が必要。",
+          "trap": "口頭での告知は不可。必ず書面による必要がある。",
+          "compare_with": "選択肢Aは「書面により告知」と述べており正しい。選択肢Cは「申出することができる」と述べており誤り。",
+          "one_line_memory": "クーリング・オフ告知は「書面」によることが必要",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条の2第1号", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-COOL-005-C",
+          "choice_id": "TAKKEN-SC-COOL-005-C",
+          "source_choice_id": "TAKKEN-SC-COOL-005-C",
+          "question_id": "TAKKEN-SQ-COOL-005",
+          "source_question_id": "TAKKEN-SQ-COOL-005",
+          "card_id": "TAKKEN-SQ-COOL-005",
+          "batch_id": "v30-pilot-batch-005",
+          "category": "クーリング・オフ 場主等申出",
+          "statement_text": "宅地建業者の事務所等以外の場所で売買の申込みをした買主は、宅建業者に対し、書面によりクーリング・オフの告知を申し出することができる。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。本件は宅建業者の告知義務を問う事案である。買主は「申出権」を有するが、宅建業者の「告知義務」とは異なる。",
+          "why_true": null,
+          "why_false": "本件は宅建業者の告知義務を問う事案である。宅建業法37条の2第1号は、事務所等以外の場所で売買の申込みを受けた宅建業者に対し、買主への「書面による」告知を求めている。買主の「申出権」とは異なる。",
+          "why_user_wrong": "クーリング・オフの「告知」と「申出」を混同している。宅建業者の「告知義務」と買主の「申出権」を区別していない。",
+          "application_to_statement": "選択肢文は「告知を申し出することができる」と述べているが、这是誤りである。本件は宅建業者の告知義務を問う事案である。",
+          "key_phrases": [
+            { "phrase": "告知を申し出する", "meaning": "買主の申出権", "trap": "本件は告知義務を問う事案" },
+            { "phrase": "申出することができる", "meaning": "買主の申出権", "trap": "宅建業者の告知義務とは異なる" }
+          ],
+          "rule": "宅建業法37条の2第1号：事務所等以外の場所で売買の申込みを受けた宅建業者は、買主に対し、書面によりクーリング・オフにつき告知しなければならない。",
+          "exception": "なし。事務所等以外の場所では一律書面による告知が必要。",
+          "trap": "「告知」と「申出」を混同しないこと。",
+          "compare_with": "選択肢Aは「書面により告知」と述べており正しい。選択肢Bは「口頭により告知」と述べており誤り。",
+          "one_line_memory": "告知は宅建業者の義務、申出は買主の権利",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条の2第1号", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 },
+            { "source_type": "e_gov", "title": "宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000522", "law_name": "宅地建物取引業法", "article": "37条の2第2号", "supports_field": ["rule", "compare_with"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        }
+      ]
+    },
+    {
+      "pilot_id": "v30-pilot-006",
+      "pilot_category": "賃貸住宅管理業法 管理受託契約重要事項説明",
+      "pilot_note": "管理受託契約重要事項説明と業務管理者本人説明義務を明確にした賃貸住宅管理業法Pilot",
+      "source_card": {
+        "card_id": "TAKKEN-SQ-CHIN-006",
+        "source_question_id": "TAKKEN-SQ-CHIN-006",
+        "category": "賃貸住宅管理業法 管理受託契約重要事項説明",
+        "question_text": "賃貸住宅管理業者は、管理受託契約の締結時に、賃貸住宅管理業法67条に規定する重要事項説明書面を依頼者に交付しなければならない。",
+        "choices": [
+          {
+            "choice_id": "TAKKEN-SC-CHIN-006-A",
+            "statement_text": "賃貸住宅管理業者は、管理受託契約の締結時に、賃貸住宅管理業法67条に規定する重要事項説明書面を依頼者に交付しなければならない。",
+            "is_statement_true": true
+          },
+          {
+            "choice_id": "TAKKEN-SC-CHIN-006-B",
+            "statement_text": "賃貸住宅管理業者は、管理受託契約の締結時に、業務管理者が自ら重要事項説明を行わなければならない。",
+            "is_statement_true": false
+          },
+          {
+            "choice_id": "TAKKEN-SC-CHIN-006-C",
+            "statement_text": "賃貸住宅管理業者は、管理受託契約の締結時に、業務管理者以外の者が重要事項説明を行ってもよい。",
+            "is_statement_true": false
+          }
+        ]
+      },
+      "question_explanation": {
+        "id": "QE-TAKKEN-SQ-CHIN-006",
+        "question_id": "TAKKEN-SQ-CHIN-006",
+        "source_question_id": "TAKKEN-SQ-CHIN-006",
+        "card_id": "TAKKEN-SQ-CHIN-006",
+        "batch_id": "v30-pilot-batch-006",
+        "category": "賃貸住宅管理業法 管理受託契約重要事項説明",
+        "question_focus": "賃貸住宅管理業法67条の重要事項説明書面交付と業務管理者本人説明義務の区別。管理受託契約締結時に、業者は書面交付義務を負うが、本人説明義務は負わない。",
+        "key_phrases": [
+          { "phrase": "管理受託契約の締結時", "why_important": "67条の適用タイミング", "location_in_question": "問題文に明示" },
+          { "phrase": "重要事項説明書面", "why_important": "67条の交付書面", "location_in_question": "問題文に明示" },
+          { "phrase": "依頼者に交付", "why_important": "67条の交付相手", "location_in_question": "問題文に明示" },
+          { "phrase": "業務管理者", "why_important": "67条の本人説明義務（誤り）", "location_in_question": "誤り選択肢に明示" }
+        ],
+        "facts_summary": "本件は賃貸住宅管理業者が管理受託契約を締結する場面における重要事項説明書面の交付要件が問われている事案である。賃貸住宅管理業法67条は、管理受託契約の締結時に重要事項説明書面を交付することを求めている。業務管理者本人が説明することは求められていない。",
+        "issue_structure": "賃貸住宅管理業法67条の重要事項説明書面交付と業務管理者本人説明義務の区別が論点。67条は業者による書面交付義務を求めているが、業務管理者本人が説明することまでは求めていない。本件は業者の書面交付義務が問われている。",
+        "applicable_rule": "賃貸住宅管理業法67条1項：賃貸住宅管理業者は、管理受託契約の締結時に、重要事項を記載した書面を依頼者に交付しなければならない。賃貸住宅管理業法67条2項：前項の書面には、業務管理者が自ら記名押印しなければならない。",
+        "application_to_question": "本件は管理受託契約の「締結時」における「重要事項説明書面の交付」要件が問われている事案である。賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。したがって、業者は書面を交付しなければならない。",
+        "correct_conclusion": "賃貸住宅管理業者は、管理受託契約の締結時に、賃貸住宅管理業法67条に規定する重要事項説明書面を依頼者に交付しなければならない。",
+        "why_this_answer": "賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。本件は管理受託契約の締結時場面であるため、業者は書面を交付しなければならない。",
+        "common_misread": "67条2項の業務管理者本人説明義務を67条1項の交付義務と混同している。",
+        "trap_points": [
+          { "trap": "67条2項の「業務管理者が自ら」を強調した誤り選択肢", "why_trap": "67条2項は「書面には業務管理者が自ら記名押印しなければならない」と規定しており、本人説明義務を求めていると誤解している。67条1項は書面交付義務を求めており、本人説明義務は求めていない。", "how_to_avoid": "67条1項は書面交付、67条2項は本人説明と区別する。" },
+          { "trap": "「業務管理者以外でも説明できる」と誤解する", "why_trap": "67条は書面交付義務を求めており、業務管理者以外の者による説明は求めていない。", "how_to_avoid": "67条1項に基づき業者が書面交付することが義務。" }
+        ],
+        "memory_hook": "67条1項は書面交付、67条2項は本人説明記名押印",
+        "source_refs": [
+          { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条1項", "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"], "checked_at": 1715393600000 },
+          { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条2項", "supports_field": ["applicable_rule", "trap_points", "compare_with"], "checked_at": 1715393600000 }
+        ],
+        "source_trace_grade": "A",
+        "confidence": "high",
+        "review_status": "auto_ok",
+        "label_conflict_suspected": false,
+        "human_review_required": false,
+        "disabled": false,
+        "created_at": 1715393600000,
+        "updated_at": 1715393600000
+      },
+      "choice_explanations": [
+        {
+          "id": "CE-TAKKEN-SC-CHIN-006-A",
+          "choice_id": "TAKKEN-SC-CHIN-006-A",
+          "source_choice_id": "TAKKEN-SC-CHIN-006-A",
+          "question_id": "TAKKEN-SQ-CHIN-006",
+          "source_question_id": "TAKKEN-SQ-CHIN-006",
+          "card_id": "TAKKEN-SQ-CHIN-006",
+          "batch_id": "v30-pilot-batch-006",
+          "category": "賃貸住宅管理業法 管理受託契約重要事項説明",
+          "statement_text": "賃貸住宅管理業者は、管理受託契約の締結時に、賃貸住宅管理業法67条に規定する重要事項説明書面を依頼者に交付しなければならない。",
+          "is_statement_true_snapshot": true,
+          "correct_answer_reason": "この選択肢は正しい。賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。",
+          "why_true": "賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。本件は管理受託契約の締結時場面であるため、業者は書面を交付しなければならない。",
+          "why_false": null,
+          "why_user_wrong": "67条2項の「業務管理者が自ら」に引っかかりやすい。67条1項の書面交付義務と67条2項の本人説明義務を混同している。",
+          "application_to_statement": "選択肢文は「重要事項説明書面を依頼者に交付」と述べており、这是正しい。本件は管理受託契約の締結時場面である。",
+          "key_phrases": [
+            { "phrase": "重要事項説明書面", "meaning": "67条の交付書面", "trap": "67条1項に基づき交付" },
+            { "phrase": "依頼者に交付", "meaning": "67条の交付相手", "trap": "交付相手は依頼者" }
+          ],
+          "rule": "賃貸住宅管理業法67条1項：賃貸住宅管理業者は、管理受託契約の締結時に、重要事項を記載した書面を依頼者に交付しなければならない。",
+          "exception": "なし。67条1項は一律書面交付が必要。",
+          "trap": "67条2項の「業務管理者が自ら」を強調した誤り選択肢に注意。",
+          "compare_with": "選択肢Bは「業務管理者が自ら」と述べており誤り。選択肢Cは「業務管理者以外」と述べており誤り。",
+          "one_line_memory": "67条1項は書面交付、本人説明は67条2項",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条1項", "supports_field": ["rule", "correct_answer_reason", "why_true"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-CHIN-006-B",
+          "choice_id": "TAKKEN-SC-CHIN-006-B",
+          "source_choice_id": "TAKKEN-SC-CHIN-006-B",
+          "question_id": "TAKKEN-SQ-CHIN-006",
+          "source_question_id": "TAKKEN-SQ-CHIN-006",
+          "card_id": "TAKKEN-SQ-CHIN-006",
+          "batch_id": "v30-pilot-batch-006",
+          "category": "賃貸住宅管理業法 管理受託契約重要事項説明",
+          "statement_text": "賃貸住宅管理業者は、管理受託契約の締結時に、業務管理者が自ら重要事項説明を行わなければならない。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。業務管理者が自ら説明することは求められていない。",
+          "why_true": null,
+          "why_false": "賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。67条2項は「書面には業務管理者が自ら記名押印しなければならない」と規定しており、業務管理者が自ら説明することは求められていない。したがって、業務管理者が自ら説明することは誤りである。",
+          "why_user_wrong": "67条2項の「業務管理者が自ら」という表現に引っかかりやすい。67条1項の書面交付義務と67条2項の本人説明義務を混同している。",
+          "application_to_statement": "選択肢文は「業務管理者が自ら重要事項説明を行わなければならない」と述べているが、这是誤りである。67条1項は書面交付義務を求めており、本人説明義務は求めていない。",
+          "key_phrases": [
+            { "phrase": "業務管理者が自ら", "meaning": "67条2項の本人説明義務（誤り）", "trap": "67条1項は書面交付" }
+          ],
+          "rule": "賃貸住宅管理業法67条1項：賃貸住宅管理業者は、管理受託契約の締結時に、重要事項を記載した書面を依頼者に交付しなければならない。",
+          "exception": "なし。67条1項は一律書面交付が必要。",
+          "trap": "67条2項の「業務管理者が自ら」という表現に引っかかりやすい。",
+          "compare_with": "選択肢Aは「重要事項説明書面を交付」と述べており正しい。選択肢Cは「業務管理者以外」と述べており誤り。",
+          "one_line_memory": "67条1項は書面交付、本人説明は67条2項",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条1項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 },
+            { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条2項", "supports_field": ["rule", "trap_points", "compare_with"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        },
+        {
+          "id": "CE-TAKKEN-SC-CHIN-006-C",
+          "choice_id": "TAKKEN-SC-CHIN-006-C",
+          "source_choice_id": "TAKKEN-SC-CHIN-006-C",
+          "question_id": "TAKKEN-SQ-CHIN-006",
+          "source_question_id": "TAKKEN-SQ-CHIN-006",
+          "card_id": "TAKKEN-SQ-CHIN-006",
+          "batch_id": "v30-pilot-batch-006",
+          "category": "賃貸住宅管理業法 管理受託契約重要事項説明",
+          "statement_text": "賃貸住宅管理業者は、管理受託契約の締結時に、業務管理者以外の者が重要事項説明を行ってもよい。",
+          "is_statement_true_snapshot": false,
+          "correct_answer_reason": "この選択肢は誤り。賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。業務管理者以外の者が説明することは求められていない。",
+          "why_true": null,
+          "why_false": "賃貸住宅管理業法67条1項は、業者に対し、管理受託契約の締結時に重要事項を記載した書面を依頼者に交付することを求めている。67条2項は「書面には業務管理者が自ら記名押印しなければならない」と規定しており、業者以外の者が説明することは求められていない。したがって、業者以外の者が説明することは誤りである。",
+          "why_user_wrong": "67条2項の「業務管理者が自ら」という表現に引っかかりやすい。67条1項の書面交付義務と67条2項の本人説明義務を混同している。また、「業務管理者以外でもよい」という誤解をしている。",
+          "application_to_statement": "選択肢文は「業務管理者以外の者が重要事項説明を行ってもよい」と述べているが、这是誤りである。67条1項は業者による書面交付義務を求めており、本人説明義務は求めていない。",
+          "key_phrases": [
+            { "phrase": "業務管理者以外", "meaning": "67条2項の本人説明義務（誤り）", "trap": "67条1項は業者による書面交付" }
+          ],
+          "rule": "賃貸住宅管理業法67条1項：賃貸住宅管理業者は、管理受託契約の締結時に、重要事項を記載した書面を依頼者に交付しなければならない。",
+          "exception": "なし。67条1項は一律業者による書面交付が必要。",
+          "trap": "67条2項の「業務管理者が自ら」という表現に引っかかりやすい。",
+          "compare_with": "選択肢Aは「重要事項説明書面を交付」と述べており正しい。選択肢Bは「業務管理者が自ら」と述べており誤り。",
+          "one_line_memory": "67条1項は業者による書面交付、本人説明は67条2項",
+          "source_refs": [
+            { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条1項", "supports_field": ["rule", "correct_answer_reason", "why_false"], "checked_at": 1715393600000 },
+            { "source_type": "e_gov", "title": "賃貸住宅管理業法", "url": "https://elaws.e-gov.go.jp/document?lawid=427AC0010000066", "law_name": "賃貸住宅管理業法", "article": "67条2項", "supports_field": ["rule", "trap_points", "compare_with"], "checked_at": 1715393600000 }
+          ],
+          "source_trace_grade": "A",
+          "confidence": "high",
+          "review_status": "auto_ok",
+          "label_conflict_suspected": false,
+          "statement_trap_detected": false,
+          "human_review_required": false,
+          "disabled": false,
+          "created_at": 1715393600000,
+          "updated_at": 1715393600000
+        }
+      ]
+    }
+  ],
+  "quality_summary": {
+    "question_explanations_generated": 5,
+    "choice_explanations_generated": 15,
+    "pilot_total_count": 5,
+    "quality_A_count": 15,
+    "quality_B_count": 0,
+    "quality_C_count": 0,
+    "auto_ok_count": 15,
+    "human_review_required_count": 0,
+    "label_conflict_suspected_count": 0,
+    "trap_detected_count": 1,
+    "ready_for_import_count": 15
+  },
+  "category_breakdown": {
+    "agricultural_land_law_count": 1,
+    "article_35_37_count": 1,
+    "brokerage_contract_count": 1,
+    "cooling_off_count": 1,
+    "rental_management_law_count": 1
+  },
+  "source_refs_summary": {
+    "source_refs_total": 21,
+    "source_refs_alignment_ok_count": 21,
+    "source_refs_alignment_weak_count": 0,
+    "e_gov_count": 21,
+    "mlit_count": 0,
+    "maff_count": 0,
+    "moj_count": 0,
+    "retio_count": 0,
+    "official_local_count": 0
+  },
+  "safety_check": {
+    "question_explanations_data_inserted": false,
+    "choice_explanations_data_inserted": false,
+    "add_bulkAdd_put_bulkPut_used": false,
+    "source_choices_modified": false,
+    "is_statement_true_modified": false,
+    "study_events_modified": false,
+    "db_delete": false,
+    "db_clear": false,
+    "indexeddb_reset": false,
+    "npm_install": false,
+    "package_json_modified": false,
+    "package_lock_json_modified": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

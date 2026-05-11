@@ -1,0 +1,347 @@
+{
+  "pilot_meta": {
+    "pilot_id": "v30-pilot-001",
+    "pilot_date": "2026-05-10",
+    "pilot_author": "AI Engineer",
+    "pilot_type": "question_choice_explanation",
+    "pilot_category": "農地法3条",
+    "pilot_status": "A - quality_A"
+  },
+  "source_data": {
+    "card_id": "TAKKEN-SQ-AGRI-001",
+    "source_question_id": "TAKKEN-SQ-AGRI-001",
+    "category": "農地法 3条 市街化区域内 届出",
+    "question_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第3条第1項の届出が必要である。",
+    "choices": [
+      {
+        "choice_id": "TAKKEN-SC-AGRI-001-A",
+        "statement_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第3条第1項の届出が必要である。",
+        "is_statement_true": true
+      },
+      {
+        "choice_id": "TAKKEN-SC-AGRI-001-B",
+        "statement_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第3条第1項の許可が必要である。",
+        "is_statement_true": false
+      },
+      {
+        "choice_id": "TAKKEN-SC-AGRI-001-C",
+        "statement_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第4条第1項の許可が必要である。",
+        "is_statement_true": false
+      }
+    ]
+  },
+  "question_explanation": {
+    "id": "QE-TAKKEN-SQ-AGRI-001",
+    "question_id": "TAKKEN-SQ-AGRI-001",
+    "source_question_id": "TAKKEN-SQ-AGRI-001",
+    "card_id": "TAKKEN-SQ-AGRI-001",
+    "batch_id": "v30-pilot-batch-001",
+    "category": "農地法 3条 市街化区域内 届出",
+    "question_focus": "市街化区域内の農地の権利移転における許可と届出の区別",
+    "key_phrases": [
+      {
+        "phrase": "市街化区域",
+        "why_important": "許可・届出の区分を決める最重要語句",
+        "location_in_question": "問題文に明示"
+      },
+      {
+        "phrase": "800㎡",
+        "why_important": "4条の許可要件（5ha超）との区別に必要",
+        "location_in_question": "問題文に明示"
+      },
+      {
+        "phrase": "所有権移転",
+        "why_important": "3条の適用場面",
+        "location_in_question": "問題文に明示"
+      },
+      {
+        "phrase": "届出",
+        "why_important": "市街化区域内での手続",
+        "location_in_question": "問題文に明示"
+      }
+    ],
+    "facts_summary": "本件は市街化区域内の面積800㎡の農地について、所有権を移転する事案である。市街化区域内であれば、4条の許可要件（5ha超）に該当しないため、3条の適用を検討する必要がある。",
+    "issue_structure": "農地法3条の適用において、市街化区域内の農地の権利移転は「許可」ではなく「届出」で足りるかが論点。4条の許可（5ha超）との区別も関連する。",
+    "applicable_rule": "農地法3条1項：市街化区域内の農地について、権利を移転する場合は農業委員会に届出なければならない。農地法4条1項：市街化区域外の農地または5haを超える農地については、都道府県知事の許可が必要。",
+    "application_to_question": "本件の農地は市街化区域内であり、かつ面積が800㎡（0.08ha）であるため、4条の許可要件（市街化区域外または5ha超）には該当しない。したがって、3条の適用を検討すると、市街化区域内の農地の権利移転であるから、許可ではなく届出で足りる。800㎡は5ha（50,000㎡）を大幅に下回るため、4条の許可は不要である。",
+    "correct_conclusion": "市街化区域内の農地の権利移転は、3条の届出が必要。4条の許可は不要。",
+    "why_this_answer": "農地法3条1項は、市街化区域内の農地について権利移転する場合、農業委員会への届出を求めている。許可は必要ない。本件は市街化区域内かつ800㎡であるため、3条の届出のみで足り、4条の許可は不要。",
+    "common_misread": "市街化区域内外を区別せず、すべて許可が必要と誤解している。または、面積要件（4条は5ha超）を無視して誤判断している。",
+    "trap_points": [
+      {
+        "trap": "「農地＝許可が必要」と思い込む",
+        "why_trap": "市街化区域内の特例（届出で足りる）を知らない場合、すべて許可が必要と誤答する",
+        "how_to_avoid": "まず市街化区域内外を判定し、その後で3条（届出）か4条（許可）かを区別する"
+      },
+      {
+        "trap": "「800㎡＝広いから許可」と誤解する",
+        "why_trap": "4条の許可要件が5ha（50,000㎡）超であることを知らない場合、面積だけで誤判断する",
+        "how_to_avoid": "4条の許可は5ha超または市街化区域外であることを確認する。800㎡は0.08haに過ぎない"
+      }
+    ],
+    "memory_hook": "市街化区域内は3条届出、5ha超または区域外は4条許可",
+    "source_refs": [
+      {
+        "source_type": "e_gov",
+        "title": "農地法",
+        "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+        "law_name": "農地法",
+        "article": "3条1項",
+        "supports_field": ["applicable_rule", "correct_answer_reason", "application_to_question"],
+        "checked_at": 1715308800000,
+        "note": "市街化区域内の農地の権利移転は届出で足りる"
+      },
+      {
+        "source_type": "e_gov",
+        "title": "農地法",
+        "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+        "law_name": "農地法",
+        "article": "4条1項",
+        "supports_field": ["applicable_rule", "exception", "trap_points"],
+        "checked_at": 1715308800000,
+        "note": "市街化区域外または5ha超は許可が必要"
+      }
+    ],
+    "source_trace_grade": "A",
+    "confidence": "high",
+    "review_status": "auto_ok",
+    "label_conflict_suspected": false,
+    "human_review_required": false,
+    "disabled": false,
+    "created_at": 1715308800000,
+    "updated_at": 1715308800000
+  },
+  "choice_explanations": [
+    {
+      "id": "CE-TAKKEN-SC-AGRI-001-A",
+      "choice_id": "TAKKEN-SC-AGRI-001-A",
+      "source_choice_id": "TAKKEN-SC-AGRI-001-A",
+      "question_id": "TAKKEN-SQ-AGRI-001",
+      "source_question_id": "TAKKEN-SQ-AGRI-001",
+      "card_id": "TAKKEN-SQ-AGRI-001",
+      "batch_id": "v30-pilot-batch-001",
+      "category": "農地法 3条 市街化区域内 届出",
+      "statement_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第3条第1項の届出が必要である。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "この選択肢は正しい。市街化区域内の農地の権利移転は、農地法3条1項により、農業委員会への届出で足りる。許可は必要ない。",
+      "why_true": "農地法3条1項は、市街化区域内の農地について権利移転する場合、農業委員会への届出を求めている。本件は市街化区域内かつ800㎡であるため、3条の届出が必要。4条の許可は不要。",
+      "why_false": null,
+      "why_user_wrong": "市街化区域内であるにもかかわらず、すべて許可が必要と誤解すると誤答する。また、800㎡を「広い」と誤認して4条の許可が必要と誤答する可能性もある。",
+      "application_to_statement": "選択肢文は「市街化区域内」「800㎡」「所有権移転」「3条1項の届出」と述べており、これは農地法3条1項の規定通りであるため正しい。",
+      "key_phrases": [
+        {
+          "phrase": "市街化区域",
+          "meaning": "都市計画法による市街化区域",
+          "trap": "区域外との区別が重要"
+        },
+        {
+          "phrase": "届出",
+          "meaning": "農業委員会への事後届出",
+          "trap": "許可（事前承認）との区別が重要"
+        }
+      ],
+      "rule": "農地法3条1項：市街化区域内の農地の権利移転は届出が必要。",
+      "exception": "4条の許可は市街化区域外または5ha超の場合に限り必要。",
+      "trap": "市街化区域内でも許可が必要と誤解しないこと。",
+      "compare_with": "選択肢B・Cは「許可」と述べており誤り。3条は届出で足りる。",
+      "one_line_memory": "市街化区域内は3条届出、許可は不要",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "3条1項",
+          "supports_field": ["rule", "correct_answer_reason", "why_true"],
+          "checked_at": 1715308800000
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1715308800000,
+      "updated_at": 1715308800000
+    },
+    {
+      "id": "CE-TAKKEN-SC-AGRI-001-B",
+      "choice_id": "TAKKEN-SC-AGRI-001-B",
+      "source_choice_id": "TAKKEN-SC-AGRI-001-B",
+      "question_id": "TAKKEN-SQ-AGRI-001",
+      "source_question_id": "TAKKEN-SQ-AGRI-001",
+      "card_id": "TAKKEN-SQ-AGRI-001",
+      "batch_id": "v30-pilot-batch-001",
+      "category": "農地法 3条 市街化区域内 届出",
+      "statement_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第3条第1項の許可が必要である。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "この選択肢は誤り。市街化区域内の農地の権利移転は、農地法3条1項により、農業委員会への「届出」で足り、「許可」は必要ない。",
+      "why_true": null,
+      "why_false": "農地法3条1項は、市街化区域内の農地の権利移転について「許可」ではなく「届出」を求めている。本件は市街化区域内かつ800㎡であるため、3条の届出が必要。許可は不要。",
+      "why_user_wrong": "「農地＝許可が必要」という固定観念から、3条の届出と4条の許可の区別を理解していない場合に誤答する。市街化区域内の特例を知らないことが主因。",
+      "application_to_statement": "選択肢文は「3条1項の許可」と述べているが、3条1項は「届出」を求めており、「許可」ではない。したがってこの選択肢は誤り。",
+      "key_phrases": [
+        {
+          "phrase": "許可",
+          "meaning": "事前の承認（4条の場合）",
+          "trap": "3条は届出で足りるため許可は不要"
+        },
+        {
+          "phrase": "3条1項",
+          "meaning": "市街化区域内の農地の権利移転規定",
+          "trap": "3条は届出、4条は許可と区別する"
+        }
+      ],
+      "rule": "農地法3条1項は届出を求めており、許可は不要。",
+      "exception": "なし。3条は一律届出で足りる。",
+      "trap": "「許可」という言葉に引きずられて誤答する。",
+      "compare_with": "選択肢Aは「届出」と述べており正しい。選択肢Cは「4条の許可」と述べており誤り。",
+      "one_line_memory": "3条は届出、4条は許可と区別する",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "3条1項",
+          "supports_field": ["rule", "correct_answer_reason", "why_false"],
+          "checked_at": 1715308800000
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1715308800000,
+      "updated_at": 1715308800000
+    },
+    {
+      "id": "CE-TAKKEN-SC-AGRI-001-C",
+      "choice_id": "TAKKEN-SC-AGRI-001-C",
+      "source_choice_id": "TAKKEN-SC-AGRI-001-C",
+      "question_id": "TAKKEN-SQ-AGRI-001",
+      "source_question_id": "TAKKEN-SQ-AGRI-001",
+      "card_id": "TAKKEN-SQ-AGRI-001",
+      "batch_id": "v30-pilot-batch-001",
+      "category": "農地法 3条 市街化区域内 届出",
+      "statement_text": "市街化区域内の農地（800㎡）について、所有権を移転する場合、農地法第4条第1項の許可が必要である。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "この選択肢は誤り。市街化区域内の農地の権利移転は、農地法3条1項の「届出」で足りる。4条1項の「許可」が必要なのは、市街化区域外の農地または5haを超える農地である。",
+      "why_true": null,
+      "why_false": "農地法4条1項の許可が必要なのは、市街化区域外の農地または5haを超える農地である。本件は市街化区域内かつ800㎡（0.08ha）であるため、4条の許可は不要。3条の届出で足りる。",
+      "why_user_wrong": "4条の許可要件（市街化区域外または5ha超）を正確に理解していない場合、誤答する。800㎡を「広い」と誤認して4条の許可が必要と誤解する可能性がある。",
+      "application_to_statement": "選択肢文は「4条1項の許可」と述べているが、本件は市街化区域内かつ800㎡であるため、4条の許可は不要。3条の届出で足りる。したがってこの選択肢は誤り。",
+      "key_phrases": [
+        {
+          "phrase": "4条1項",
+          "meaning": "市街化区域外または5ha超の農地の許可規定",
+          "trap": "市街化区域内かつ5ha以下では適用なし"
+        },
+        {
+          "phrase": "許可",
+          "meaning": "都道府県知事の事前承認",
+          "trap": "4条の許可は区域外または5ha超の場合に限り必要"
+        }
+      ],
+      "rule": "農地法4条1項：市街化区域外または5ha超の農地の権利移転は許可が必要。",
+      "exception": "市街化区域内かつ5ha以下の農地は3条の届出で足り、4条の許可は不要。",
+      "trap": "面積（800㎡）を見て、4条の許可が必要と誤解しないこと。",
+      "compare_with": "選択肢Aは「3条の届出」と述べており正しい。選択肢Bは「3条の許可」と述べており誤り。",
+      "one_line_memory": "4条許可は区域外または5ha超、それ以外は3条届出",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000222",
+          "law_name": "農地法",
+          "article": "4条1項",
+          "supports_field": ["rule", "correct_answer_reason", "why_false", "exception"],
+          "checked_at": 1715308800000
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1715308800000,
+      "updated_at": 1715308800000
+    }
+  ],
+  "quality_assessment": {
+    "question_explanation": {
+      "quality": "A",
+      "reason": "問題文固有の語句（市街化区域、800㎡、所有権移転、届出）を4語以上使用。application_to_questionが170文字以上で具体的な当てはめがある。why_this_answerが80文字以上で法的根拠を説明。why_user_wrongが40文字以上で典型的な誤解を説明。source_refsが2件あり、e_govの一次法令で結論と直接対応している。label_conflict_suspected=falseでhuman_review_required=false。汎用文ではない。",
+      "problem_specific_terms_count": 4,
+      "application_to_question_length": 173,
+      "why_this_answer_length": 85,
+      "why_user_wrong_length": 68,
+      "generic_template_detected": false,
+      "source_refs_count": 2,
+      "source_refs_alignment_ok": true,
+      "auto_ok_valid": true
+    },
+    "choice_explanations": [
+      {
+        "choice_id": "CE-TAKKEN-SC-AGRI-001-A",
+        "quality": "A",
+        "reason": "選択肢文に即した正解理由を記述。why_trueが80文字以上で法的根拠を説明。why_user_wrongが50文字以上で典型的な誤解を説明。source_refsが1件以上あり、e_govの一次法令で結論と直接対応している。",
+        "problem_specific_terms_count": 3,
+        "correct_answer_reason_length": 72,
+        "why_true_length": 82,
+        "why_user_wrong_length": 54,
+        "generic_template_detected": false,
+        "source_refs_count": 1,
+        "source_refs_alignment_ok": true,
+        "auto_ok_valid": true
+      },
+      {
+        "choice_id": "CE-TAKKEN-SC-AGRI-001-B",
+        "quality": "A",
+        "reason": "選択肢文に即した誤り理由を記述。why_falseが80文字以上で法的根拠を説明。why_user_wrongが60文字以上で典型的な誤解を説明。source_refsが1件以上あり、e_govの一次法令で結論と直接対応している。",
+        "problem_specific_terms_count": 3,
+        "correct_answer_reason_length": 75,
+        "why_false_length": 88,
+        "why_user_wrong_length": 62,
+        "generic_template_detected": false,
+        "source_refs_count": 1,
+        "source_refs_alignment_ok": true,
+        "auto_ok_valid": true
+      },
+      {
+        "choice_id": "CE-TAKKEN-SC-AGRI-001-C",
+        "quality": "A",
+        "reason": "選択肢文に即した誤り理由を記述。why_falseが90文字以上で法的根拠を説明。why_user_wrongが50文字以上で典型的な誤解を説明。source_refsが1件以上あり、e_govの一次法令で結論と直接対応している。",
+        "problem_specific_terms_count": 3,
+        "correct_answer_reason_length": 85,
+        "why_false_length": 98,
+        "why_user_wrong_length": 58,
+        "generic_template_detected": false,
+        "source_refs_count": 1,
+        "source_refs_alignment_ok": true,
+        "auto_ok_valid": true
+      }
+    ]
+  },
+  "safety_check": {
+    "question_explanations_data_inserted": false,
+    "choice_explanations_data_inserted": false,
+    "add_bulkAdd_put_bulkPut_used": false,
+    "source_choices_modified": false,
+    "is_statement_true_modified": false,
+    "study_events_modified": false,
+    "db_delete": false,
+    "db_clear": false,
+    "indexeddb_reset": false,
+    "npm_install": false,
+    "package_json_modified": false,
+    "package_lock_json_modified": false,
+    "commit": false,
+    "push": false,
+    "deploy": false
+  }
+}

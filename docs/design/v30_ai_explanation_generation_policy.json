@@ -1,0 +1,754 @@
+{
+  "policy_meta": {
+    "policy_type": "V30_AI_EXPLANATION_GENERATION_POLICY",
+    "version": "1.0.0",
+    "created_date": "2026-05-10",
+    "author": "AI Engineer",
+    "status": "A - v30 AI解説生成方針設計完了"
+  },
+  "generation_targets": {
+    "target_categories": [
+      {
+        "category": "農地法 3条・4条・5条",
+        "description": "農地権利移動の許可・届出",
+        "priority": "high"
+      },
+      {
+        "category": "35条書面 / 37条書面",
+        "description": "重要事項説明・契約書面",
+        "priority": "high"
+      },
+      {
+        "category": "媒介契約",
+        "description": "専任媒介・一般媒介等",
+        "priority": "medium"
+      },
+      {
+        "category": "クーリング・オフ",
+        "description": "訪問販売・通信販売等",
+        "priority": "medium"
+      },
+      {
+        "category": "詐欺・強迫",
+        "description": "取消原因",
+        "priority": "medium"
+      },
+      {
+        "category": "借地借家法",
+        "description": "賃貸借契約",
+        "priority": "medium"
+      },
+      {
+        "category": "賃貸住宅管理業法",
+        "description": "管理業務適正化",
+        "priority": "low"
+      }
+    ],
+    "initial_targets": {
+      "question_explanations_count": {
+        "min": 5,
+        "max": 10,
+        "reason": "品質検証のため"
+      },
+      "choice_explanations_count": {
+        "min": 15,
+        "max": 30,
+        "reason": "1問あたり3選択肢"
+      }
+    },
+    "selection_criteria": [
+      "法令根拠が明確: 条文・通達で根拠が特定できる",
+      "正誤ラベル安定: is_statement_trueの信頼性が高い",
+      "解説の具体性: 問題文固有の事実関係がある",
+      "頻出分野: 過去問での出題頻度が高い"
+    ]
+  },
+  "required_fields": {
+    "question_explanations": [
+      {
+        "field": "question_focus",
+        "description": "問題の核心",
+        "min_length": 10,
+        "quality_requirement": "問題文固有の語句を含む"
+      },
+      {
+        "field": "key_phrases",
+        "description": "重要語句",
+        "min_count": 3,
+        "quality_requirement": "問題文から抽出した語句"
+      },
+      {
+        "field": "facts_summary",
+        "description": "事実関係",
+        "min_length": 50,
+        "quality_requirement": "問題文の具体的事実を列挙"
+      },
+      {
+        "field": "issue_structure",
+        "description": "論点構造",
+        "min_length": 30,
+        "quality_requirement": "法的争点を明示"
+      },
+      {
+        "field": "applicable_rule",
+        "description": "適用ルール",
+        "min_length": 40,
+        "quality_requirement": "条文番号・要件を明示"
+      },
+      {
+        "field": "application_to_question",
+        "description": "問題文への当てはめ",
+        "min_length": 80,
+        "quality_requirement": "具体的な事実と要件の対応"
+      },
+      {
+        "field": "correct_conclusion",
+        "description": "正解の結論",
+        "min_length": 20,
+        "quality_requirement": "明確な結論"
+      },
+      {
+        "field": "why_this_answer",
+        "description": "なぜ正解か",
+        "min_length": 60,
+        "quality_requirement": "法的根拠と当てはめ"
+      },
+      {
+        "field": "common_misread",
+        "description": "誤読パターン",
+        "min_length": 40,
+        "quality_requirement": "典型的な誤解"
+      },
+      {
+        "field": "trap_points",
+        "description": "ひっかけポイント",
+        "min_count": 2,
+        "quality_requirement": "具体的なひっかけ内容"
+      },
+      {
+        "field": "memory_hook",
+        "description": "暗記フレーズ",
+        "min_length": 15,
+        "quality_requirement": "1行で覚える要点"
+      },
+      {
+        "field": "source_refs",
+        "description": "根拠ソース",
+        "min_count": 1,
+        "quality_requirement": "一次法令を優先"
+      },
+      {
+        "field": "source_trace_grade",
+        "description": "根拠等級",
+        "values": ["A", "B", "C", "D"],
+        "quality_requirement": "source_refsの質"
+      },
+      {
+        "field": "confidence",
+        "description": "確信度",
+        "values": ["high", "medium", "low"],
+        "quality_requirement": "根拠の強さ"
+      },
+      {
+        "field": "review_status",
+        "description": "レビュー状態",
+        "values": ["auto_ok", "draft", "human_review_required"],
+        "quality_requirement": "品質判定"
+      },
+      {
+        "field": "label_conflict_suspected",
+        "description": "正誤疑義",
+        "type": "boolean",
+        "quality_requirement": "is_statement_trueの矛盾検出"
+      },
+      {
+        "field": "human_review_required",
+        "description": "人的レビュー要",
+        "type": "boolean",
+        "quality_requirement": "品質閾値"
+      }
+    ],
+    "choice_explanations": [
+      {
+        "field": "statement_text",
+        "description": "選択肢文",
+        "quality_requirement": "source_choicesから引用"
+      },
+      {
+        "field": "is_statement_true_snapshot",
+        "description": "正誤ラベル",
+        "quality_requirement": "変更禁止"
+      },
+      {
+        "field": "correct_answer_reason",
+        "description": "正解の理由",
+        "min_length": 40,
+        "quality_requirement": "〇/×の根拠"
+      },
+      {
+        "field": "why_true",
+        "description": "なぜ正しいか",
+        "min_length": 30,
+        "quality_requirement": "条文適用"
+      },
+      {
+        "field": "why_false",
+        "description": "なぜ誤りか",
+        "min_length": 30,
+        "quality_requirement": "条文不適合"
+      },
+      {
+        "field": "why_user_wrong",
+        "description": "なぜ誤答するか",
+        "min_length": 40,
+        "quality_requirement": "典型的な誤解"
+      },
+      {
+        "field": "application_to_statement",
+        "description": "選択肢文への当てはめ",
+        "min_length": 60,
+        "quality_requirement": "具体的な対応関係"
+      },
+      {
+        "field": "key_phrases",
+        "description": "重要語句",
+        "min_count": 2,
+        "quality_requirement": "選択肢文から抽出"
+      },
+      {
+        "field": "rule",
+        "description": "適用ルール",
+        "min_length": 30,
+        "quality_requirement": "条文・要件"
+      },
+      {
+        "field": "exception",
+        "description": "例外",
+        "min_length": 20,
+        "quality_requirement": "例外があれば記載"
+      },
+      {
+        "field": "trap",
+        "description": "ひっかけ",
+        "min_length": 20,
+        "quality_requirement": "具体的なひっかけ"
+      },
+      {
+        "field": "compare_with",
+        "description": "他選択肢との比較",
+        "min_length": 30,
+        "quality_requirement": "混同しやすい点"
+      },
+      {
+        "field": "one_line_memory",
+        "description": "1行暗記",
+        "min_length": 15,
+        "quality_requirement": "要点"
+      },
+      {
+        "field": "source_refs",
+        "description": "根拠ソース",
+        "min_count": 1,
+        "quality_requirement": "一次法令を優先"
+      },
+      {
+        "field": "source_trace_grade",
+        "description": "根拠等級",
+        "values": ["A", "B", "C", "D"],
+        "quality_requirement": "source_refsの質"
+      },
+      {
+        "field": "confidence",
+        "description": "確信度",
+        "values": ["high", "medium", "low"],
+        "quality_requirement": "根拠の強さ"
+      },
+      {
+        "field": "review_status",
+        "description": "レビュー状態",
+        "values": ["auto_ok", "draft", "human_review_required"],
+        "quality_requirement": "品質判定"
+      },
+      {
+        "field": "label_conflict_suspected",
+        "description": "正誤疑義",
+        "type": "boolean",
+        "quality_requirement": "is_statement_trueの矛盾検出"
+      },
+      {
+        "field": "human_review_required",
+        "description": "人的レビュー要",
+        "type": "boolean",
+        "quality_requirement": "品質閾値"
+      }
+    ]
+  },
+  "quality_rules": {
+    "prohibited_patterns": [
+      {
+        "pattern": "汎用テンプレートのみ",
+        "example": "法令の規定に関する正誤判断です",
+        "reason": "問題文に即していない"
+      },
+      {
+        "pattern": "抽象的指示のみ",
+        "example": "基本ルールを確認しましょう",
+        "reason": "具体的な当てはめがない"
+      },
+      {
+        "pattern": "事実列挙のみ",
+        "example": "問題文の事実を整理しましょう",
+        "reason": "法的評価がない"
+      },
+      {
+        "pattern": "問題文固有語句なし",
+        "example": "カテゴリ名のみの解説",
+        "reason": "具体性に欠ける"
+      },
+      {
+        "pattern": "正誤理由なし",
+        "example": "正解は〇ですのみ",
+        "reason": "根拠が不明"
+      },
+      {
+        "pattern": "why_user_wrongなし",
+        "example": "誤答者の誤解を説明しない",
+        "reason": "学習効果が低い"
+      },
+      {
+        "pattern": "source_refsなしのauto_ok",
+        "example": "根拠なしで高品質判定",
+        "reason": "信頼性が低い"
+      },
+      {
+        "pattern": "AI推測のみのauto_ok",
+        "example": "推論のみで確定",
+        "reason": "検証不可能"
+      },
+      {
+        "pattern": "民間サイトのみのauto_ok",
+        "example": "信頼性が一次法令に劣る",
+        "reason": "根拠が弱い"
+      }
+    ],
+    "required_conditions": [
+      {
+        "condition": "問題文固有の語句",
+        "description": "問題文・選択肢文から抽出した語句を含む",
+        "threshold": "3語以上"
+      },
+      {
+        "condition": "具体的な当てはめ",
+        "description": "事実と要件の具体的な対応",
+        "threshold": "80文字以上"
+      },
+      {
+        "condition": "明確な正誤理由",
+        "description": "なぜ〇/×かの法的根拠",
+        "threshold": "40文字以上"
+      },
+      {
+        "condition": "具体的な誤答理由",
+        "description": "誤答者が陥る典型的な誤解",
+        "threshold": "30文字以上"
+      },
+      {
+        "condition": "一次法令の根拠",
+        "description": "e-Gov等の一次法令を引用",
+        "threshold": "1件以上"
+      }
+    ],
+    "quality_checklist": [
+      "question_focusに問題文固有の語句が含まれる",
+      "facts_summaryに問題文の具体的事実が列挙されている",
+      "application_to_questionに事実と要件の対応が記述されている",
+      "why_this_answerに法的根拠と当てはめが記述されている",
+      "why_user_wrongに誤答者の典型的な誤解が記述されている",
+      "source_refsに一次法令が含まれている",
+      "source_refsのsupports_fieldで対応関係が明示されている",
+      "trap_pointsに問題文固有のひっかけが含まれている"
+    ]
+  },
+  "source_refs_design": {
+    "priority_sources": [
+      {
+        "priority": 1,
+        "source_type": "e_gov",
+        "description": "e-Gov法令データ",
+        "examples": ["農地法", "宅建業法"]
+      },
+      {
+        "priority": 1,
+        "source_type": "mlit",
+        "description": "国土交通省",
+        "examples": ["宅建業法通達"]
+      },
+      {
+        "priority": 1,
+        "source_type": "moj",
+        "description": "法務省",
+        "examples": ["民法", "借地借家法"]
+      },
+      {
+        "priority": 1,
+        "source_type": "maff",
+        "description": "農林水産省",
+        "examples": ["農地法通達"]
+      },
+      {
+        "priority": 2,
+        "source_type": "official_exam",
+        "description": "過去問公式",
+        "examples": ["宅建試験問題"]
+      },
+      {
+        "priority": 2,
+        "source_type": "retio",
+        "description": "不動産適正取引推進機構",
+        "examples": ["宅建業法解説"]
+      },
+      {
+        "priority": 3,
+        "source_type": "tax_commission",
+        "description": "国税庁",
+        "examples": ["贈与税・相続税"]
+      },
+      {
+        "priority": 4,
+        "source_type": "local_gov",
+        "description": "自治体公式資料",
+        "examples": ["東京都条例等"]
+      },
+      {
+        "priority": 5,
+        "source_type": "other",
+        "description": "その他",
+        "examples": ["民間サイト等"]
+      }
+    ],
+    "required_fields": [
+      {
+        "field": "source_type",
+        "type": "string",
+        "required": true,
+        "description": "ソース種別"
+      },
+      {
+        "field": "title",
+        "type": "string",
+        "required": true,
+        "description": "法令名・資料名"
+      },
+      {
+        "field": "url",
+        "type": "string",
+        "required": true,
+        "description": "URL"
+      },
+      {
+        "field": "law_name",
+        "type": "string",
+        "required": true,
+        "description": "法令名（法令の場合）"
+      },
+      {
+        "field": "article",
+        "type": "string",
+        "required": true,
+        "description": "条番号・節等"
+      },
+      {
+        "field": "supports_field",
+        "type": "string[]",
+        "required": true,
+        "description": "支えるフィールド"
+      },
+      {
+        "field": "checked_at",
+        "type": "number",
+        "required": false,
+        "description": "確認日時"
+      },
+      {
+        "field": "note",
+        "type": "string",
+        "required": false,
+        "description": "備考"
+      }
+    ],
+    "supports_field_values": [
+      {
+        "value": "applicable_rule",
+        "target_field": "question_explanations",
+        "description": "適用されるルール"
+      },
+      {
+        "value": "correct_answer_reason",
+        "target_field": "choice_explanations",
+        "description": "正解の理由"
+      },
+      {
+        "value": "application_to_question",
+        "target_field": "question_explanations",
+        "description": "問題文への当てはめ"
+      },
+      {
+        "value": "application_to_statement",
+        "target_field": "choice_explanations",
+        "description": "選択肢文への当てはめ"
+      },
+      {
+        "value": "exception",
+        "target_field": "question/choice",
+        "description": "例外規定"
+      },
+      {
+        "value": "trap_points",
+        "target_field": "question/choice",
+        "description": "ひっかけポイント"
+      }
+    ],
+    "alignment_check": {
+      "verification_logic": [
+        "source_refsに含まれるlaw_nameが解説文に言及されている",
+        "source_refsに含まれるarticleが解説文に引用されている",
+        "supports_fieldで指定されたフィールドに根拠が反映されている"
+      ],
+      "pass_conditions": [
+        "source_refsのlaw_nameが解説文に1回以上言及されている",
+        "source_refsのarticleが解説文に引用されている",
+        "supports_fieldで指定されたフィールドに根拠が反映されている"
+      ]
+    }
+  },
+  "review_design": {
+    "auto_ok_conditions": {
+      "all_required": true,
+      "conditions": [
+        {
+          "field": "source_trace_grade",
+          "operator": "=",
+          "value": "A",
+          "description": "根拠等級"
+        },
+        {
+          "field": "source_refs_count",
+          "operator": ">=",
+          "value": 1,
+          "description": "一次法令の件数"
+        },
+        {
+          "field": "source_refs_alignment",
+          "operator": "=",
+          "value": "all_supported",
+          "description": "根拠と解説の対応"
+        },
+        {
+          "field": "problem_specificity",
+          "operator": "=",
+          "value": "concrete",
+          "description": "問題文固有の当てはめ"
+        },
+        {
+          "field": "why_user_wrong_concrete",
+          "operator": ">=",
+          "value": 30,
+          "description": "誤答理由の具体性"
+        },
+        {
+          "field": "label_conflict_suspected",
+          "operator": "=",
+          "value": false,
+          "description": "正誤ラベル疑義"
+        },
+        {
+          "field": "human_review_required",
+          "operator": "=",
+          "value": false,
+          "description": "人的レビュー要"
+        },
+        {
+          "field": "confidence",
+          "operator": "=",
+          "value": "high",
+          "description": "確信度"
+        }
+      ]
+    },
+    "human_review_required_conditions": {
+      "any_required": true,
+      "conditions": [
+        {
+          "condition": "正誤ラベル疑義",
+          "field": "label_conflict_suspected",
+          "operator": "=",
+          "value": true
+        },
+        {
+          "condition": "根拠が弱い",
+          "field": "source_trace_grade",
+          "operator": "in",
+          "value": ["C", "D"]
+        },
+        {
+          "condition": "条文だけでは判断が難しい",
+          "description": "判例・通達・実務運用が絡む"
+        },
+        {
+          "condition": "古い過去問",
+          "description": "現行法とのズレがあり得る"
+        },
+        {
+          "condition": "AI生成の確信度が低い",
+          "field": "confidence",
+          "operator": "in",
+          "value": ["medium", "low"]
+        },
+        {
+          "condition": "source_refs_alignmentが弱い",
+          "description": "一部のsupports_fieldに対応がない"
+        }
+      ]
+    },
+    "draft_conditions": {
+      "description": "auto_okとhuman_review_requiredの中間",
+      "conditions": [
+        {
+          "condition": "source_trace_grade",
+          "operator": "=",
+          "value": "B"
+        },
+        {
+          "condition": "一部のフィールドが弱い",
+          "description": "why_user_wrongが短い等"
+        },
+        {
+          "condition": "source_refs_alignmentが一部弱い",
+          "description": "一部のsupports_fieldに対応がない"
+        }
+      ]
+    },
+    "rejected_conditions": {
+      "conditions": [
+        {
+          "condition": "明らかな誤り",
+          "description": "法令の解釈が誤っている"
+        },
+        {
+          "condition": "品質基準を満たさない",
+          "description": "汎用テンプレートのみ等"
+        }
+      ]
+    }
+  },
+  "label_conflict_design": {
+    "detection_patterns": [
+      {
+        "pattern": "正誤と根拠条文の矛盾",
+        "description": "問題文の正誤と根拠条文が矛盾する可能性",
+        "detection_logic": "条文の要件と問題文の事実が対応しない"
+      },
+      {
+        "pattern": "農地法3条/4条/5条の取り違え",
+        "description": "届出と許可の取り違え",
+        "detection_logic": "市街化区域内外の判定ミス"
+      },
+      {
+        "pattern": "35条と37条の取り違え",
+        "description": "タイミング・交付先の取り違え",
+        "detection_logic": "契約前/契約後の取り違え"
+      },
+      {
+        "pattern": "詐欺と強迫の取り違え",
+        "description": "第三者対抗の取り違え",
+        "detection_logic": "取消期間の取り違え"
+      },
+      {
+        "pattern": "借地借家法の取り違え",
+        "description": "普通借家・定期借家の取り違え",
+        "detection_logic": "更新の有無の取り違え"
+      },
+      {
+        "pattern": "is_statement_true_snapshot",
+        "description": "is_statement_trueがnull",
+        "detection_logic": "明示的に疑義あり"
+      }
+    ],
+    "handling": {
+      "important": "is_statement_trueは絶対に変更しない",
+      "actions": [
+        "label_conflict_suspected = true とする",
+        "human_review_required = true とする",
+        "review_status = 'label_conflict_suspected' とする",
+        "noteに疑義の内容を記録する"
+      ]
+    }
+  },
+  "implementation_notes": {
+    "db_write_prohibited": [
+      "question_explanationsへの本投入",
+      "choice_explanationsへの本投入",
+      "source_choicesの変更",
+      "is_statement_trueの変更",
+      "study_eventsの変更"
+    ],
+    "dry_run_only": {
+      "output_format": "JSON",
+      "verification": "ブラウザコンソール",
+      "review": "人的確認"
+    },
+    "phased_implementation": [
+      {
+        "phase": "Phase 1",
+        "description": "1件のみ生成して品質確認"
+      },
+      {
+        "phase": "Phase 2",
+        "description": "5件生成して品質確認"
+      },
+      {
+        "phase": "Phase 3",
+        "description": "10件生成して品質確認"
+      },
+      {
+        "phase": "Phase 4",
+        "description": "品質安定後、本投入検討"
+      }
+    ]
+  },
+  "quality_metrics": {
+    "initial_targets": {
+      "auto_ok_rate": "0%",
+      "reason": "初回は人的レビュー優先",
+      "human_review_required_rate": "100%",
+      "generic_message_detected_count": 0,
+      "source_refs_alignment_ok_rate": "100%",
+      "problem_specificity_ok_rate": "100%"
+    },
+    "final_targets": {
+      "auto_ok_rate": "20〜30%",
+      "human_review_required_rate": "70〜80%",
+      "generic_message_detected_count": 0,
+      "source_refs_alignment_ok_rate": "100%",
+      "problem_specificity_ok_rate": "100%"
+    }
+  },
+  "references": [
+    {
+      "name": "v30スキーマ定義",
+      "path": "src/db.ts"
+    },
+    {
+      "name": "修正前監査レポート",
+      "path": "docs/audit/V30_EXPLANATION_DRY_RUN_OUTPUT_QUALITY_AUDIT.md"
+    },
+    {
+      "name": "修正後監査レポート",
+      "path": "docs/audit/V30_DRY_RUN_FIX_VERIFICATION_AUDIT.md"
+    }
+  ],
+  "created_files": [
+    "docs/design/V30_AI_EXPLANATION_GENERATION_POLICY.md",
+    "docs/design/v30_ai_explanation_generation_policy.json"
+  ]
+}
