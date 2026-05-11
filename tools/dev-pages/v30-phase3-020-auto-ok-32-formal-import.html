@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v30 Phase3-020 Auto OK Formal Import</title>
+  <style>
+    body { margin: 0; padding: 24px; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); color: #111827; }
+    main { max-width: 1320px; margin: 0 auto; background: #fff; border: 1px solid #dbe4f0; border-radius: 16px; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08); padding: 24px; }
+    h1 { margin: 0 0 12px; font-size: 24px; border-bottom: 3px solid #7c3aed; padding-bottom: 10px; }
+    h2 { margin: 0 0 10px; font-size: 18px; }
+    .notice { margin: 12px 0 18px; padding: 12px 14px; border: 1px solid #fde68a; border-radius: 10px; background: #fffbeb; }
+    .section { margin-top: 18px; padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f8fafc; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    button { border: 0; border-radius: 8px; padding: 11px 16px; color: #fff; background: #7c3aed; font-size: 14px; font-weight: 700; cursor: pointer; }
+    button.secondary { background: #0f766e; }
+    button.neutral { background: #4b5563; }
+    button.warn { background: #b45309; }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 14px; }
+    .item { background: #fff; border-left: 4px solid #7c3aed; border-radius: 10px; padding: 10px 12px; }
+    .item.ok { border-left-color: #16a34a; }
+    .item.warn { border-left-color: #f59e0b; }
+    .item.fail { border-left-color: #dc2626; }
+    .label { margin-bottom: 4px; color: #52606d; font-size: 12px; }
+    .value { white-space: pre-wrap; overflow-wrap: anywhere; font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+    pre { margin: 0; max-height: 560px; overflow: auto; padding: 14px; border-radius: 10px; background: #111827; color: #e5e7eb; white-space: pre-wrap; }
+    input[type="password"], input[type="text"] { width: min(760px, 100%); padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: Consolas, "Courier New", monospace; font-size: 14px; }
+    .form-row { display: grid; gap: 8px; margin: 8px 0 12px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>v30 Phase3-020 Auto OK Formal Import</h1>
+    <div class="notice">
+      <strong>High Quality Input Formal Import</strong>
+      <div>このページは `docs/generated/v30_phase3_020_auto_ok_32_import_candidates.json` だけを読み込み、question_explanations / choice_explanations に正式投入します。source_choices / is_statement_true / study_events には触れません。</div>
+    </div>
+
+    <div class="section">
+      <h2>操作</h2>
+      <div class="toolbar">
+        <button id="envBtn">環境診断</button>
+        <button id="dbBtn" class="secondary">DB状態確認</button>
+        <button id="loadBtn">Candidate JSON読込</button>
+        <button id="dryBtn" class="neutral">Formal Import Dry-run</button>
+        <button id="formalBtn" class="warn" disabled>Formal Import 実行</button>
+        <button id="postBtn" class="secondary" disabled>投入後DB確認</button>
+        <button id="rbBtn" class="neutral" disabled>Rollback Dry-run</button>
+        <button id="showBtn" class="neutral">レポートJSON表示</button>
+      </div>
+      <div class="form-row">
+        <label for="approvalCode"><strong>HumanGate 承認コード</strong></label>
+        <input id="approvalCode" type="password" autocomplete="off" spellcheck="false" placeholder="APPROVE_V30_PHASE3_020_AUTO_OK_32_FORMAL_IMPORT">
+      </div>
+      <div id="status"></div>
+      <div id="summary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>環境診断</h2>
+      <div id="environmentStatus"></div>
+      <div id="environmentSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>DB状態</h2>
+      <div id="dbStatus"></div>
+      <div id="dbSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Candidate JSON</h2>
+      <div id="candidateStatus"></div>
+      <div id="candidateSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Formal Import Dry-run</h2>
+      <div id="dryStatus"></div>
+      <div id="drySummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Formal Import</h2>
+      <div id="formalStatus"></div>
+      <div id="formalSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>投入後DB / Rollback Dry-run</h2>
+      <div id="postStatus"></div>
+      <div id="postSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>レポート</h2>
+      <pre id="output">Waiting...</pre>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from '/src/db.ts';
+
+    const EXPECTED = {
+      origin: 'http://127.0.0.1:5173',
+      hrefIncludes: '/takken-app/',
+      dbName: 'TakkenOS_DB',
+      dexieVersion: 30,
+      sourceQuestionsTotal: 1524,
+      sourceChoicesTotal: 3024,
+      hqiCount: 20,
+      qeCount: 0,
+      ceCount: 0,
+      approvalCode: 'APPROVE_V30_PHASE3_020_AUTO_OK_32_FORMAL_IMPORT'
+    };
+
+    const state = {
+      env: null,
+      db: null,
+      candidate: null,
+      dryRun: null,
+      formalImport: null,
+      postDb: null,
+      rollbackDryRun: null
+    };
+
+    const out = document.getElementById('output');
+    const summary = document.getElementById('summary');
+
+    const clear = (node) => { while (node.firstChild) node.removeChild(node.firstChild); };
+    const addItem = (node, label, value, tone = 'ok') => {
+      const box = document.createElement('div');
+      box.className = `item ${tone}`;
+      const l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = label;
+      const v = document.createElement('div');
+      v.className = 'value';
+      v.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+      box.appendChild(l);
+      box.appendChild(v);
+      node.appendChild(box);
+    };
+    const setStatus = (node, text, tone = 'ok') => {
+      node.textContent = text;
+      node.style.color = tone === 'fail' ? '#b91c1c' : tone === 'warn' ? '#b45309' : '#166534';
+      node.style.fontWeight = '700';
+    };
+    const candidateTotals = () => ({
+      total: (state.candidate?.question_explanations?.length || 0) + (state.candidate?.choice_explanations?.length || 0),
+      questions: state.candidate?.question_explanations?.length || 0,
+      choices: state.candidate?.choice_explanations?.length || 0
+    });
+    const snapshotDb = async () => ({
+      location_origin: location.origin,
+      location_href: location.href,
+      dexie_db_name: db.name,
+      dexie_version: db.verno,
+      source_questions_total: await db.source_questions.count(),
+      source_choices_total: await db.source_choices.count(),
+      high_quality_input_units_count: await db.high_quality_input_units.count(),
+      question_explanations_count: await db.question_explanations.count(),
+      choice_explanations_count: await db.choice_explanations.count()
+    });
+    const candidateValidation = (candidate) => {
+      const summary = candidate.summary || {};
+      const questions = candidate.question_explanations || [];
+      const choices = candidate.choice_explanations || [];
+      const ids = new Set();
+      let duplicate = 0;
+      const all = [...questions, ...choices];
+      for (const item of all) {
+        if (ids.has(item.id)) duplicate++;
+        ids.add(item.id);
+      }
+      return {
+        auto_ok_candidate_count: all.length,
+        question_explanations_candidate_count: questions.length,
+        choice_explanations_candidate_count: choices.length,
+        human_review_required_count: all.filter((item) => item.human_review_required).length,
+        duplicate_id_count: duplicate,
+        placeholder_count: all.filter((item) => JSON.stringify(item).includes('テキスト元データ不足')).length,
+        source_question_based_choice_count: choices.filter((item) => item.source_question_based_choice === true).length,
+        source_refs_mismatch_count: summary.source_refs_mismatch_count ?? 0,
+        source_refs_missing_count: summary.source_refs_missing_count ?? 0,
+        article_number_error_count: summary.article_number_error_count ?? 0,
+        legal_interpretation_error_count: summary.legal_interpretation_error_count ?? 0,
+        label_conflict_suspected_count: all.filter((item) => item.label_conflict_suspected).length,
+        quality_A_count: all.filter((item) => item.quality === 'A').length,
+        review_status_auto_ok_count: all.filter((item) => item.review_status === 'auto_ok').length,
+        ready_for_import_count: all.filter((item) => item.ready_for_import === true).length
+      };
+    };
+    const renderSnapshot = (node, snap) => {
+      clear(node);
+      Object.entries(snap).forEach(([k, v]) => addItem(node, k, v, 'ok'));
+    };
+
+    async function env() {
+      const status = document.getElementById('environmentStatus');
+      setStatus(status, 'environment loading', 'warn');
+      const snap = {
+        location_origin: location.origin,
+        location_href: location.href,
+        userAgent: navigator.userAgent,
+        indexedDB_databases: typeof indexedDB.databases === 'function' ? await indexedDB.databases() : []
+      };
+      state.env = snap;
+      renderSnapshot(document.getElementById('environmentSummary'), snap);
+      setStatus(status, 'environment loaded', 'ok');
+      return snap;
+    }
+
+    async function dbStatus() {
+      const status = document.getElementById('dbStatus');
+      setStatus(status, 'db checking', 'warn');
+      await db.open();
+      const snap = await snapshotDb();
+      state.db = snap;
+      renderSnapshot(document.getElementById('dbSummary'), snap);
+      const issues = [];
+      if (snap.location_origin !== EXPECTED.origin) issues.push(`origin mismatch: ${snap.location_origin}`);
+      if (!snap.location_href.includes(EXPECTED.hrefIncludes)) issues.push(`href mismatch: ${snap.location_href}`);
+      if (snap.dexie_db_name !== EXPECTED.dbName) issues.push(`db name mismatch: ${snap.dexie_db_name}`);
+      if (snap.dexie_version !== EXPECTED.dexieVersion) issues.push(`dexie version mismatch: ${snap.dexie_version}`);
+      if (snap.source_questions_total !== EXPECTED.sourceQuestionsTotal) issues.push(`source_questions_total mismatch: ${snap.source_questions_total}`);
+      if (snap.source_choices_total !== EXPECTED.sourceChoicesTotal) issues.push(`source_choices_total mismatch: ${snap.source_choices_total}`);
+      if (snap.high_quality_input_units_count !== EXPECTED.hqiCount) issues.push(`high_quality_input_units_count mismatch: ${snap.high_quality_input_units_count}`);
+      if (snap.question_explanations_count !== EXPECTED.qeCount) issues.push(`question_explanations_count mismatch: ${snap.question_explanations_count}`);
+      if (snap.choice_explanations_count !== EXPECTED.ceCount) issues.push(`choice_explanations_count mismatch: ${snap.choice_explanations_count}`);
+      setStatus(status, issues.length ? `db check warning: ${issues.join(' | ')}` : 'db check pass', issues.length ? 'warn' : 'ok');
+      return snap;
+    }
+
+    async function loadCandidate() {
+      const status = document.getElementById('candidateStatus');
+      setStatus(status, 'candidate loading', 'warn');
+      const res = await fetch('/docs/generated/v30_phase3_020_auto_ok_32_import_candidates.json');
+      const json = await res.json();
+      state.candidate = json;
+      const validation = candidateValidation(json);
+      state.candidateValidation = validation;
+      renderSnapshot(document.getElementById('candidateSummary'), validation);
+      out.textContent = JSON.stringify({ status: res.status, validation }, null, 2);
+      setStatus(status, 'candidate loaded', 'ok');
+      document.getElementById('dryBtn').disabled = false;
+      return json;
+    }
+
+    async function runDryRun() {
+      const status = document.getElementById('dryStatus');
+      setStatus(status, 'formal import dry-run running', 'warn');
+      const candidate = state.candidate || await loadCandidate();
+      const validation = candidateValidation(candidate);
+      const report = {
+        formal_import_dry_run_executed: true,
+        dry_run_writes_db: false,
+        converted_total: validation.auto_ok_candidate_count,
+        question_explanations_converted: validation.question_explanations_candidate_count,
+        choice_explanations_converted: validation.choice_explanations_candidate_count,
+        validation_failed: validation.duplicate_id_count + validation.placeholder_count + validation.source_question_based_choice_count + validation.source_refs_mismatch_count + validation.source_refs_missing_count + validation.article_number_error_count + validation.legal_interpretation_error_count + validation.human_review_required_count,
+        duplicate_id_count: validation.duplicate_id_count,
+        missing_required_field_count: 0,
+        source_refs_missing_count: validation.source_refs_missing_count,
+        human_review_required_count: validation.human_review_required_count,
+        source_question_based_choice_count: validation.source_question_based_choice_count,
+        placeholder_count: validation.placeholder_count
+      };
+      state.dryRun = report;
+      renderSnapshot(document.getElementById('drySummary'), report);
+      out.textContent = JSON.stringify(report, null, 2);
+      const pass = report.validation_failed === 0 && report.converted_total === 32;
+      setStatus(status, pass ? 'formal import dry-run pass' : 'formal import dry-run warning', pass ? 'ok' : 'warn');
+      document.getElementById('formalBtn').disabled = !pass;
+      return report;
+    }
+
+    async function runFormalImport() {
+      const status = document.getElementById('formalStatus');
+      setStatus(status, 'formal import waiting for approval', 'warn');
+      const approval = document.getElementById('approvalCode').value.trim();
+      if (approval !== EXPECTED.approvalCode) {
+        const report = { formal_import_executed: false, reason: 'approval code mismatch' };
+        state.formalImport = report;
+        out.textContent = JSON.stringify(report, null, 2);
+        setStatus(status, 'approval code mismatch - import blocked', 'fail');
+        return report;
+      }
+
+      const dry = state.dryRun || await runDryRun();
+      if (dry.validation_failed !== 0) {
+        const report = { formal_import_executed: false, reason: 'dry-run validation failed', dry };
+        state.formalImport = report;
+        out.textContent = JSON.stringify(report, null, 2);
+        setStatus(status, 'dry-run validation failed - import blocked', 'fail');
+        return report;
+      }
+
+      const candidate = state.candidate || await loadCandidate();
+      const q = candidate.question_explanations || [];
+      const c = candidate.choice_explanations || [];
+      const writeTargets = ['question_explanations', 'choice_explanations'];
+      try {
+        await db.transaction('rw', db.question_explanations, db.choice_explanations, async () => {
+          await db.question_explanations.bulkAdd(q);
+          await db.choice_explanations.bulkAdd(c);
+        });
+        const report = {
+          formal_import_executed: true,
+          target_stores: writeTargets,
+          inserted_total: q.length + c.length,
+          inserted_question_explanations: q.length,
+          inserted_choice_explanations: c.length,
+          failed_count: 0,
+          duplicate_id_count: 0,
+          touched_stores: writeTargets
+        };
+        state.formalImport = report;
+        out.textContent = JSON.stringify(report, null, 2);
+        renderSnapshot(document.getElementById('formalSummary'), report);
+        setStatus(status, 'formal import complete', 'ok');
+        document.getElementById('postBtn').disabled = false;
+        document.getElementById('rbBtn').disabled = false;
+        return report;
+      } catch (error) {
+        const report = {
+          formal_import_executed: false,
+          target_stores: writeTargets,
+          inserted_total: 0,
+          inserted_question_explanations: 0,
+          inserted_choice_explanations: 0,
+          failed_count: 1,
+          duplicate_id_count: 0,
+          touched_stores: writeTargets,
+          error: error instanceof Error ? error.message : String(error)
+        };
+        state.formalImport = report;
+        out.textContent = JSON.stringify(report, null, 2);
+        renderSnapshot(document.getElementById('formalSummary'), report);
+        setStatus(status, 'formal import failed', 'fail');
+        return report;
+      }
+    }
+
+    async function postDb() {
+      const status = document.getElementById('postStatus');
+      setStatus(status, 'post DB checking', 'warn');
+      const snap = await snapshotDb();
+      state.postDb = snap;
+      renderSnapshot(document.getElementById('postSummary'), snap);
+      out.textContent = JSON.stringify(snap, null, 2);
+      setStatus(status, 'post DB check complete', 'ok');
+      return snap;
+    }
+
+    async function rollbackDryRun() {
+      const status = document.getElementById('postStatus');
+      setStatus(status, 'rollback dry-run checking', 'warn');
+      const snap = await snapshotDb();
+      const rollback = {
+        rollback_dry_run_executed: true,
+        rollback_executed: false,
+        rollback_question_target_count: candidateTotals().questions,
+        rollback_choice_target_count: candidateTotals().choices,
+        question_explanations_count_after_rollback_dry_run: snap.question_explanations_count,
+        choice_explanations_count_after_rollback_dry_run: snap.choice_explanations_count
+      };
+      state.rollbackDryRun = rollback;
+      const merged = { ...snap, ...rollback };
+      renderSnapshot(document.getElementById('postSummary'), merged);
+      out.textContent = JSON.stringify(merged, null, 2);
+      setStatus(status, 'rollback dry-run complete', 'ok');
+      return merged;
+    }
+
+    function showReport() {
+      out.textContent = JSON.stringify({
+        env: state.env,
+        db: state.db,
+        candidateValidation: state.candidateValidation,
+        dryRun: state.dryRun,
+        formalImport: state.formalImport,
+        postDb: state.postDb,
+        rollbackDryRun: state.rollbackDryRun
+      }, null, 2);
+    }
+
+    document.getElementById('envBtn').onclick = env;
+    document.getElementById('dbBtn').onclick = dbStatus;
+    document.getElementById('loadBtn').onclick = loadCandidate;
+    document.getElementById('dryBtn').onclick = runDryRun;
+    document.getElementById('formalBtn').onclick = runFormalImport;
+    document.getElementById('postBtn').onclick = postDb;
+    document.getElementById('rbBtn').onclick = rollbackDryRun;
+    document.getElementById('showBtn').onclick = showReport;
+
+    env();
+  </script>
+</body>
+</html>

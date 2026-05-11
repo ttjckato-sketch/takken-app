@@ -1,0 +1,36 @@
+# V30 Phase3-020 auto_ok 32 post import audit
+
+- target_origin: http://127.0.0.1:5173
+- canonical_url: http://127.0.0.1:5173/takken-app/tools/dev-pages/v30-phase3-020-auto-ok-32-formal-import.html
+- dexie_db_name: TakkenOS_DB
+- dexie_version: 30
+- source_questions_total: 1524
+- source_choices_total: 3024
+- high_quality_input_units_count: 20
+- question_explanations_count: 20
+- choice_explanations_count: 12
+- question_explanations_auto_ok_count: 20
+- choice_explanations_auto_ok_count: 12
+- human_review_required_count: 0
+- label_conflict_suspected_count: 0
+- source_refs_missing_count: 0
+- source_refs_mismatch_count: 0
+- placeholder_count: 0
+- source_question_based_choice_count: 0
+- duplicate_id_count: 0
+- human_review_28_inserted: false
+- human_review_required_true_in_db: 0
+- source_question_based_choice_in_db: 0
+- rollback_dry_run_executed: true
+- rollback_executed: false
+- rollback_question_target_count: 20
+- rollback_choice_target_count: 12
+- question_explanations_count_after_rollback_dry_run: 20
+- choice_explanations_count_after_rollback_dry_run: 12
+- source_questions_changed: false
+- source_choices_changed: false
+- high_quality_input_units_changed: false
+- study_events_changed: false
+- memory_cards_changed: false
+- memory_card_progress_changed: false
+- screenshot: unavailable (Playwright screenshot timeout)

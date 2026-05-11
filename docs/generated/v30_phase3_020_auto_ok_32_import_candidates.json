@@ -1,0 +1,2342 @@
+{
+  "meta": {
+    "title": "Phase3-020 auto_ok 32 import candidates",
+    "source_path": "docs/generated/v30_pilot_question_choice_explanations_phase3_020.json",
+    "generated_at": "2026-05-11T07:24:12.991Z",
+    "model": "gpt-5.4-mini medium"
+  },
+  "summary": {
+    "total_items": 32,
+    "question_explanations_auto_ok_count": 20,
+    "choice_explanations_auto_ok_count": 12,
+    "duplicate_id_count": 0,
+    "placeholder_count": 0,
+    "source_question_based_choice_count": 0,
+    "human_review_required_count": 0,
+    "label_conflict_suspected_count": 0,
+    "source_refs_missing_count": 0,
+    "source_refs_mismatch_count": 0,
+    "article_number_error_count": 0,
+    "legal_interpretation_error_count": 0,
+    "yes_no_lead_missing_count": 0,
+    "ready_for_import_count": 32
+  },
+  "question_explanations": [
+    {
+      "id": "QE-v30-pilot-phase3-001",
+      "question_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "question_focus": "遺産分割で農地の所有権を取得する場面が、3条許可の要否にどう影響するか",
+      "key_phrases": [
+        {
+          "phrase": "農地法第3条",
+          "why_important": "農地法第3条は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "遺産の分割により農地の所有権を取得する場合",
+          "why_important": "遺産の分割により農地の所有権を取得する場合は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "農地法第3条の許可を得る必要はない",
+          "why_important": "農地法第3条の許可を得る必要はないは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。」。固有語句を手がかりに、遺産分割で農地の所有権を取得する場面が、3条許可の要否にどう影響するかを判断する。",
+      "issue_structure": "遺産分割で農地の所有権を取得する場面が、3条許可の要否にどう影響するかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "農地法3条は権利移転の基本ルールだが、相続や遺産分割のような承継取得には許可を要しない。",
+      "rule_source": "農地法 3条",
+      "article_or_section": "3条",
+      "application_to_question": "遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。。この事案では、問題文の「遺産の分割により」「農地の所有権を取得する」という語から、売買ではなく承継取得の例外を見抜く。。したがって、結論は 遺産分割で農地の所有権を取得する場合は、農地法3条の許可は不要。 となる。",
+      "correct_conclusion": "結論：遺産分割で農地の所有権を取得する場合は、農地法3条の許可は不要。",
+      "why_this_answer": "農地法3条は権利移転の基本ルールだが、相続や遺産分割のような承継取得には許可を要しない。。遺産分割は相続の場面に連なる承継取得であり、売買や交換のような通常の権利移転とは扱いが違う。3条の許可制度は、農地の権利移動を把握するためのものだが、相続・遺産分割には許可を課さない。。問題文の事実を順に当てはめると、遺産分割で農地の所有権を取得する場合は、農地法3条の許可は不要。 で結論が固定される。",
+      "common_misread": "「農地の所有権を取得する」とだけ見て、売買や交換と同じ許可制だと短絡すると誤る。遺産分割は相続処理であり、3条許可の対象外だ。",
+      "trap_points": [
+        {
+          "trap": "所有権を取得するなら常に3条許可が必要と読む",
+          "why_trap": "承継取得の例外を落とすため",
+          "how_to_avoid": "相続・遺産分割・時効取得の文言があれば、まず許可不要の例外を疑う"
+        },
+        {
+          "trap": "農地法の3条と4条/5条を混同する",
+          "why_trap": "転用の論点を持ち込むと判断を誤る",
+          "how_to_avoid": "権利移転か転用かを先に分ける"
+        }
+      ],
+      "memory_hook": "遺産分割は3条許可不要",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "3条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-002",
+      "question_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "question_focus": "自己所有農地の転用で、市街化区域内なら許可ではなく届出で足りるか",
+      "key_phrases": [
+        {
+          "phrase": "市街化区域内",
+          "why_important": "市街化区域内は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "自己所有の農地",
+          "why_important": "自己所有の農地は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "駐車場",
+          "why_important": "駐車場は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。」。固有語句を手がかりに、自己所有農地の転用で、市街化区域内なら許可ではなく届出で足りるかを判断する。",
+      "issue_structure": "自己所有農地の転用で、市街化区域内なら許可ではなく届出で足りるかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "農地法4条は自己所有農地の転用を規律し、市街化区域内では農業委員会への届出で足りる。",
+      "rule_source": "農地法 4条",
+      "article_or_section": "4条",
+      "application_to_question": "市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。。この事案では、「自己所有」「転用」「市街化区域内」という3語がそろったら、4条の届出特例をまず確認する。。したがって、結論は 市街化区域内の自己所有農地を転用する4条場面は、届出で足りる。 となる。",
+      "correct_conclusion": "結論：市街化区域内の自己所有農地を転用する4条場面は、届出で足りる。",
+      "why_this_answer": "農地法4条は自己所有農地の転用を規律し、市街化区域内では農業委員会への届出で足りる。。問題文は自己所有の農地を駐車場に変える転用場面であり、権利移転ではない。4条の市街化区域内特例は「届出」で足りるため、許可を要求する結論は取り違えである。。問題文の事実を順に当てはめると、市街化区域内の自己所有農地を転用する4条場面は、届出で足りる。 で結論が固定される。",
+      "common_misread": "3条の権利移転ルールと、4条の自己転用ルールを混ぜると、必要な手続を過大に読んでしまう。",
+      "trap_points": [
+        {
+          "trap": "市街化区域内なら何でも届出と考える",
+          "why_trap": "5条や3条との区別を落とすため",
+          "how_to_avoid": "まず3条/4条/5条を特定してから市街化区域内特例を見る"
+        },
+        {
+          "trap": "自己所有農地でも権利移転と誤る",
+          "why_trap": "転用と移転の違いを見失うため",
+          "how_to_avoid": "所有者が変わるのか、用途だけ変わるのかを先に見る"
+        }
+      ],
+      "memory_hook": "4条は自己転用、区域内は届出",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "4条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-003",
+      "question_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "source_question_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "card_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "question_focus": "市街化区域内の農地を宅地化する目的で権利取得する場合の5条手続",
+      "key_phrases": [
+        {
+          "phrase": "市街化区域内",
+          "why_important": "市街化区域内は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "農地",
+          "why_important": "農地は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "住宅を建設する目的で市街化区域内の農地の所有権を",
+          "why_important": "住宅を建設する目的で市街化区域内の農地の所有権をは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "あらかじめ農業委員会に届け出た場合には",
+          "why_important": "あらかじめ農業委員会に届け出た場合にはは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。」。固有語句を手がかりに、市街化区域内の農地を宅地化する目的で権利取得する場合の5条手続を判断する。",
+      "issue_structure": "市街化区域内の農地を宅地化する目的で権利取得する場合の5条手続を、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "農地法5条は転用目的の権利移転を規律し、市街化区域内では届出で足りる。",
+      "rule_source": "農地法 5条",
+      "article_or_section": "5条",
+      "application_to_question": "住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。。この事案では、「宅地とする目的」「権利を取得」「市街化区域内」は5条の届出特例の典型。。したがって、結論は 市街化区域内で農地を宅地にするための権利取得は、5条の届出で足りる。 となる。",
+      "correct_conclusion": "結論：市街化区域内で農地を宅地にするための権利取得は、5条の届出で足りる。",
+      "why_this_answer": "農地法5条は転用目的の権利移転を規律し、市街化区域内では届出で足りる。。問題文は「宅地とする目的で権利を取得する」ので、5条の転用目的の権利取得に該当する。市街化区域内なら届出で足り、都道府県知事の許可までは不要だ。。問題文の事実を順に当てはめると、市街化区域内で農地を宅地にするための権利取得は、5条の届出で足りる。 で結論が固定される。",
+      "common_misread": "5条を3条の権利移転や4条の自己転用と混ぜると、許可と届出を逆に読む。",
+      "trap_points": [
+        {
+          "trap": "農地の取得だから3条だと決める",
+          "why_trap": "転用目的を見落とすから",
+          "how_to_avoid": "取得の目的が転用なら5条、単なる移転なら3条"
+        },
+        {
+          "trap": "市街化区域内でも許可が必要と読む",
+          "why_trap": "届出特例を忘れるから",
+          "how_to_avoid": "4条・5条の市街化区域内特例は届出であると固定する"
+        }
+      ],
+      "memory_hook": "5条は転用目的の権利取得",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "5条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-004",
+      "question_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "question_focus": "35条書面と37条書面の役割、記名者、説明の要否を一目で切り分けること",
+      "key_phrases": [
+        {
+          "phrase": "宅地建物取引士",
+          "why_important": "宅地建物取引士は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "記名",
+          "why_important": "記名は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "法第35条に規定する重要事項を記載した書面には",
+          "why_important": "法第35条に規定する重要事項を記載した書面にはは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "説明した宅地建物取引士Cが記名をしたが",
+          "why_important": "説明した宅地建物取引士Cが記名をしたがは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引...」。固有語句を手がかりに、35条書面と37条書面の役割、記名者、説明の要否を一目で切り分けることを判断する。",
+      "issue_structure": "35条書面と37条書面の役割、記名者、説明の要否を一目で切り分けることを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "35条書面は契約成立前に相手方へ説明する書面で、37条書面は契約成立後に当事者へ交付する書面である。",
+      "rule_source": "宅地建物取引業法 35条 / 宅地建物取引業法 37条",
+      "article_or_section": "35条、37条",
+      "application_to_question": "法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した。。この事案では、「契約前」「重要事項」「説明」があれば35条、「契約成立後」「書面」「交付」があれば37条。。したがって、結論は 35条は契約前の重要事項説明、37条は契約後の書面交付。 となる。",
+      "correct_conclusion": "結論：35条は契約前の重要事項説明、37条は契約後の書面交付。",
+      "why_this_answer": "35条書面は契約成立前に相手方へ説明する書面で、37条書面は契約成立後に当事者へ交付する書面である。。問題文は35条書面と37条書面を同じ宅建士が処理している場面だが、問われるのは「記名者の差」ではなく、書面の機能とタイミングの差である。35条は説明、37条は交付という役割を固定して読む。。問題文の事実を順に当てはめると、35条は契約前の重要事項説明、37条は契約後の書面交付。 で結論が固定される。",
+      "common_misread": "35条と37条はどちらも宅建業法の書面だが、契約前か契約後か、説明か交付かで役割が逆転しやすい。",
+      "trap_points": [
+        {
+          "trap": "35条と37条をどちらも契約後の書面と読む",
+          "why_trap": "タイミングの差を落とすから",
+          "how_to_avoid": "35条は前、37条は後で固定する"
+        },
+        {
+          "trap": "説明と交付を混同する",
+          "why_trap": "試験で最も狙われる混同点だから",
+          "how_to_avoid": "35条は説明、37条は交付と短く暗記する"
+        }
+      ],
+      "memory_hook": "35条は前に説明、37条は後に交付",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "35条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        },
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-005",
+      "question_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "source_question_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "card_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "question_focus": "売主・媒介業者・買主の関係の中で、35条説明義務が誰に向くか",
+      "key_phrases": [
+        {
+          "phrase": "買主",
+          "why_important": "買主は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "35条",
+          "why_important": "35条は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "重要事項の説明",
+          "why_important": "重要事項の説明は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規...」。固有語句を手がかりに、売主・媒介業者・買主の関係の中で、35条説明義務が誰に向くかを判断する。",
+      "issue_structure": "売主・媒介業者・買主の関係の中で、35条説明義務が誰に向くかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "35条は、契約の相手方が判断材料を得られるよう、宅建業者が相手方へ重要事項を説明する仕組みだ。",
+      "rule_source": "宅地建物取引業法 35条",
+      "article_or_section": "35条",
+      "application_to_question": "宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う。。この事案では、「買主に対して」「重要事項の説明」という語があるので、説明主体が宅建業者であることを見抜く。。したがって、結論は 35条説明義務は、宅建業者が取引の相手方に対して負う。 となる。",
+      "correct_conclusion": "結論：35条説明義務は、宅建業者が取引の相手方に対して負う。",
+      "why_this_answer": "35条は、契約の相手方が判断材料を得られるよう、宅建業者が相手方へ重要事項を説明する仕組みだ。。問題文は売主A、媒介業者B、買主の媒介業者Cという三者関係だが、35条の本質は「誰が誰へ説明するか」にある。相手方が宅建業者かどうかで説明省略の可否が変わる点を押さえる。。問題文の事実を順に当てはめると、35条説明義務は、宅建業者が取引の相手方に対して負う。 で結論が固定される。",
+      "common_misread": "売主自身にも説明義務が広がると誤読しやすいが、35条の中心は宅建業者の説明義務であって当事者全員ではない。",
+      "trap_points": [
+        {
+          "trap": "売主も35条説明義務者だと読む",
+          "why_trap": "業者間取引の見分けを誤るから",
+          "how_to_avoid": "35条の説明主体は宅建業者と固定する"
+        },
+        {
+          "trap": "媒介業者がいるから説明不要と読む",
+          "why_trap": "媒介と説明義務を混同するから",
+          "how_to_avoid": "媒介の有無と35条義務は別物と分ける"
+        }
+      ],
+      "memory_hook": "35条説明は宅建業者→相手方",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "35条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-006",
+      "question_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "question_focus": "37条書面に記載する内容を、35条説明時の図書で代替したように見える場面の処理",
+      "key_phrases": [
+        {
+          "phrase": "37条書面",
+          "why_important": "37条書面は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "図書",
+          "why_important": "図書は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "記載",
+          "why_important": "記載は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "建築工事完了前",
+          "why_important": "建築工事完了前は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要...」。固有語句を手がかりに、37条書面に記載する内容を、35条説明時の図書で代替したように見える場面の処理を判断する。",
+      "issue_structure": "37条書面に記載する内容を、35条説明時の図書で代替したように見える場面の処理を、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "37条書面は契約内容を固定するための書面で、契約成立後に両当事者へ交付する。",
+      "rule_source": "宅地建物取引業法 37条",
+      "article_or_section": "37条",
+      "application_to_question": "Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った。。この事案では、「37条書面に記載する」「契約成立後」のセットを見たら、契約内容の固定に視点を置く。。したがって、結論は 37条書面は契約後の書面であり、35条の図書でそのまま代替できるとは限らない。 となる。",
+      "correct_conclusion": "結論：37条書面は契約後の書面であり、35条の図書でそのまま代替できるとは限らない。",
+      "why_this_answer": "37条書面は契約内容を固定するための書面で、契約成立後に両当事者へ交付する。。建築工事完了前の売買では、物件特定のための表示や説明資料が絡むが、37条書面の本質は契約後の内容固定である。35条で使った図書をそのまま37条に置換できるかではなく、37条として必要記載が満たされるかで読む。。問題文の事実を順に当てはめると、37条書面は契約後の書面であり、35条の図書でそのまま代替できるとは限らない。 で結論が固定される。",
+      "common_misread": "説明時に使った図書があるからといって、37条の書面要件まで当然に満たすわけではない。",
+      "trap_points": [
+        {
+          "trap": "35条の資料があれば37条も足りると読む",
+          "why_trap": "別書面の独立性を落とすから",
+          "how_to_avoid": "35条資料と37条書面は役割が違うと固定する"
+        },
+        {
+          "trap": "工事完了前だから37条不要と読む",
+          "why_trap": "売買契約自体の書面要件を忘れるから",
+          "how_to_avoid": "完成前でも契約があれば37条は問題になる"
+        }
+      ],
+      "memory_hook": "37条は契約後の確定書面",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-007",
+      "question_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "source_question_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "card_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "question_focus": "専任媒介契約の有効期間と更新の上限を切り分けること",
+      "key_phrases": [
+        {
+          "phrase": "専任媒介契約",
+          "why_important": "専任媒介契約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "有効期間",
+          "why_important": "有効期間は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "3月",
+          "why_important": "3月は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "更新",
+          "why_important": "更新は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3...」。固有語句を手がかりに、専任媒介契約の有効期間と更新の上限を切り分けることを判断する。",
+      "issue_structure": "専任媒介契約の有効期間と更新の上限を切り分けることを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "専任媒介契約は有効期間3か月以内、更新も依頼者の申出があれば3か月以内である。",
+      "rule_source": "宅地建物取引業法 34条の2",
+      "article_or_section": "34条の2",
+      "application_to_question": "専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい。。この事案では、「3月を超えることができず」「更新の時から3月を超えない範囲」という言い回しに反応する。。したがって、結論は 専任媒介契約の有効期間は3か月が上限で、更新も3か月以内。 となる。",
+      "correct_conclusion": "結論：専任媒介契約の有効期間は3か月が上限で、更新も3か月以内。",
+      "why_this_answer": "専任媒介契約は有効期間3か月以内、更新も依頼者の申出があれば3か月以内である。。媒介契約では期間の上限が数字で問われる。問題文は有効期間と更新の双方を問うため、3か月という数字を固定し、延長できるが3か月超にはできないという二段階で覚える。。問題文の事実を順に当てはめると、専任媒介契約の有効期間は3か月が上限で、更新も3か月以内。 で結論が固定される。",
+      "common_misread": "有効期間と更新期間を別々に見て、片方だけ長く設定できると誤読しやすい。",
+      "trap_points": [
+        {
+          "trap": "更新は無制限にできると読む",
+          "why_trap": "更新上限を落とすから",
+          "how_to_avoid": "更新も3か月以内で固定する"
+        },
+        {
+          "trap": "一般媒介にも同じ制限があると読む",
+          "why_trap": "媒介種別差を見失うから",
+          "how_to_avoid": "一般/専任/専属専任を分けて読む"
+        }
+      ],
+      "memory_hook": "専任媒介は3か月上限",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-008",
+      "question_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "source_question_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "card_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "question_focus": "専属専任媒介契約の報告方法と、電子メールの可否を切り分けること",
+      "key_phrases": [
+        {
+          "phrase": "専属専任媒介契約",
+          "why_important": "専属専任媒介契約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "電子メール",
+          "why_important": "電子メールは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "報告",
+          "why_important": "報告は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。」。固有語句を手がかりに、専属専任媒介契約の報告方法と、電子メールの可否を切り分けることを判断する。",
+      "issue_structure": "専属専任媒介契約の報告方法と、電子メールの可否を切り分けることを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "専属専任媒介契約は処理状況の報告頻度と登録義務が重いが、報告方法まで一律に紙へ限定されるわけではない。",
+      "rule_source": "宅地建物取引業法 34条の2",
+      "article_or_section": "34条の2",
+      "application_to_question": "A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。。この事案では、「電子メールで行うことはできない」と読んだ瞬間に、方法制限の有無を条文ベースで確認する。。したがって、結論は 専属専任媒介契約の処理状況報告は、電子メールで行えないわけではない。 となる。",
+      "correct_conclusion": "結論：専属専任媒介契約の処理状況報告は、電子メールで行えないわけではない。",
+      "why_this_answer": "専属専任媒介契約は処理状況の報告頻度と登録義務が重いが、報告方法まで一律に紙へ限定されるわけではない。。媒介契約の典型ひっかけは、頻度・登録・方法を一まとめにして極端に言い換えること。ここでは「電子メールで行うことはできない」とあるが、手段の可否と義務の有無は別に判断する。。問題文の事実を順に当てはめると、専属専任媒介契約の処理状況報告は、電子メールで行えないわけではない。 で結論が固定される。",
+      "common_misread": "「専属専任だから厳格に紙のみ」と思い込むと、IT対応や実務運用の細かい規定を落とす。",
+      "trap_points": [
+        {
+          "trap": "専属専任は何でも厳しいからメール不可と読む",
+          "why_trap": "感覚で判断すると外れるから",
+          "how_to_avoid": "頻度・登録・方法を分けて確認する"
+        },
+        {
+          "trap": "REINS登録と報告方法を同一視する",
+          "why_trap": "別の義務だから",
+          "how_to_avoid": "登録は機構向け、報告は依頼者向けと切る"
+        }
+      ],
+      "memory_hook": "専属専任は頻度重、方法は別",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-009",
+      "question_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "question_focus": "標準媒介契約約款に基づかない場合の表示義務を読み分けること",
+      "key_phrases": [
+        {
+          "phrase": "標準媒介契約約款",
+          "why_important": "標準媒介契約約款は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "書面",
+          "why_important": "書面は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "表示",
+          "why_important": "表示は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "業務停止処分",
+          "why_important": "業務停止処分は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。」。固有語句を手がかりに、標準媒介契約約款に基づかない場合の表示義務を読み分けることを判断する。",
+      "issue_structure": "標準媒介契約約款に基づかない場合の表示義務を読み分けることを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "媒介契約書面は、約款の有無や契約条件の表示をきちんと分けて、依頼者が内容を把握できるようにする。",
+      "rule_source": "宅地建物取引業法 34条の2",
+      "article_or_section": "34条の2",
+      "application_to_question": "AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。。この事案では、「標準媒介契約約款に基づかない」とあれば、表示義務を連想する。。したがって、結論は 標準媒介契約約款に基づかない書面は、その旨の表示が必要。 となる。",
+      "correct_conclusion": "結論：標準媒介契約約款に基づかない書面は、その旨の表示が必要。",
+      "why_this_answer": "媒介契約書面は、約款の有無や契約条件の表示をきちんと分けて、依頼者が内容を把握できるようにする。。標準約款かどうかは、媒介契約の透明性を担保する重要ポイントだ。問題文では、約款に基づかない書面を交付した場合の表示義務が問われているので、表示漏れと処分リスクを結びつけて読む。。問題文の事実を順に当てはめると、標準媒介契約約款に基づかない書面は、その旨の表示が必要。 で結論が固定される。",
+      "common_misread": "約款に基づかないこと自体が直ちに違法ではなく、表示を欠く点が問題になる。",
+      "trap_points": [
+        {
+          "trap": "書面の形式が違うだけで処分なしと読む",
+          "why_trap": "表示義務を落とすから",
+          "how_to_avoid": "約款外なら表示が要ると固定する"
+        },
+        {
+          "trap": "媒介契約書面の内容は自由でよいと読む",
+          "why_trap": "依頼者保護を見落とすから",
+          "how_to_avoid": "記載事項と表示義務をセットで覚える"
+        }
+      ],
+      "memory_hook": "約款外は表示義務",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-010",
+      "question_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "クーリング・オフ",
+      "question_focus": "買受け申込みの場所と、クーリング・オフ適用の可否を切り分けること",
+      "key_phrases": [
+        {
+          "phrase": "ホテルのロビー",
+          "why_important": "ホテルのロビーは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "自ら指定した",
+          "why_important": "自ら指定したは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "モデルルーム",
+          "why_important": "モデルルームは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "解除",
+          "why_important": "解除は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、B...」。固有語句を手がかりに、買受け申込みの場所と、クーリング・オフ適用の可否を切り分けることを判断する。",
+      "issue_structure": "買受け申込みの場所と、クーリング・オフ適用の可否を切り分けることを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "クーリング・オフは事務所等以外の場所での勧誘を広く保護するが、場所や手続の例外を問題文で丁寧に読む必要がある。",
+      "rule_source": "宅地建物取引業法 37条の2",
+      "article_or_section": "37条の2",
+      "application_to_question": "Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる。。この事案では、「自ら指定したホテルのロビー」「クーリング・オフについて何も告げられず」という語の組み合わせを拾う。。したがって、結論は 事務所等以外でも、買主自ら指定した場所ならクーリング・オフが制限される場面がある。 となる。",
+      "correct_conclusion": "結論：事務所等以外でも、買主自ら指定した場所ならクーリング・オフが制限される場面がある。",
+      "why_this_answer": "クーリング・オフは事務所等以外の場所での勧誘を広く保護するが、場所や手続の例外を問題文で丁寧に読む必要がある。。ホテルのロビーやモデルルームは一見すると事務所等以外に見えるが、「自ら指定したか」「書面告知があったか」を合わせて判断する。場所だけで即断すると外しやすい。。問題文の事実を順に当てはめると、事務所等以外でも、買主自ら指定した場所ならクーリング・オフが制限される場面がある。 で結論が固定される。",
+      "common_misread": "場所が事務所外なら自動で解除可と読むと、指定場所や引渡し等の制限を見落とす。",
+      "trap_points": [
+        {
+          "trap": "ホテルや喫茶店なら常に解除可と読む",
+          "why_trap": "指定場所の例外を落とすから",
+          "how_to_avoid": "場所の指定主体を確認する"
+        },
+        {
+          "trap": "書面告知がなくても場所次第で不可と読む",
+          "why_trap": "告知の有無を落とすから",
+          "how_to_avoid": "場所と書面の両方を判定する"
+        }
+      ],
+      "memory_hook": "場所だけでなく指定の有無を見る",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-011",
+      "question_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "source_question_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "card_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "クーリング・オフ",
+      "question_focus": "代金支払割合が高くても、8日以内なら解除できるか",
+      "key_phrases": [
+        {
+          "phrase": "代金の80％",
+          "why_important": "代金の80％は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "8日",
+          "why_important": "8日は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ホテルのロビー",
+          "why_important": "ホテルのロビーは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "解除",
+          "why_important": "解除は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を...」。固有語句を手がかりに、代金支払割合が高くても、8日以内なら解除できるかを判断する。",
+      "issue_structure": "代金支払割合が高くても、8日以内なら解除できるかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "クーリング・オフの期間制限は書面告知からの8日で管理され、支払割合だけで即座に失権しない。",
+      "rule_source": "宅地建物取引業法 37条の2",
+      "article_or_section": "37条の2",
+      "application_to_question": "買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすること...。この事案では、「代金の80％」「8日」を見たら、期間管理が主役であることを意識する。。したがって、結論は クーリング・オフは、代金の大半を払っていても、要件を満たせば8日以内は可能。 となる。",
+      "correct_conclusion": "結論：クーリング・オフは、代金の大半を払っていても、要件を満たせば8日以内は可能。",
+      "why_this_answer": "クーリング・オフの期間制限は書面告知からの8日で管理され、支払割合だけで即座に失権しない。。この問題は「80％を支払っていた」点で焦らせるが、クーリング・オフのカウントは期間と告知の起算が基本だ。支払割合の多寡は、別の例外要件と結びつけて読む。。問題文の事実を順に当てはめると、クーリング・オフは、代金の大半を払っていても、要件を満たせば8日以内は可能。 で結論が固定される。",
+      "common_misread": "代金の大半を支払ったから解除不可と短絡すると、制度の期間要件を落とす。",
+      "trap_points": [
+        {
+          "trap": "支払済み割合が大きいと解除不可と読む",
+          "why_trap": "期間要件を落とすから",
+          "how_to_avoid": "8日管理が基本で、支払割合は別条件と切る"
+        },
+        {
+          "trap": "書面告知があればいつでも解除可と読む",
+          "why_trap": "8日の上限を落とすから",
+          "how_to_avoid": "告知日から8日を必ず確認する"
+        }
+      ],
+      "memory_hook": "クーリングオフは8日管理",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-012",
+      "question_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "source_question_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "card_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "民法系",
+      "question_focus": "第三者の強迫がある場合に、相手方の善意悪意をどう扱うか",
+      "key_phrases": [
+        {
+          "phrase": "強迫",
+          "why_important": "強迫は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "第三者",
+          "why_important": "第三者は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "売買契約",
+          "why_important": "売買契約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "取り消す",
+          "why_important": "取り消すは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことが...」。固有語句を手がかりに、第三者の強迫がある場合に、相手方の善意悪意をどう扱うかを判断する。",
+      "issue_structure": "第三者の強迫がある場合に、相手方の善意悪意をどう扱うかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "民法96条の強迫は、相手方の第三者認識に左右されず、意思表示を保護する方向に働く。",
+      "rule_source": "民法 96条",
+      "article_or_section": "96条",
+      "application_to_question": "Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる。。この事案では、「第三者Cの強迫」「知っていたか否かにかかわらず」という語で、強迫取消しの強い保護を読む。。したがって、結論は 強迫による意思表示は、相手方が第三者の事情を知っていたかにかかわらず取り消せる。 となる。",
+      "correct_conclusion": "結論：強迫による意思表示は、相手方が第三者の事情を知っていたかにかかわらず取り消せる。",
+      "why_this_answer": "民法96条の強迫は、相手方の第三者認識に左右されず、意思表示を保護する方向に働く。。第三者の強迫が絡むと、詐欺の第三者保護の発想を混ぜやすいが、強迫はより強く取消しを認める。相手方Bが知っていたかどうかを問われても、取り消し可否は揺れない。。問題文の事実を順に当てはめると、強迫による意思表示は、相手方が第三者の事情を知っていたかにかかわらず取り消せる。 で結論が固定される。",
+      "common_misread": "詐欺の第三者保護と同じ感覚で読むと、強迫でも相手方善意悪意を問題にしてしまう。",
+      "trap_points": [
+        {
+          "trap": "詐欺と同じく第三者保護を考える",
+          "why_trap": "制度差を混同するから",
+          "how_to_avoid": "強迫は取消しが厚いと固定する"
+        },
+        {
+          "trap": "相手方Bの善意悪意が結論を左右すると読む",
+          "why_trap": "条文の読みを誤るから",
+          "how_to_avoid": "強迫は相手方事情に左右されにくいと覚える"
+        }
+      ],
+      "memory_hook": "強迫は第三者でも取消し可",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "96条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-013",
+      "question_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "source_question_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "card_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "民法系",
+      "question_focus": "無権代理人本人の相続と、追認拒絶権を誰が持つか",
+      "key_phrases": [
+        {
+          "phrase": "無権代理",
+          "why_important": "無権代理は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "追認拒絶権",
+          "why_important": "追認拒絶権は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "相続",
+          "why_important": "相続は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "自ら",
+          "why_important": "自らは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。」。固有語句を手がかりに、無権代理人本人の相続と、追認拒絶権を誰が持つかを判断する。",
+      "issue_structure": "無権代理人本人の相続と、追認拒絶権を誰が持つかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "無権代理は本人の追認があって初めて本人に効果が帰属し、追認拒絶の意思決定は本人側の権限として扱う。",
+      "rule_source": "民法 113条 / 民法 117条",
+      "article_or_section": "113条、117条",
+      "application_to_question": "Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。。この事案では、「無権代理行為」「追認拒絶権」「相続」という3語を見たら、本人と無権代理人の地位を分ける。。したがって、結論は 無権代理人の相続では、追認拒絶権の帰属を丁寧に分けて読む必要がある。 となる。",
+      "correct_conclusion": "結論：無権代理人の相続では、追認拒絶権の帰属を丁寧に分けて読む必要がある。",
+      "why_this_answer": "無権代理は本人の追認があって初めて本人に効果が帰属し、追認拒絶の意思決定は本人側の権限として扱う。。この問題は、無権代理人が死亡して相続が起きたときの権利関係を問う。代理権のない行為を本人の意思で救済するか否かが軸であり、相続によって何が承継されるかを見極める。。問題文の事実を順に当てはめると、無権代理人の相続では、追認拒絶権の帰属を丁寧に分けて読む必要がある。 で結論が固定される。",
+      "common_misread": "無権代理を「相続で全部引き継ぐ」と雑に読むと、追認拒絶の立場がずれる。",
+      "trap_points": [
+        {
+          "trap": "無権代理人が死ぬと責任も権利も単純承継と読む",
+          "why_trap": "相続と代理の構造を混同するから",
+          "how_to_avoid": "代理行為の効果帰属先と相続の対象を分ける"
+        },
+        {
+          "trap": "追認拒絶権を当然に使えると読む",
+          "why_trap": "誰が権限者かを落とすから",
+          "how_to_avoid": "追認・拒絶の主体を本文で特定する"
+        }
+      ],
+      "memory_hook": "無権代理は追認が鍵",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "113条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        },
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "117条",
+          "supports_field": [
+            "applicable_rule",
+            "trap_points"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-014",
+      "question_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "source_question_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "card_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "税・その他",
+      "question_focus": "宅地取得時の課税標準が半額計算になるかを、取得税の枠組みで読む",
+      "key_phrases": [
+        {
+          "phrase": "不動産取得税",
+          "why_important": "不動産取得税は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "宅地",
+          "why_important": "宅地は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "課税標準",
+          "why_important": "課税標準は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "2分の1",
+          "why_important": "2分の1は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。」。固有語句を手がかりに、宅地取得時の課税標準が半額計算になるかを、取得税の枠組みで読むを判断する。",
+      "issue_structure": "宅地取得時の課税標準が半額計算になるかを、取得税の枠組みで読むを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "不動産取得税は地方税法73条の2に基づく取得時課税で、住宅や宅地には特例の有無を確認する。",
+      "rule_source": "地方税法 73条の2",
+      "article_or_section": "73条の2",
+      "application_to_question": "令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。。この事案では、「宅地を取得」「課税標準」「2分の1」という数字に反応し、取得税の特例を当てる。。したがって、結論は 不動産取得税は取得時に一度だけ課税され、宅地には課税標準の軽減特例がある。 となる。",
+      "correct_conclusion": "結論：不動産取得税は取得時に一度だけ課税され、宅地には課税標準の軽減特例がある。",
+      "why_this_answer": "不動産取得税は地方税法73条の2に基づく取得時課税で、住宅や宅地には特例の有無を確認する。。この問題は、宅地取得に関する課税標準の調整を問う。登記の有無や後日の保有税と混ぜず、取得の瞬間にかかる税として整理する。。問題文の事実を順に当てはめると、不動産取得税は取得時に一度だけ課税され、宅地には課税標準の軽減特例がある。 で結論が固定される。",
+      "common_misread": "固定資産税や登録免許税と混同すると、課税のタイミングと対象を取り違える。",
+      "trap_points": [
+        {
+          "trap": "登記しないと課税されないと読む",
+          "why_trap": "取得税と登記税を混同するから",
+          "how_to_avoid": "不動産取得税は取得事実で見る"
+        },
+        {
+          "trap": "保有税と同じ感覚で毎年かかると読む",
+          "why_trap": "固定資産税と混ぜるから",
+          "how_to_avoid": "取得時一回課税と固定する"
+        }
+      ],
+      "memory_hook": "取得税は取得時だけ",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "地方税法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=325AC0000000226",
+          "law_name": "地方税法",
+          "article": "73条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778482275087,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-015",
+      "question_id": "CH-2021-01",
+      "source_question_id": "CH-2021-01",
+      "card_id": "CH-2021-01",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "question_focus": "管理受託契約の締結前説明で、誰が何を説明するか",
+      "key_phrases": [
+        {
+          "phrase": "管理受託契約",
+          "why_important": "管理受託契約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "重要事項の説明",
+          "why_important": "重要事項の説明は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "契約締結前",
+          "why_important": "契約締結前は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "賃貸住宅管理業者",
+          "why_important": "賃貸住宅管理業者は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「賃貸住宅の管理業務等の適正化に関する法律（以下、各問において「管理業法」という。）に定める賃貸住宅管理業者が管理受託契約締結前に行う重要事項の説明（以下、各問に...」。固有語句を手がかりに、管理受託契約の締結前説明で、誰が何を説明するかを判断する。",
+      "issue_structure": "管理受託契約の締結前説明で、誰が何を説明するかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。",
+      "rule_source": "賃貸住宅の管理業務等の適正化に関する法律 13条",
+      "article_or_section": "13条",
+      "application_to_question": "賃貸住宅の管理業務等の適正化に関する法律（以下、各問において「管理業法」という。）に定める賃貸住宅管理業者が管理受託契約締結前に行う重要事項の説明（以下、各問において「管理受託契約重要事項説明」という。）に関する次の記述のうち、適切なものは...。この事案では、「管理受託契約締結前」「重要事項の説明」という2語で、宅建業法35条との対比を思い出す。。したがって、結論は 管理受託契約の重要事項説明は、締結前に行う必要がある。 となる。",
+      "correct_conclusion": "結論：管理受託契約の重要事項説明は、締結前に行う必要がある。",
+      "why_this_answer": "賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。。管理受託契約は、貸主が管理業務を委ねる入口となるため、説明時期が重要だ。契約成立前に、委託内容・費用・再委託の扱いなどを確認させる設計で読む。。問題文の事実を順に当てはめると、管理受託契約の重要事項説明は、締結前に行う必要がある。 で結論が固定される。",
+      "common_misread": "契約後に説明すれば足りると読むと、制度の保護タイミングを外す。",
+      "trap_points": [
+        {
+          "trap": "契約後でもよいと読む",
+          "why_trap": "時期要件を落とすから",
+          "how_to_avoid": "締結前説明を固定する"
+        },
+        {
+          "trap": "宅建士でなければ説明できないと読む",
+          "why_trap": "宅建業法と混同するから",
+          "how_to_avoid": "管理業法は説明主体の要件が異なると覚える"
+        }
+      ],
+      "memory_hook": "管理業法13条は契約前説明",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "13条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-016",
+      "question_id": "CH-2023-27",
+      "source_question_id": "CH-2023-27",
+      "card_id": "CH-2023-27",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "question_focus": "業務管理者の設置単位と兼務の可否を整理すること",
+      "key_phrases": [
+        {
+          "phrase": "業務管理者",
+          "why_important": "業務管理者は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "営業所",
+          "why_important": "営業所は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "兼務",
+          "why_important": "兼務は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "管理業務",
+          "why_important": "管理業務は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「賃貸住宅管理業者及び業務管理者に関する次の記述のうち、正しいものはいくつあるか。A営業所の業務管理者は、B営業所の業務管理者がやむを得ない事情で業務を遂行するこ...」。固有語句を手がかりに、業務管理者の設置単位と兼務の可否を整理することを判断する。",
+      "issue_structure": "業務管理者の設置単位と兼務の可否を整理することを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。",
+      "rule_source": "賃貸住宅の管理業務等の適正化に関する法律 12条",
+      "article_or_section": "12条",
+      "application_to_question": "賃貸住宅管理業者及び業務管理者に関する次の記述のうち、正しいものはいくつあるか。A営業所の業務管理者は、B営業所の業務管理者がやむを得ない事情で業務を遂行することができなくなった場合には、B営業所の業務管理者を兼務することができる。賃貸住宅...。この事案では、「営業所」「兼務」「業務管理者」を見たら、拠点単位の設置義務を思い出す。。したがって、結論は 業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。 となる。",
+      "correct_conclusion": "結論：業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。",
+      "why_this_answer": "賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。。業務管理者の問題は、「何人必要か」より「どこに置くか」「どこまで兼務できるか」を問う。営業所等の実態を伴う拠点単位で判断するのが基本だ。。問題文の事実を順に当てはめると、業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。 で結論が固定される。",
+      "common_misread": "人数割合や宅建士の5人に1人ルールと混同しやすい。",
+      "trap_points": [
+        {
+          "trap": "5人に1人のような人数制限だと読む",
+          "why_trap": "宅建業法の設置義務と混ざるから",
+          "how_to_avoid": "賃貸管理業法は拠点ごとに1名以上と切る"
+        },
+        {
+          "trap": "どの営業所でも自由に兼務できると読む",
+          "why_trap": "実態のある拠点単位を落とすから",
+          "how_to_avoid": "業務の中心となる拠点を確認する"
+        }
+      ],
+      "memory_hook": "業務管理者は拠点ごと",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "12条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-017",
+      "question_id": "CH-2023-37",
+      "source_question_id": "CH-2023-37",
+      "card_id": "CH-2023-37",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "question_focus": "サブリース契約の勧誘で、将来の減額リスクをどう扱うか",
+      "key_phrases": [
+        {
+          "phrase": "特定転貸事業者",
+          "why_important": "特定転貸事業者は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "説明",
+          "why_important": "説明は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "特定転貸事業者が行う特定賃貸借契約重要事項説明に",
+          "why_important": "特定転貸事業者が行う特定賃貸借契約重要事項説明には問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "特定賃貸借契約の相手方になろうとする者に交付すべ",
+          "why_important": "特定賃貸借契約の相手方になろうとする者に交付すべは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「特定転貸事業者が行う特定賃貸借契約重要事項説明において、特定賃貸借契約の相手方になろうとする者に交付すべき書面（以下、各問において「特定賃貸借契約重要事項説明書...」。固有語句を手がかりに、サブリース契約の勧誘で、将来の減額リスクをどう扱うかを判断する。",
+      "issue_structure": "サブリース契約の勧誘で、将来の減額リスクをどう扱うかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。",
+      "rule_source": "賃貸住宅の管理業務等の適正化に関する法律 29条",
+      "article_or_section": "29条",
+      "application_to_question": "特定転貸事業者が行う特定賃貸借契約重要事項説明において、特定賃貸借契約の相手方になろうとする者に交付すべき書面（以下、各問において「特定賃貸借契約重要事項説明書」という。）に記載して説明すべき事項に関する次の記述のうち、誤っているものはどれ...。この事案では、「将来の家賃減額リスク」「特定転貸事業者」という語で、勧誘規制を直結させる。。したがって、結論は 特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。 となる。",
+      "correct_conclusion": "結論：特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。",
+      "why_this_answer": "賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。。サブリースは「家賃保証」という印象が強いが、実際には減額や解除の可能性がある。勧誘段階での不実告知・不告知が問題になるので、説明義務と勧誘規制を分けて読む。。問題文の事実を順に当てはめると、特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。 で結論が固定される。",
+      "common_misread": "契約書に書けば足りる、または勧誘者は対象外だと読むと誤る。",
+      "trap_points": [
+        {
+          "trap": "契約書で説明していれば勧誘は自由と読む",
+          "why_trap": "勧誘段階の規制を落とすから",
+          "how_to_avoid": "勧誘時点での不実告知禁止を固定する"
+        },
+        {
+          "trap": "勧誘を委託された者は対象外と読む",
+          "why_trap": "規制対象の広さを落とすから",
+          "how_to_avoid": "委託勧誘者も規制対象と覚える"
+        }
+      ],
+      "memory_hook": "サブリースは勧誘段階から注意",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "29条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-018",
+      "question_id": "CH-2017-12",
+      "source_question_id": "CH-2017-12",
+      "card_id": "CH-2017-12",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "借地借家法",
+      "question_focus": "定期借家契約の成立要件と、事前説明の位置づけ",
+      "key_phrases": [
+        {
+          "phrase": "定期建物賃貸借",
+          "why_important": "定期建物賃貸借は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "書面",
+          "why_important": "書面は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "事前説明",
+          "why_important": "事前説明は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "更新がない",
+          "why_important": "更新がないは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「定期建物賃貸借契約に関する次の記述のうち、適切なものの組合せはどれか。定期建物賃貸借契約の事前説明において「更新がなく、期間の満了により契約が終了する」旨を記載...」。固有語句を手がかりに、定期借家契約の成立要件と、事前説明の位置づけを判断する。",
+      "issue_structure": "定期借家契約の成立要件と、事前説明の位置づけを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。",
+      "rule_source": "借地借家法 38条",
+      "article_or_section": "38条",
+      "application_to_question": "定期建物賃貸借契約に関する次の記述のうち、適切なものの組合せはどれか。定期建物賃貸借契約の事前説明において「更新がなく、期間の満了により契約が終了する」旨を記載した書面を交付して口頭で説明したとしても、賃貸借契約書に「更新がなく、期間の満了...。この事案では、「契約の締結に先立って説明」「書面又は電磁的記録」の語を、そのまま成立要件と結びつける。。したがって、結論は 定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。 となる。",
+      "correct_conclusion": "結論：定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。",
+      "why_this_answer": "借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。。定期借家は、普通借家の更新保護を外す代わりに、借主が「更新がない」ことを事前に理解して契約する制度だ。書面と事前説明の二段構えを崩すと無効方向に傾く。。問題文の事実を順に当てはめると、定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。 で結論が固定される。",
+      "common_misread": "口頭説明だけで足りる、または契約書に書けば後でよいと読むと要件を落とす。",
+      "trap_points": [
+        {
+          "trap": "口頭説明だけでよいと読む",
+          "why_trap": "書面要件を落とすから",
+          "how_to_avoid": "事前説明は書面を交えて読む"
+        },
+        {
+          "trap": "契約期間が1年未満なら不可と読む",
+          "why_trap": "期間要件の誤解だから",
+          "how_to_avoid": "1年未満もありうると固定する"
+        }
+      ],
+      "memory_hook": "定期借家は書面と事前説明",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "借地借家法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=403AC0000000090",
+          "law_name": "借地借家法",
+          "article": "38条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-019",
+      "question_id": "CH-2019-10",
+      "source_question_id": "CH-2019-10",
+      "card_id": "CH-2019-10",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "借地借家法",
+      "question_focus": "普通借家での賃料増減額請求と、裁判確定までの賃料扱い",
+      "key_phrases": [
+        {
+          "phrase": "賃料増減額請求",
+          "why_important": "賃料増減額請求は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "普通建物賃貸借",
+          "why_important": "普通建物賃貸借は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "裁判",
+          "why_important": "裁判は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "特約",
+          "why_important": "特約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「普通建物賃貸借契約（定期建物賃貸借契約でない建物賃貸借契約をいう。以下、各問において同じ。）における賃料増減額請求に関する次の記述のうち、不適切なものの組合せは...」。固有語句を手がかりに、普通借家での賃料増減額請求と、裁判確定までの賃料扱いを判断する。",
+      "issue_structure": "普通借家での賃料増減額請求と、裁判確定までの賃料扱いを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。",
+      "rule_source": "借地借家法 32条",
+      "article_or_section": "32条",
+      "application_to_question": "普通建物賃貸借契約（定期建物賃貸借契約でない建物賃貸借契約をいう。以下、各問において同じ。）における賃料増減額請求に関する次の記述のうち、不適切なものの組合せはどれか。賃貸借契約の貸主の地位を複数の貸主が共に有する場合（ただし、各貸主の持分...。この事案では、「賃料増減額請求」という単語が出たら、更新ではなく価格調整の条文だと即座に分類する。。したがって、結論は 普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。 となる。",
+      "correct_conclusion": "結論：普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。",
+      "why_this_answer": "借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。。賃料増減額請求は、普通借家の中でも更新や解除とは別軸の論点だ。裁判が確定するまでに、どの賃料を支払うかを読み違えると失点しやすい。。問題文の事実を順に当てはめると、普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。 で結論が固定される。",
+      "common_misread": "更新拒絶や定期借家の終了通知と混同すると、請求の性質を取り違える。",
+      "trap_points": [
+        {
+          "trap": "更新拒絶の話だと読む",
+          "why_trap": "論点をすり替えるから",
+          "how_to_avoid": "賃料額の争いと更新拒絶を切り分ける"
+        },
+        {
+          "trap": "定期借家にも同じルールだと読む",
+          "why_trap": "普通借家と定期借家の差を落とすから",
+          "how_to_avoid": "まず普通借家かどうかを確認する"
+        }
+      ],
+      "memory_hook": "32条は賃料増減額請求",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "借地借家法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=403AC0000000090",
+          "law_name": "借地借家法",
+          "article": "32条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "QE-v30-pilot-phase3-020",
+      "question_id": "CH-2015-24",
+      "source_question_id": "CH-2015-24",
+      "card_id": "CH-2015-24",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "税・その他",
+      "question_focus": "原状回復で通常損耗と借主負担をどう分けるか",
+      "key_phrases": [
+        {
+          "phrase": "原状回復",
+          "why_important": "原状回復は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ガイドライン",
+          "why_important": "ガイドラインは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "国土交通省",
+          "why_important": "国土交通省は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "facts_summary": "問題文の核は「「原状回復をめぐるトラブルとガイドライン（再改訂版）」（国土交通省平成23年8月。以下、本問において「ガイドライン」という。）に関する次の記述のうち、最も適切な...」。固有語句を手がかりに、原状回復で通常損耗と借主負担をどう分けるかを判断する。",
+      "issue_structure": "原状回復で通常損耗と借主負担をどう分けるかを、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。",
+      "applicable_rule": "国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。",
+      "rule_source": "原状回復ガイドライン 全文",
+      "article_or_section": "全文",
+      "application_to_question": "「原状回復をめぐるトラブルとガイドライン（再改訂版）」（国土交通省平成23年8月。以下、本問において「ガイドライン」という。）に関する次の記述のうち、最も適切なものはどれか。。この事案では、「通常損耗」「経年変化」「故意過失」の3語を見たら、貸主負担と借主負担を二分する。。したがって、結論は 通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。 となる。",
+      "correct_conclusion": "結論：通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。",
+      "why_this_answer": "国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。。原状回復は、退去時にすべて借主が負担するという発想ではなく、通常使用の範囲と逸脱した損耗を分けて考える。ガイドラインはその仕分け基準として使う。。問題文の事実を順に当てはめると、通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。 で結論が固定される。",
+      "common_misread": "ハウスクリーニングや壁紙の全部交換を自動的に借主負担と読むと、通常損耗の原則を外す。",
+      "trap_points": [
+        {
+          "trap": "ガイドラインが法律と同じ強制力を持つと読む",
+          "why_trap": "位置づけを誤るから",
+          "how_to_avoid": "実務基準として使うが条文そのものではないと理解する"
+        },
+        {
+          "trap": "退去時は全部借主負担と読む",
+          "why_trap": "通常損耗の原則を落とすから",
+          "how_to_avoid": "通常損耗は貸主負担と固定する"
+        }
+      ],
+      "memory_hook": "通常損耗は貸主負担",
+      "source_refs": [
+        {
+          "source_type": "mlit",
+          "title": "原状回復をめぐるトラブルとガイドライン",
+          "url": "https://www.mlit.go.jp/jutakukentiku/house/jutakukentiku_house_tk3_000020.html",
+          "law_name": "原状回復ガイドライン",
+          "article": "全文",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    }
+  ],
+  "choice_explanations": [
+    {
+      "id": "CE-v30-pilot-phase3-015-03",
+      "choice_id": "CH-2021-01-3",
+      "source_choice_id": "CH-2021-01-3",
+      "question_id": "CH-2021-01",
+      "source_question_id": "CH-2021-01",
+      "card_id": "CH-2021-01",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "statement_text": "賃貸住宅管理業者は、賃貸人が管理受託契約重要事項説明の対象となる場合は、その者が管理受託契約について一定の知識や経験があったとしても、書面にて十分な説明をしなければならない。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：この選択肢は正しい。賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。に照らすと、賃貸住宅管理業者は、賃貸人が管理受託契約重要事項説明の対象となる場合は、その者が管理受託契約について一定の知識や経験があ...という文言は問題文 賃貸住宅の管理業務等の適正化に関する法律（以下、各問において「管理業法」という。）に定める賃貸住宅管... における結論と一致する。",
+      "why_true": "賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。。管理受託契約の重要事項説明は、締結前に行う必要がある。 となるため、文言の方向性は結論と一致する。",
+      "why_false": null,
+      "why_user_wrong": "契約後に説明すれば足りると読むと、制度の保護タイミングを外す。。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。",
+      "application_to_statement": "賃貸住宅管理業者は、賃貸人が管理受託契約重要事項説明の対象となる場合は、その者が管理受託契約について一定の知識や経験があったとしても、書面にて十分な説明をしなければならない。 を、管理受託契約の締結前説明で、誰が何を説明するか の観点で読むと、結論と一致する。問題文の「賃貸住宅の管理業務等の適正化に関する法律（以下、各問において「管理業法」という。）に定める賃貸住...」を併せて読むと、管理受託契約の重要事項説明は、締結前に行う必要がある。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "管理受託契約",
+          "why_important": "管理受託契約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "賃貸住宅管理業者",
+          "why_important": "賃貸住宅管理業者は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "賃貸住宅管理業者は",
+          "why_important": "賃貸住宅管理業者はは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "賃貸人が管理受託契約重要事項説明の対象となる場合",
+          "why_important": "賃貸人が管理受託契約重要事項説明の対象となる場合は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。",
+      "exception": "契約後に説明すれば足りると読むと、制度の保護タイミングを外す。",
+      "trap": "契約後でもよいと読む",
+      "compare_with": "宅建士でなければ説明できないと読む",
+      "one_line_memory": "管理業法13条は契約前説明",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "13条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-015-01",
+      "choice_id": "CH-2021-01-1",
+      "source_choice_id": "CH-2021-01-1",
+      "question_id": "CH-2021-01",
+      "source_question_id": "CH-2021-01",
+      "card_id": "CH-2021-01",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "statement_text": "管理受託契約重要事項説明は、管理受託契約の締結とできるだけ近接した時期に行うことが望ましい。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は誤り。賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。に照らすと、管理受託契約重要事項説明は、管理受託契約の締結とできるだけ近接した時期に行うことが望ましい。 という断定は、問題文の事実関係と合わない。",
+      "why_true": null,
+      "why_false": "賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。",
+      "why_user_wrong": "契約後に説明すれば足りると読むと、制度の保護タイミングを外す。。選択肢の一部語句だけを拾って、管理受託契約の重要事項説明は、締結前に行う必要がある。 と逆の結論を選びやすい。",
+      "application_to_statement": "管理受託契約重要事項説明は、管理受託契約の締結とできるだけ近接した時期に行うことが望ましい。 を、管理受託契約の締結前説明で、誰が何を説明するか の観点で読むと、結論と一致しない。問題文の「賃貸住宅の管理業務等の適正化に関する法律（以下、各問において「管理業法」という。）に定める賃貸住...」を併せて読むと、管理受託契約の重要事項説明は、締結前に行う必要がある。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "管理受託契約",
+          "why_important": "管理受託契約は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "管理受託契約重要事項説明は",
+          "why_important": "管理受託契約重要事項説明はは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "管理受託契約の締結とできるだけ近接した時期に行う",
+          "why_important": "管理受託契約の締結とできるだけ近接した時期に行うは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。",
+      "exception": "契約後に説明すれば足りると読むと、制度の保護タイミングを外す。",
+      "trap": "契約後でもよいと読む",
+      "compare_with": "宅建士でなければ説明できないと読む",
+      "one_line_memory": "管理業法13条は契約前説明",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "13条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-016-03",
+      "choice_id": "CH-2023-27-3",
+      "source_choice_id": "CH-2023-27-3",
+      "question_id": "CH-2023-27",
+      "source_question_id": "CH-2023-27",
+      "card_id": "CH-2023-27",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "statement_text": "3つ",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は正しい。賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。に照らすと、3つという文言は問題文 賃貸住宅管理業者及び業務管理者に関する次の記述のうち、正しいものはいくつあるか。A営業所の業務管理者... における結論と一致する。",
+      "why_true": "賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。。業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。 となるため、文言の方向性は結論と一致する。",
+      "why_false": null,
+      "why_user_wrong": "人数割合や宅建士の5人に1人ルールと混同しやすい。。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。",
+      "application_to_statement": "3つ を、業務管理者の設置単位と兼務の可否を整理すること の観点で読むと、結論と一致する。問題文の「賃貸住宅管理業者及び業務管理者に関する次の記述のうち、正しいものはいくつあるか。A営業所の業務管...」を併せて読むと、業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "3つ",
+          "why_important": "3つは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。",
+      "exception": "人数割合や宅建士の5人に1人ルールと混同しやすい。",
+      "trap": "5人に1人のような人数制限だと読む",
+      "compare_with": "どの営業所でも自由に兼務できると読む",
+      "one_line_memory": "業務管理者は拠点ごと",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "12条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-016-01",
+      "choice_id": "CH-2023-27-1",
+      "source_choice_id": "CH-2023-27-1",
+      "question_id": "CH-2023-27",
+      "source_question_id": "CH-2023-27",
+      "card_id": "CH-2023-27",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "statement_text": "1つ",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は誤り。賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。に照らすと、1つ という断定は、問題文の事実関係と合わない。",
+      "why_true": null,
+      "why_false": "賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。",
+      "why_user_wrong": "人数割合や宅建士の5人に1人ルールと混同しやすい。。選択肢の一部語句だけを拾って、業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。 と逆の結論を選びやすい。",
+      "application_to_statement": "1つ を、業務管理者の設置単位と兼務の可否を整理すること の観点で読むと、結論と一致しない。問題文の「賃貸住宅管理業者及び業務管理者に関する次の記述のうち、正しいものはいくつあるか。A営業所の業務管...」を併せて読むと、業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "1つ",
+          "why_important": "1つは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。",
+      "exception": "人数割合や宅建士の5人に1人ルールと混同しやすい。",
+      "trap": "5人に1人のような人数制限だと読む",
+      "compare_with": "どの営業所でも自由に兼務できると読む",
+      "one_line_memory": "業務管理者は拠点ごと",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "12条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-017-02",
+      "choice_id": "CH-2023-37-2",
+      "source_choice_id": "CH-2023-37-2",
+      "question_id": "CH-2023-37",
+      "source_question_id": "CH-2023-37",
+      "card_id": "CH-2023-37",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "statement_text": "賃貸人が賠償責任保険に加入しない場合は、その旨",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は正しい。賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。に照らすと、賃貸人が賠償責任保険に加入しない場合は、その旨という文言は問題文 特定転貸事業者が行う特定賃貸借契約重要事項説明において、特定賃貸借契約の相手方になろうとする者に交付... における結論と一致する。",
+      "why_true": "賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。。特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。 となるため、文言の方向性は結論と一致する。",
+      "why_false": null,
+      "why_user_wrong": "契約書に書けば足りる、または勧誘者は対象外だと読むと誤る。。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。",
+      "application_to_statement": "賃貸人が賠償責任保険に加入しない場合は、その旨 を、サブリース契約の勧誘で、将来の減額リスクをどう扱うか の観点で読むと、結論と一致する。問題文の「特定転貸事業者が行う特定賃貸借契約重要事項説明において、特定賃貸借契約の相手方になろうとする者に...」を併せて読むと、特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "賃貸人が賠償責任保険に加入しない場合は",
+          "why_important": "賃貸人が賠償責任保険に加入しない場合はは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "その旨",
+          "why_important": "その旨は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。",
+      "exception": "契約書に書けば足りる、または勧誘者は対象外だと読むと誤る。",
+      "trap": "契約書で説明していれば勧誘は自由と読む",
+      "compare_with": "勧誘を委託された者は対象外と読む",
+      "one_line_memory": "サブリースは勧誘段階から注意",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "29条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-017-01",
+      "choice_id": "CH-2023-37-1",
+      "source_choice_id": "CH-2023-37-1",
+      "question_id": "CH-2023-37",
+      "source_question_id": "CH-2023-37",
+      "card_id": "CH-2023-37",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "賃貸住宅管理業法",
+      "statement_text": "特定賃貸借契約の対象となる賃貸住宅の建物設備",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：この選択肢は誤り。賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。に照らすと、特定賃貸借契約の対象となる賃貸住宅の建物設備 という断定は、問題文の事実関係と合わない。",
+      "why_true": null,
+      "why_false": "賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。",
+      "why_user_wrong": "契約書に書けば足りる、または勧誘者は対象外だと読むと誤る。。選択肢の一部語句だけを拾って、特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。 と逆の結論を選びやすい。",
+      "application_to_statement": "特定賃貸借契約の対象となる賃貸住宅の建物設備 を、サブリース契約の勧誘で、将来の減額リスクをどう扱うか の観点で読むと、結論と一致しない。問題文の「特定転貸事業者が行う特定賃貸借契約重要事項説明において、特定賃貸借契約の相手方になろうとする者に...」を併せて読むと、特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "特定賃貸借契約の対象となる賃貸住宅の建物設備",
+          "why_important": "特定賃貸借契約の対象となる賃貸住宅の建物設備は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。",
+      "exception": "契約書に書けば足りる、または勧誘者は対象外だと読むと誤る。",
+      "trap": "契約書で説明していれば勧誘は自由と読む",
+      "compare_with": "勧誘を委託された者は対象外と読む",
+      "one_line_memory": "サブリースは勧誘段階から注意",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "賃貸住宅の管理業務等の適正化に関する法律",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=502AC0000000039",
+          "law_name": "賃貸住宅の管理業務等の適正化に関する法律",
+          "article": "29条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-018-01",
+      "choice_id": "CH-2017-12-1",
+      "source_choice_id": "CH-2017-12-1",
+      "question_id": "CH-2017-12",
+      "source_question_id": "CH-2017-12",
+      "card_id": "CH-2017-12",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "借地借家法",
+      "statement_text": "ア、イ",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は正しい。借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。に照らすと、ア、イという文言は問題文 定期建物賃貸借契約に関する次の記述のうち、適切なものの組合せはどれか。定期建物賃貸借契約の事前説明に... における結論と一致する。",
+      "why_true": "借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。。定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。 となるため、文言の方向性は結論と一致する。",
+      "why_false": null,
+      "why_user_wrong": "口頭説明だけで足りる、または契約書に書けば後でよいと読むと要件を落とす。。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。",
+      "application_to_statement": "ア、イ を、定期借家契約の成立要件と、事前説明の位置づけ の観点で読むと、結論と一致する。問題文の「定期建物賃貸借契約に関する次の記述のうち、適切なものの組合せはどれか。定期建物賃貸借契約の事前説...」を併せて読むと、定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "ア",
+          "why_important": "アは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "イ",
+          "why_important": "イは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。",
+      "exception": "口頭説明だけで足りる、または契約書に書けば後でよいと読むと要件を落とす。",
+      "trap": "口頭説明だけでよいと読む",
+      "compare_with": "契約期間が1年未満なら不可と読む",
+      "one_line_memory": "定期借家は書面と事前説明",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "借地借家法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=403AC0000000090",
+          "law_name": "借地借家法",
+          "article": "38条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-018-02",
+      "choice_id": "CH-2017-12-2",
+      "source_choice_id": "CH-2017-12-2",
+      "question_id": "CH-2017-12",
+      "source_question_id": "CH-2017-12",
+      "card_id": "CH-2017-12",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "借地借家法",
+      "statement_text": "ア、ウ",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は誤り。借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。に照らすと、ア、ウ という断定は、問題文の事実関係と合わない。",
+      "why_true": null,
+      "why_false": "借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。",
+      "why_user_wrong": "口頭説明だけで足りる、または契約書に書けば後でよいと読むと要件を落とす。。選択肢の一部語句だけを拾って、定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。 と逆の結論を選びやすい。",
+      "application_to_statement": "ア、ウ を、定期借家契約の成立要件と、事前説明の位置づけ の観点で読むと、結論と一致しない。問題文の「定期建物賃貸借契約に関する次の記述のうち、適切なものの組合せはどれか。定期建物賃貸借契約の事前説...」を併せて読むと、定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "ア",
+          "why_important": "アは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ウ",
+          "why_important": "ウは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。",
+      "exception": "口頭説明だけで足りる、または契約書に書けば後でよいと読むと要件を落とす。",
+      "trap": "口頭説明だけでよいと読む",
+      "compare_with": "契約期間が1年未満なら不可と読む",
+      "one_line_memory": "定期借家は書面と事前説明",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "借地借家法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=403AC0000000090",
+          "law_name": "借地借家法",
+          "article": "38条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-019-01",
+      "choice_id": "CH-2019-10-1",
+      "source_choice_id": "CH-2019-10-1",
+      "question_id": "CH-2019-10",
+      "source_question_id": "CH-2019-10",
+      "card_id": "CH-2019-10",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "借地借家法",
+      "statement_text": "ア、イ",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は正しい。借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。に照らすと、ア、イという文言は問題文 普通建物賃貸借契約（定期建物賃貸借契約でない建物賃貸借契約をいう。以下、各問において同じ。）における... における結論と一致する。",
+      "why_true": "借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。。普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。 となるため、文言の方向性は結論と一致する。",
+      "why_false": null,
+      "why_user_wrong": "更新拒絶や定期借家の終了通知と混同すると、請求の性質を取り違える。。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。",
+      "application_to_statement": "ア、イ を、普通借家での賃料増減額請求と、裁判確定までの賃料扱い の観点で読むと、結論と一致する。問題文の「普通建物賃貸借契約（定期建物賃貸借契約でない建物賃貸借契約をいう。以下、各問において同じ。）にお...」を併せて読むと、普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "ア",
+          "why_important": "アは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "イ",
+          "why_important": "イは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。",
+      "exception": "更新拒絶や定期借家の終了通知と混同すると、請求の性質を取り違える。",
+      "trap": "更新拒絶の話だと読む",
+      "compare_with": "定期借家にも同じルールだと読む",
+      "one_line_memory": "32条は賃料増減額請求",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "借地借家法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=403AC0000000090",
+          "law_name": "借地借家法",
+          "article": "32条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-019-02",
+      "choice_id": "CH-2019-10-2",
+      "source_choice_id": "CH-2019-10-2",
+      "question_id": "CH-2019-10",
+      "source_question_id": "CH-2019-10",
+      "card_id": "CH-2019-10",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "借地借家法",
+      "statement_text": "イ、ウ",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は誤り。借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。に照らすと、イ、ウ という断定は、問題文の事実関係と合わない。",
+      "why_true": null,
+      "why_false": "借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。",
+      "why_user_wrong": "更新拒絶や定期借家の終了通知と混同すると、請求の性質を取り違える。。選択肢の一部語句だけを拾って、普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。 と逆の結論を選びやすい。",
+      "application_to_statement": "イ、ウ を、普通借家での賃料増減額請求と、裁判確定までの賃料扱い の観点で読むと、結論と一致しない。問題文の「普通建物賃貸借契約（定期建物賃貸借契約でない建物賃貸借契約をいう。以下、各問において同じ。）にお...」を併せて読むと、普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "イ",
+          "why_important": "イは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ウ",
+          "why_important": "ウは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。",
+      "exception": "更新拒絶や定期借家の終了通知と混同すると、請求の性質を取り違える。",
+      "trap": "更新拒絶の話だと読む",
+      "compare_with": "定期借家にも同じルールだと読む",
+      "one_line_memory": "32条は賃料増減額請求",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "借地借家法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=403AC0000000090",
+          "law_name": "借地借家法",
+          "article": "32条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-020-02",
+      "choice_id": "CH-2015-24-2",
+      "source_choice_id": "CH-2015-24-2",
+      "question_id": "CH-2015-24",
+      "source_question_id": "CH-2015-24",
+      "card_id": "CH-2015-24",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "税・その他",
+      "statement_text": "ガイドラインの考え方によれば、借主の故意過失等による損耗であっても、借主の負担については、原則として建物や設備等の経過年数を考慮し、年数が多いほど負担割合が減少することとなる。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：この選択肢は正しい。国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。に照らすと、ガイドラインの考え方によれば、借主の故意過失等による損耗であっても、借主の負担については、原則として建物や設備等の経過年...という文言は問題文 「原状回復をめぐるトラブルとガイドライン（再改訂版）」（国土交通省平成23年8月。以下、本問において... における結論と一致する。",
+      "why_true": "国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。。通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。 となるため、文言の方向性は結論と一致する。",
+      "why_false": null,
+      "why_user_wrong": "ハウスクリーニングや壁紙の全部交換を自動的に借主負担と読むと、通常損耗の原則を外す。。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。",
+      "application_to_statement": "ガイドラインの考え方によれば、借主の故意過失等による損耗であっても、借主の負担については、原則として建物や設備等の経過年数を考慮し、年数が多いほど負担割合が減少することとなる。 を、原状回復で通常損耗と借主負担をどう分けるか の観点で読むと、結論と一致する。問題文の「「原状回復をめぐるトラブルとガイドライン（再改訂版）」（国土交通省平成23年8月。以下、本問にお...」を併せて読むと、通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "ガイドライン",
+          "why_important": "ガイドラインは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ガイドラインの考え方によれば",
+          "why_important": "ガイドラインの考え方によればは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "借主の故意過失等による損耗であっても",
+          "why_important": "借主の故意過失等による損耗であってもは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "借主の負担については",
+          "why_important": "借主の負担についてはは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。",
+      "exception": "ハウスクリーニングや壁紙の全部交換を自動的に借主負担と読むと、通常損耗の原則を外す。",
+      "trap": "ガイドラインが法律と同じ強制力を持つと読む",
+      "compare_with": "退去時は全部借主負担と読む",
+      "one_line_memory": "通常損耗は貸主負担",
+      "source_refs": [
+        {
+          "source_type": "mlit",
+          "title": "原状回復をめぐるトラブルとガイドライン",
+          "url": "https://www.mlit.go.jp/jutakukentiku/house/jutakukentiku_house_tk3_000020.html",
+          "law_name": "原状回復ガイドライン",
+          "article": "全文",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    },
+    {
+      "id": "CE-v30-pilot-phase3-020-01",
+      "choice_id": "CH-2015-24-1",
+      "source_choice_id": "CH-2015-24-1",
+      "question_id": "CH-2015-24",
+      "source_question_id": "CH-2015-24",
+      "card_id": "CH-2015-24",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "税・その他",
+      "statement_text": "原状回復の取扱いについて、ガイドラインの内容と異なる特約を定めても無効である。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：この選択肢は誤り。国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。に照らすと、原状回復の取扱いについて、ガイドラインの内容と異なる特約を定めても無効である。 という断定は、問題文の事実関係と合わない。",
+      "why_true": null,
+      "why_false": "国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。",
+      "why_user_wrong": "ハウスクリーニングや壁紙の全部交換を自動的に借主負担と読むと、通常損耗の原則を外す。。選択肢の一部語句だけを拾って、通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。 と逆の結論を選びやすい。",
+      "application_to_statement": "原状回復の取扱いについて、ガイドラインの内容と異なる特約を定めても無効である。 を、原状回復で通常損耗と借主負担をどう分けるか の観点で読むと、結論と一致しない。問題文の「「原状回復をめぐるトラブルとガイドライン（再改訂版）」（国土交通省平成23年8月。以下、本問にお...」を併せて読むと、通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。 に収束する。",
+      "key_phrases": [
+        {
+          "phrase": "原状回復",
+          "why_important": "原状回復は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ガイドライン",
+          "why_important": "ガイドラインは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "原状回復の取扱いについて",
+          "why_important": "原状回復の取扱いについては問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        },
+        {
+          "phrase": "ガイドラインの内容と異なる特約を定めても無効であ",
+          "why_important": "ガイドラインの内容と異なる特約を定めても無効であは問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。",
+      "exception": "ハウスクリーニングや壁紙の全部交換を自動的に借主負担と読むと、通常損耗の原則を外す。",
+      "trap": "ガイドラインが法律と同じ強制力を持つと読む",
+      "compare_with": "退去時は全部借主負担と読む",
+      "one_line_memory": "通常損耗は貸主負担",
+      "source_refs": [
+        {
+          "source_type": "mlit",
+          "title": "原状回復をめぐるトラブルとガイドライン",
+          "url": "https://www.mlit.go.jp/jutakukentiku/house/jutakukentiku_house_tk3_000020.html",
+          "law_name": "原状回復ガイドライン",
+          "article": "全文",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275088
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "high",
+      "review_status": "auto_ok",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": false,
+      "disabled": false,
+      "created_at": 1778482275088,
+      "updated_at": 1778482275088,
+      "quality": "A",
+      "ready_for_import": true,
+      "generic_template_detected": false
+    }
+  ]
+}

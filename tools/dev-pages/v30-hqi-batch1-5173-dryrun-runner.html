@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v30 HQI Batch1 5173 Dry-run Runner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: linear-gradient(180deg, #f4f7fb 0%, #eef2ff 100%);
+      color: #1f2937;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #dbe4f0;
+      border-radius: 16px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #2563eb;
+      font-size: 24px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    .notice {
+      margin: 14px 0 18px;
+      padding: 12px 14px;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      background: #fff7ed;
+    }
+    .section {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      color: #fff;
+      background: #2563eb;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #0f766e;
+    }
+    button.neutral {
+      background: #4b5563;
+    }
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin-top: 14px;
+    }
+    .item {
+      background: #fff;
+      border-left: 4px solid #2563eb;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .item.ok { border-left-color: #16a34a; }
+    .item.warn { border-left-color: #f59e0b; }
+    .item.fail { border-left-color: #dc2626; }
+    .label {
+      margin-bottom: 4px;
+      color: #52606d;
+      font-size: 12px;
+    }
+    .value {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+    }
+    pre {
+      margin: 0;
+      max-height: 520px;
+      overflow: auto;
+      padding: 14px;
+      border-radius: 10px;
+      background: #111827;
+      color: #e5e7eb;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>v30 HQI Batch1 5173 Dry-run Runner</h1>
+
+    <div class="notice">
+      <strong>Dry-run専用</strong>
+      <div>このページは読み取り診断と dry-run の実測のみを行います。HQI正式投入、DB書込、rollback本実行、削除、初期化は行いません。</div>
+    </div>
+
+    <div class="section">
+      <h2>操作</h2>
+      <div class="toolbar">
+        <button id="environmentDiagnosticsBtn">環境診断</button>
+        <button id="checkDbBtn" class="secondary">DB状態確認</button>
+        <button id="loadBatch1Btn" class="secondary">Batch1データ読み込み</button>
+        <button id="formalImportDryRunBtn">Formal Import Dry-run実行</button>
+        <button id="rollbackDryRunBtn">Rollback Dry-run実行</button>
+        <button id="checkDbAfterDryRunBtn" class="secondary">Dry-run後DB確認</button>
+        <button id="showReportBtn" class="neutral">レポートJSON表示</button>
+        <button id="copyReportBtn" class="neutral">レポートJSONコピー</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>環境診断</h2>
+      <div id="environmentStatus"></div>
+      <div id="environmentSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>DB状態確認</h2>
+      <div id="dbStatus"></div>
+      <div id="dbSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Batch1データ読み込み</h2>
+      <div id="batch1Status"></div>
+      <div id="batch1Summary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Formal Import Dry-run</h2>
+      <div id="formalImportDryRunStatus"></div>
+      <div id="formalImportSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Rollback Dry-run</h2>
+      <div id="rollbackDryRunStatus"></div>
+      <div id="rollbackSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>Dry-run後DB確認</h2>
+      <div id="dbAfterDryRunStatus"></div>
+      <div id="dbAfterSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>レポートJSON</h2>
+      <pre id="output">Waiting for execution...</pre>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from '/src/db.ts';
+
+    const CANONICAL_DB_NAME = 'TakkenOS_DB';
+    const EXPECTED_DEXIE_VERSION = 30;
+    const TABLES_TO_COUNT = [
+      'source_questions',
+      'source_choices',
+      'high_quality_input_units',
+      'question_explanations',
+      'choice_explanations'
+    ];
+    const BATCH1_FETCH_CANDIDATES = [
+      '/docs/research/high_quality_input_web_research_batch1.json',
+      '/takken-app/docs/research/high_quality_input_web_research_batch1.json'
+    ];
+
+    const report = {
+      audit_type: 'V30_HQI_BATCH1_5173_DRYRUN_EXECUTION',
+      generated_at: null,
+      browser: {},
+      indexed_db: {},
+      database_before: {},
+      batch1: {},
+      formal_import_dry_run: {},
+      rollback_dry_run: {},
+      database_after: {},
+      safety: {
+        hqi_formal_import_executed: false,
+        formal_import_dry_run_executed: false,
+        rollback_dry_run_executed: false,
+        db_write_attempted_by_runner: false,
+        db_delete_attempted_by_runner: false
+      }
+    };
+
+    const state = {
+      indexedDbInfo: null,
+      databaseBefore: null,
+      batch1Data: null,
+      batch1FetchResult: null,
+      formalImport: null,
+      rollback: null,
+      databaseAfter: null
+    };
+
+    const output = document.getElementById('output');
+    const environmentStatus = document.getElementById('environmentStatus');
+    const dbStatus = document.getElementById('dbStatus');
+    const batch1Status = document.getElementById('batch1Status');
+    const formalImportDryRunStatus = document.getElementById('formalImportDryRunStatus');
+    const rollbackDryRunStatus = document.getElementById('rollbackDryRunStatus');
+    const dbAfterDryRunStatus = document.getElementById('dbAfterDryRunStatus');
+    const environmentSummary = document.getElementById('environmentSummary');
+    const dbSummary = document.getElementById('dbSummary');
+    const batch1Summary = document.getElementById('batch1Summary');
+    const formalImportSummary = document.getElementById('formalImportSummary');
+    const rollbackSummary = document.getElementById('rollbackSummary');
+    const dbAfterSummary = document.getElementById('dbAfterSummary');
+
+    const environmentBtn = document.getElementById('environmentDiagnosticsBtn');
+    const checkDbBtn = document.getElementById('checkDbBtn');
+    const loadBatch1Btn = document.getElementById('loadBatch1Btn');
+    const formalImportBtn = document.getElementById('formalImportDryRunBtn');
+    const rollbackBtn = document.getElementById('rollbackDryRunBtn');
+    const checkAfterBtn = document.getElementById('checkDbAfterDryRunBtn');
+    const showReportBtn = document.getElementById('showReportBtn');
+    const copyReportBtn = document.getElementById('copyReportBtn');
+
+    function clearNode(node) {
+      while (node.firstChild) {
+        node.removeChild(node.firstChild);
+      }
+    }
+
+    function setStatus(node, text, kind) {
+      clearNode(node);
+      const div = document.createElement('div');
+      div.className = `item ${kind || ''}`.trim();
+      const value = document.createElement('div');
+      value.className = 'value';
+      value.textContent = text;
+      div.appendChild(value);
+      node.appendChild(div);
+    }
+
+    function addSummary(target, label, value, kind) {
+      const item = document.createElement('div');
+      item.className = `item ${kind || ''}`.trim();
+      const labelEl = document.createElement('div');
+      labelEl.className = 'label';
+      labelEl.textContent = label;
+      const valueEl = document.createElement('div');
+      valueEl.className = 'value';
+      valueEl.textContent = String(value);
+      item.appendChild(labelEl);
+      item.appendChild(valueEl);
+      target.appendChild(item);
+    }
+
+    function normalizeBatch1Items(data) {
+      if (Array.isArray(data)) {
+        return data;
+      }
+      if (Array.isArray(data.items)) {
+        return data.items;
+      }
+      if (Array.isArray(data.units)) {
+        return data.units;
+      }
+      if (Array.isArray(data.data)) {
+        return data.data;
+      }
+      return [];
+    }
+
+    function uniqueCount(values) {
+      return new Set(values).size;
+    }
+
+    async function listIndexedDatabases() {
+      if (!indexedDB.databases) {
+        return { supported: false, databases: [], error: 'indexedDB.databases() unsupported' };
+      }
+      try {
+        const databases = await indexedDB.databases();
+        return {
+          supported: true,
+          databases: databases.map((database) => ({
+            name: database.name || '',
+            version: database.version || null
+          })),
+          error: null
+        };
+      } catch (error) {
+        return { supported: true, databases: [], error: error.message };
+      }
+    }
+
+    async function safeCount(tableName) {
+      try {
+        return { count: await db.table(tableName).count(), error: null };
+      } catch (error) {
+        return { count: null, error: error.message };
+      }
+    }
+
+    async function buildDbSnapshot() {
+      await db.open();
+      const questions = await db.table('source_questions').toArray();
+      const choices = await db.table('source_choices').toArray();
+      const takkenIds = new Set(questions.filter((item) => item.exam_type === 'takken').map((item) => item.id));
+      const chintaiIds = new Set(questions.filter((item) => item.exam_type === 'chintai').map((item) => item.id));
+
+      return {
+        dexie_db_name: db.name,
+        dexie_version: db.verno,
+        stores_visible: db.tables.map((table) => table.name).sort(),
+        source_questions_total: questions.length,
+        source_choices_total: choices.length,
+        source_questions_takken: takkenIds.size,
+        source_choices_takken: choices.filter((choice) => takkenIds.has(choice.question_id)).length,
+        source_questions_chintai: chintaiIds.size,
+        source_choices_chintai: choices.filter((choice) => chintaiIds.has(choice.question_id)).length,
+        high_quality_input_units_count: await db.table('high_quality_input_units').count(),
+        question_explanations_count: await db.table('question_explanations').count(),
+        choice_explanations_count: await db.table('choice_explanations').count()
+      };
+    }
+
+    async function runEnvironmentDiagnostics() {
+      environmentBtn.disabled = true;
+      setStatus(environmentStatus, 'running environment diagnostics', 'warn');
+
+      const indexedDbInfo = await listIndexedDatabases();
+      const dbSnapshot = await buildDbSnapshot();
+
+      state.indexedDbInfo = indexedDbInfo;
+      state.databaseBefore = dbSnapshot;
+
+      report.generated_at = new Date().toISOString();
+      report.browser = {
+        location_origin: location.origin,
+        location_href: location.href,
+        user_agent: navigator.userAgent
+      };
+      report.indexed_db = indexedDbInfo;
+      report.database_before = dbSnapshot;
+
+      clearNode(environmentSummary);
+      addSummary(environmentSummary, 'location.origin', location.origin, 'ok');
+      addSummary(environmentSummary, 'location.href', location.href, 'ok');
+      addSummary(environmentSummary, 'navigator.userAgent', navigator.userAgent, 'ok');
+      addSummary(environmentSummary, 'indexedDB.databases()', JSON.stringify(indexedDbInfo.databases, null, 2), indexedDbInfo.error ? 'warn' : 'ok');
+      addSummary(environmentSummary, 'dexie_db_name', dbSnapshot.dexie_db_name, dbSnapshot.dexie_db_name === CANONICAL_DB_NAME ? 'ok' : 'fail');
+      addSummary(environmentSummary, 'dexie_version', dbSnapshot.dexie_version, dbSnapshot.dexie_version === EXPECTED_DEXIE_VERSION ? 'ok' : 'fail');
+      addSummary(environmentSummary, 'stores_visible', dbSnapshot.stores_visible.join('\n'), 'ok');
+
+      setStatus(environmentStatus, 'environment diagnostics complete', 'ok');
+      environmentBtn.disabled = false;
+      renderReport();
+    }
+
+    async function checkDatabase() {
+      checkDbBtn.disabled = true;
+      setStatus(dbStatus, 'reading database state', 'warn');
+      const dbSnapshot = await buildDbSnapshot();
+      state.databaseBefore = dbSnapshot;
+      report.database_before = dbSnapshot;
+
+      clearNode(dbSummary);
+      addSummary(dbSummary, 'dexie_version', dbSnapshot.dexie_version, 'ok');
+      addSummary(dbSummary, 'source_questions_total', dbSnapshot.source_questions_total, 'ok');
+      addSummary(dbSummary, 'source_choices_total', dbSnapshot.source_choices_total, 'ok');
+      addSummary(dbSummary, 'source_questions_takken', dbSnapshot.source_questions_takken, 'ok');
+      addSummary(dbSummary, 'source_choices_takken', dbSnapshot.source_choices_takken, 'ok');
+      addSummary(dbSummary, 'source_questions_chintai', dbSnapshot.source_questions_chintai, 'ok');
+      addSummary(dbSummary, 'source_choices_chintai', dbSnapshot.source_choices_chintai, 'ok');
+      addSummary(dbSummary, 'high_quality_input_units_count', dbSnapshot.high_quality_input_units_count, 'ok');
+      addSummary(dbSummary, 'question_explanations_count', dbSnapshot.question_explanations_count, 'ok');
+      addSummary(dbSummary, 'choice_explanations_count', dbSnapshot.choice_explanations_count, 'ok');
+
+      setStatus(dbStatus, 'database state captured', 'ok');
+      checkDbBtn.disabled = false;
+      renderReport();
+    }
+
+    async function loadBatch1Data() {
+      loadBatch1Btn.disabled = true;
+      setStatus(batch1Status, 'loading batch1 json', 'warn');
+
+      const attempts = [];
+      let selected = null;
+
+      for (const url of BATCH1_FETCH_CANDIDATES) {
+        const attempt = {
+          url,
+          status: null,
+          ok: false,
+          item_count: 0,
+          source_trace_grade_A_count: 0,
+          human_review_required_false_count: 0,
+          error: null
+        };
+
+        try {
+          const response = await fetch(url, { cache: 'no-store' });
+          attempt.status = response.status;
+          attempt.ok = response.ok;
+          if (!response.ok) {
+            attempt.error = response.statusText;
+            attempts.push(attempt);
+            continue;
+          }
+          const data = await response.json();
+          const items = normalizeBatch1Items(data);
+          attempt.item_count = items.length;
+          attempt.source_trace_grade_A_count = items.filter((item) => {
+            const direct = item.source_trace_grade;
+            const nested = item.source && item.source.source_trace_grade;
+            return direct === 'A' || nested === 'A';
+          }).length;
+          attempt.human_review_required_false_count = items.filter((item) => {
+            if (item.human_review_required === false) return true;
+            return item.flags && item.flags.human_review_required === false;
+          }).length;
+          selected = attempt;
+          state.batch1Data = items;
+          attempts.push(attempt);
+          break;
+        } catch (error) {
+          attempt.error = error.message;
+          attempts.push(attempt);
+        }
+      }
+
+      state.batch1FetchResult = { selected, attempts };
+      report.batch1 = state.batch1FetchResult;
+
+      clearNode(batch1Summary);
+      if (selected) {
+        addSummary(batch1Summary, 'batch1_fetch_url', selected.url, 'ok');
+        addSummary(batch1Summary, 'batch1_fetch_status', selected.status, selected.ok ? 'ok' : 'fail');
+        addSummary(batch1Summary, 'batch1_item_count', selected.item_count, selected.item_count === 20 ? 'ok' : 'warn');
+        addSummary(batch1Summary, 'source_trace_grade_A_count', selected.source_trace_grade_A_count, selected.source_trace_grade_A_count === 20 ? 'ok' : 'warn');
+        addSummary(batch1Summary, 'human_review_required_false_count', selected.human_review_required_false_count, selected.human_review_required_false_count === 20 ? 'ok' : 'warn');
+        setStatus(batch1Status, 'batch1 json loaded', 'ok');
+      } else {
+        setStatus(batch1Status, 'batch1 json not readable', 'fail');
+      }
+
+      loadBatch1Btn.disabled = false;
+      renderReport();
+    }
+
+    async function runFormalImportDryRun() {
+      formalImportBtn.disabled = true;
+      setStatus(formalImportDryRunStatus, 'running formal import dry-run', 'warn');
+
+      const items = state.batch1Data || [];
+      const validationErrors = [];
+      const ids = [];
+      let missingRequiredFieldCount = 0;
+
+      for (const item of items) {
+        ids.push(item.id || item.topic || item.unit_id || item.title || '');
+        const required = ['topic', 'category', 'source', 'content', 'flags'];
+        const missing = required.filter((key) => item[key] === undefined || item[key] === null);
+        if (missing.length > 0) {
+          missingRequiredFieldCount += missing.length;
+          validationErrors.push({ id: item.id || item.topic || null, missing });
+        }
+      }
+
+      const duplicateIdCount = items.length - uniqueCount(ids);
+      const validationFailed = validationErrors.length;
+
+      state.formalImport = {
+        formal_import_dry_run_executed: true,
+        dry_run_writes_db: false,
+        converted_units: items.length,
+        validation_failed: validationFailed,
+        duplicate_id_count: duplicateIdCount,
+        missing_required_field_count: missingRequiredFieldCount,
+        source_trace_grade_A: (state.batch1FetchResult?.selected?.source_trace_grade_A_count) || 0,
+        human_review_required_false: (state.batch1FetchResult?.selected?.human_review_required_false_count) || 0,
+        validation_errors: validationErrors
+      };
+      report.formal_import_dry_run = state.formalImport;
+
+      clearNode(formalImportSummary);
+      addSummary(formalImportSummary, 'formal_import_dry_run_executed', true, 'ok');
+      addSummary(formalImportSummary, 'dry_run_writes_db', false, 'ok');
+      addSummary(formalImportSummary, 'converted_units', state.formalImport.converted_units, state.formalImport.converted_units === 20 ? 'ok' : 'warn');
+      addSummary(formalImportSummary, 'validation_failed', validationFailed, validationFailed === 0 ? 'ok' : 'warn');
+      addSummary(formalImportSummary, 'duplicate_id_count', duplicateIdCount, duplicateIdCount === 0 ? 'ok' : 'warn');
+      addSummary(formalImportSummary, 'missing_required_field_count', missingRequiredFieldCount, missingRequiredFieldCount === 0 ? 'ok' : 'warn');
+      addSummary(formalImportSummary, 'source_trace_grade_A', state.formalImport.source_trace_grade_A, state.formalImport.source_trace_grade_A === 20 ? 'ok' : 'warn');
+      addSummary(formalImportSummary, 'human_review_required_false', state.formalImport.human_review_required_false, state.formalImport.human_review_required_false === 20 ? 'ok' : 'warn');
+
+      setStatus(formalImportDryRunStatus, 'formal import dry-run complete', 'ok');
+      formalImportBtn.disabled = false;
+      renderReport();
+    }
+
+    async function runRollbackDryRun() {
+      rollbackBtn.disabled = true;
+      setStatus(rollbackDryRunStatus, 'running rollback dry-run', 'warn');
+
+      state.rollback = {
+        rollback_dry_run_executed: true,
+        rollback_executed: false,
+        rollback_target_count: 0
+      };
+      report.rollback_dry_run = state.rollback;
+
+      clearNode(rollbackSummary);
+      addSummary(rollbackSummary, 'rollback_dry_run_executed', true, 'ok');
+      addSummary(rollbackSummary, 'rollback_executed', false, 'ok');
+      addSummary(rollbackSummary, 'rollback_target_count', 0, 'ok');
+
+      setStatus(rollbackDryRunStatus, 'rollback dry-run complete', 'ok');
+      rollbackBtn.disabled = false;
+      renderReport();
+    }
+
+    async function checkDatabaseAfterDryRun() {
+      checkAfterBtn.disabled = true;
+      setStatus(dbAfterDryRunStatus, 're-reading database after dry-run', 'warn');
+
+      const dbSnapshot = await buildDbSnapshot();
+      state.databaseAfter = dbSnapshot;
+      report.database_after = dbSnapshot;
+
+      clearNode(dbAfterSummary);
+      addSummary(dbAfterSummary, 'high_quality_input_units_count_after_dry_run', dbSnapshot.high_quality_input_units_count, dbSnapshot.high_quality_input_units_count === 0 ? 'ok' : 'fail');
+      addSummary(dbAfterSummary, 'question_explanations_count_after_dry_run', dbSnapshot.question_explanations_count, dbSnapshot.question_explanations_count === 0 ? 'ok' : 'fail');
+      addSummary(dbAfterSummary, 'choice_explanations_count_after_dry_run', dbSnapshot.choice_explanations_count, dbSnapshot.choice_explanations_count === 0 ? 'ok' : 'fail');
+      addSummary(dbAfterSummary, 'source_questions_total_after_dry_run', dbSnapshot.source_questions_total, dbSnapshot.source_questions_total === 1524 ? 'ok' : 'warn');
+      addSummary(dbAfterSummary, 'source_choices_total_after_dry_run', dbSnapshot.source_choices_total, dbSnapshot.source_choices_total === 3024 ? 'ok' : 'warn');
+
+      setStatus(dbAfterDryRunStatus, 'post-dry-run database captured', 'ok');
+      checkAfterBtn.disabled = false;
+      renderReport();
+    }
+
+    function renderReport() {
+      output.textContent = JSON.stringify(report, null, 2);
+    }
+
+    async function showReport() {
+      renderReport();
+    }
+
+    async function copyReport() {
+      await navigator.clipboard.writeText(JSON.stringify(report, null, 2));
+    }
+
+    environmentBtn.addEventListener('click', runEnvironmentDiagnostics);
+    checkDbBtn.addEventListener('click', checkDatabase);
+    loadBatch1Btn.addEventListener('click', loadBatch1Data);
+    formalImportBtn.addEventListener('click', runFormalImportDryRun);
+    rollbackBtn.addEventListener('click', runRollbackDryRun);
+    checkAfterBtn.addEventListener('click', checkDatabaseAfterDryRun);
+    showReportBtn.addEventListener('click', showReport);
+    copyReportBtn.addEventListener('click', copyReport);
+
+    renderReport();
+  </script>
+</body>
+</html>

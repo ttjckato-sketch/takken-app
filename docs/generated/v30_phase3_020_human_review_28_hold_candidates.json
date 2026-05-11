@@ -1,0 +1,1641 @@
+{
+  "meta": {
+    "title": "Phase3-020 human_review_required 28 hold candidates",
+    "source_path": "docs/generated/v30_pilot_question_choice_explanations_phase3_020.json",
+    "generated_at": "2026-05-11T07:24:12.991Z",
+    "model": "gpt-5.4-mini medium"
+  },
+  "summary": {
+    "total_items": 28,
+    "question_explanations_count": 0,
+    "choice_explanations_count": 28,
+    "source_question_based_choice_count": 28,
+    "reason_summary": "source_questionベース補正文であり、実source_choice文ではないため正式投入対象外",
+    "formal_import_allowed": false
+  },
+  "question_explanations": [],
+  "choice_explanations": [
+    {
+      "id": "TAKKEN-SC-KC_1_2003-23-L4-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2003-23-L4-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2003-23-L4",
+      "question_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "statement_text": "結論：遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "農地法3条は権利移転の基本ルールだが、相続や遺産分割のような承継取得には許可を要しない。",
+      "exception": "「農地の所有権を取得する」とだけ見て、売買や交換と同じ許可制だと短絡すると誤る。遺産分割は相続処理であり、3条許可の対象外だ。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "農地法の3条と4条/5条を混同する",
+      "one_line_memory": "遺産分割は3条許可不要",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "3条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2003-23-L4-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2003-23-L4-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2003-23-L4",
+      "question_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2003-23-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "statement_text": "結論：遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：遺産の分割により農地の所有権を取得する場合、農地法第3条の許可を得る必要はない。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "農地法3条は権利移転の基本ルールだが、相続や遺産分割のような承継取得には許可を要しない。",
+      "exception": "「農地の所有権を取得する」とだけ見て、売買や交換と同じ許可制だと短絡すると誤る。遺産分割は相続処理であり、3条許可の対象外だ。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "農地法の3条と4条/5条を混同する",
+      "one_line_memory": "遺産分割は3条許可不要",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "3条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2021-12-21-L4-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2021-12-21-L4-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2021-12-21-L4",
+      "question_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "statement_text": "結論：市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "農地法4条は自己所有農地の転用を規律し、市街化区域内では農業委員会への届出で足りる。",
+      "exception": "3条の権利移転ルールと、4条の自己転用ルールを混ぜると、必要な手続を過大に読んでしまう。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "自己所有農地でも権利移転と誤る",
+      "one_line_memory": "4条は自己転用、区域内は届出",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "4条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2021-12-21-L4-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2021-12-21-L4-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2021-12-21-L4",
+      "question_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2021-12-21-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "statement_text": "結論：市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：市街化区域内の自己所有の農地を駐車場に転用するため、あらかじめ農業委員会に届け出た場合には、法第4条第1項の許可を受ける必要がない。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "農地法4条は自己所有農地の転用を規律し、市街化区域内では農業委員会への届出で足りる。",
+      "exception": "3条の権利移転ルールと、4条の自己転用ルールを混ぜると、必要な手続を過大に読んでしまう。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "自己所有農地でも権利移転と誤る",
+      "one_line_memory": "4条は自己転用、区域内は届出",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "4条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_3_2007-25-L2-TRUE",
+      "choice_id": "TAKKEN-SC-KC_3_2007-25-L2-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_3_2007-25-L2",
+      "question_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "source_question_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "card_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "statement_text": "結論：住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "農地法5条は転用目的の権利移転を規律し、市街化区域内では届出で足りる。",
+      "exception": "5条を3条の権利移転や4条の自己転用と混ぜると、許可と届出を逆に読む。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "市街化区域内でも許可が必要と読む",
+      "one_line_memory": "5条は転用目的の権利取得",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "5条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_3_2007-25-L2-TRAP",
+      "choice_id": "TAKKEN-SC-KC_3_2007-25-L2-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_3_2007-25-L2",
+      "question_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "source_question_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "card_id": "TAKKEN-SQ-KC_3_2007-25-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "農地法",
+      "statement_text": "結論：住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：住宅を建設する目的で市街化区域内の農地の所有権を取得するに当たって、あらかじめ農業委員会に届け出た場合には、法第5条第1項の許可を受ける必要はない。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "農地法5条は転用目的の権利移転を規律し、市街化区域内では届出で足りる。",
+      "exception": "5条を3条の権利移転や4条の自己転用と混ぜると、許可と届出を逆に読む。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "市街化区域内でも許可が必要と読む",
+      "one_line_memory": "5条は転用目的の権利取得",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "農地法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000229",
+          "law_name": "農地法",
+          "article": "5条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason",
+            "why_false"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2002-38-L4-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2002-38-L4-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2002-38-L4",
+      "question_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "statement_text": "結論：法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "35条書面は契約成立前に相手方へ説明する書面で、37条書面は契約成立後に当事者へ交付する書面である。",
+      "exception": "35条と37条はどちらも宅建業法の書面だが、契約前か契約後か、説明か交付かで役割が逆転しやすい。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "説明と交付を混同する",
+      "one_line_memory": "35条は前に説明、37条は後に交付",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "35条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        },
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2002-38-L4-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2002-38-L4-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2002-38-L4",
+      "question_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "source_question_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "card_id": "TAKKEN-SQ-KC_1_2002-38-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "statement_text": "結論：法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：法第35条に規定する重要事項を記載した書面には、説明した宅地建物取引士Cが記名をしたが、法第37条に規定する書面には、Cが急病で入院したため、専任の宅地建物取引士Dが自ら記名した。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "35条書面は契約成立前に相手方へ説明する書面で、37条書面は契約成立後に当事者へ交付する書面である。",
+      "exception": "35条と37条はどちらも宅建業法の書面だが、契約前か契約後か、説明か交付かで役割が逆転しやすい。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "説明と交付を混同する",
+      "one_line_memory": "35条は前に説明、37条は後に交付",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "35条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        },
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_24_2003-37-L3-TRUE",
+      "choice_id": "TAKKEN-SC-KC_24_2003-37-L3-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_24_2003-37-L3",
+      "question_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "source_question_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "card_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "statement_text": "結論：宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢3（テキスト元データ不足）",
+          "why_important": "選択肢3（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "35条は、契約の相手方が判断材料を得られるよう、宅建業者が相手方へ重要事項を説明する仕組みだ。",
+      "exception": "売主自身にも説明義務が広がると誤読しやすいが、35条の中心は宅建業者の説明義務であって当事者全員ではない。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "媒介業者がいるから説明不要と読む",
+      "one_line_memory": "35条説明は宅建業者→相手方",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "35条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_24_2003-37-L3-TRAP",
+      "choice_id": "TAKKEN-SC-KC_24_2003-37-L3-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_24_2003-37-L3",
+      "question_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "source_question_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "card_id": "TAKKEN-SQ-KC_24_2003-37-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "statement_text": "結論：宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：宅地の売買について、売主A、Aの媒介業者B及び買主の媒介業者Cの三者がいずれも宅地建物取引業者である場合は、B及びCのみならず、Aも、買主に対して法第35条に規定する重要事項の説明をすべき義務を負う。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢3（テキスト元データ不足）",
+          "why_important": "選択肢3（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "35条は、契約の相手方が判断材料を得られるよう、宅建業者が相手方へ重要事項を説明する仕組みだ。",
+      "exception": "売主自身にも説明義務が広がると誤読しやすいが、35条の中心は宅建業者の説明義務であって当事者全員ではない。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "媒介業者がいるから説明不要と読む",
+      "one_line_memory": "35条説明は宅建業者→相手方",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "35条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2024-44-L1-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2024-44-L1-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2024-44-L1",
+      "question_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "statement_text": "結論：Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢1（テキスト元データ不足）",
+          "why_important": "選択肢1（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "37条書面は契約内容を固定するための書面で、契約成立後に両当事者へ交付する。",
+      "exception": "説明時に使った図書があるからといって、37条の書面要件まで当然に満たすわけではない。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "工事完了前だから37条不要と読む",
+      "one_line_memory": "37条は契約後の確定書面",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2024-44-L1-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2024-44-L1-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2024-44-L1",
+      "question_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2024-44-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "35条/37条",
+      "statement_text": "結論：Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：Aは、建築工事完了前の建物の売買契約を媒介したときに、37条書面に記載する当該建物を特定するために必要な表示について、宅地建物取引業法第35条の規定に基づく重要事項の説明において使用した図書を交付することによって行った。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢1（テキスト元データ不足）",
+          "why_important": "選択肢1（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "37条書面は契約内容を固定するための書面で、契約成立後に両当事者へ交付する。",
+      "exception": "説明時に使った図書があるからといって、37条の書面要件まで当然に満たすわけではない。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "工事完了前だから37条不要と読む",
+      "one_line_memory": "37条は契約後の確定書面",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_3_2002-34-L3-TRUE",
+      "choice_id": "TAKKEN-SC-KC_3_2002-34-L3-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_3_2002-34-L3",
+      "question_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "source_question_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "card_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "statement_text": "結論：専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢3（テキスト元データ不足）",
+          "why_important": "選択肢3（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "専任媒介契約は有効期間3か月以内、更新も依頼者の申出があれば3か月以内である。",
+      "exception": "有効期間と更新期間を別々に見て、片方だけ長く設定できると誤読しやすい。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "一般媒介にも同じ制限があると読む",
+      "one_line_memory": "専任媒介は3か月上限",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_3_2002-34-L3-TRAP",
+      "choice_id": "TAKKEN-SC-KC_3_2002-34-L3-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_3_2002-34-L3",
+      "question_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "source_question_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "card_id": "TAKKEN-SQ-KC_3_2002-34-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "statement_text": "結論：専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：専任媒介契約の有効期間は3月を超えることができず、3月より長い期間を定めたときは、その期間は3月とされるが、当該有効期間は、依頼者の申出があれば、更新の時から3月を超えない範囲で更新してもよい。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢3（テキスト元データ不足）",
+          "why_important": "選択肢3（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "専任媒介契約は有効期間3か月以内、更新も依頼者の申出があれば3か月以内である。",
+      "exception": "有効期間と更新期間を別々に見て、片方だけ長く設定できると誤読しやすい。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "一般媒介にも同じ制限があると読む",
+      "one_line_memory": "専任媒介は3か月上限",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_2_2012-29-L2-TRUE",
+      "choice_id": "TAKKEN-SC-KC_2_2012-29-L2-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_2_2012-29-L2",
+      "question_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "source_question_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "card_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "statement_text": "結論：A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "専属専任媒介契約は処理状況の報告頻度と登録義務が重いが、報告方法まで一律に紙へ限定されるわけではない。",
+      "exception": "「専属専任だから厳格に紙のみ」と思い込むと、IT対応や実務運用の細かい規定を落とす。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "REINS登録と報告方法を同一視する",
+      "one_line_memory": "専属専任は頻度重、方法は別",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_2_2012-29-L2-TRAP",
+      "choice_id": "TAKKEN-SC-KC_2_2012-29-L2-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_2_2012-29-L2",
+      "question_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "source_question_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "card_id": "TAKKEN-SQ-KC_2_2012-29-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "statement_text": "結論：A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：A社がBと専属専任媒介契約を締結した場合、A社は、Bに当該媒介業務の処理状況の報告を電子メールで行うことはできない。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "専属専任媒介契約は処理状況の報告頻度と登録義務が重いが、報告方法まで一律に紙へ限定されるわけではない。",
+      "exception": "「専属専任だから厳格に紙のみ」と思い込むと、IT対応や実務運用の細かい規定を落とす。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "REINS登録と報告方法を同一視する",
+      "one_line_memory": "専属専任は頻度重、方法は別",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2004-39-L1-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2004-39-L1-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2004-39-L1",
+      "question_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "statement_text": "結論：AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢1（テキスト元データ不足）",
+          "why_important": "選択肢1（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "媒介契約書面は、約款の有無や契約条件の表示をきちんと分けて、依頼者が内容を把握できるようにする。",
+      "exception": "約款に基づかないこと自体が直ちに違法ではなく、表示を欠く点が問題になる。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "媒介契約書面の内容は自由でよいと読む",
+      "one_line_memory": "約款外は表示義務",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2004-39-L1-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2004-39-L1-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2004-39-L1",
+      "question_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2004-39-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "媒介契約",
+      "statement_text": "結論：AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：AがBに交付した媒介契約書が国土交通大臣が定めた標準媒介契約約款に基づかない書面である場合、その旨の表示をしなければ、Aは業務停止処分を受けることがある。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢1（テキスト元データ不足）",
+          "why_important": "選択肢1（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "媒介契約書面は、約款の有無や契約条件の表示をきちんと分けて、依頼者が内容を把握できるようにする。",
+      "exception": "約款に基づかないこと自体が直ちに違法ではなく、表示を欠く点が問題になる。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "媒介契約書面の内容は自由でよいと読む",
+      "one_line_memory": "約款外は表示義務",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "34条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2010-38-L1-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2010-38-L1-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2010-38-L1",
+      "question_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "クーリング・オフ",
+      "statement_text": "結論：Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢1（テキスト元データ不足）",
+          "why_important": "選択肢1（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "クーリング・オフは事務所等以外の場所での勧誘を広く保護するが、場所や手続の例外を問題文で丁寧に読む必要がある。",
+      "exception": "場所が事務所外なら自動で解除可と読むと、指定場所や引渡し等の制限を見落とす。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "書面告知がなくても場所次第で不可と読む",
+      "one_line_memory": "場所だけでなく指定の有無を見る",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2010-38-L1-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2010-38-L1-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2010-38-L1",
+      "question_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "source_question_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "card_id": "TAKKEN-SQ-KC_1_2010-38-L1",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "クーリング・オフ",
+      "statement_text": "結論：Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：Bが、自ら指定したホテルのロビーで買受けの申込みをし、その際にAからクーリング・オフについて何も告げられず、その3日後、Aのモデルルームで契約を締結した場合、Bは売買契約を解除することができる。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢1（テキスト元データ不足）",
+          "why_important": "選択肢1（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "クーリング・オフは事務所等以外の場所での勧誘を広く保護するが、場所や手続の例外を問題文で丁寧に読む必要がある。",
+      "exception": "場所が事務所外なら自動で解除可と読むと、指定場所や引渡し等の制限を見落とす。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "書面告知がなくても場所次第で不可と読む",
+      "one_line_memory": "場所だけでなく指定の有無を見る",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_2_2008-39-L4-TRUE",
+      "choice_id": "TAKKEN-SC-KC_2_2008-39-L4-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_2_2008-39-L4",
+      "question_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "source_question_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "card_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "クーリング・オフ",
+      "statement_text": "結論：買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすることができる。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすることができる。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすることができる。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "クーリング・オフの期間制限は書面告知からの8日で管理され、支払割合だけで即座に失権しない。",
+      "exception": "代金の大半を支払ったから解除不可と短絡すると、制度の期間要件を落とす。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "書面告知があればいつでも解除可と読む",
+      "one_line_memory": "クーリングオフは8日管理",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_2_2008-39-L4-TRAP",
+      "choice_id": "TAKKEN-SC-KC_2_2008-39-L4-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_2_2008-39-L4",
+      "question_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "source_question_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "card_id": "TAKKEN-SQ-KC_2_2008-39-L4",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "クーリング・オフ",
+      "statement_text": "結論：買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすることができる という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすることができる。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：買主Eはホテルのロビーにおいて買受けの申込みをし、その際にAからクーリング・オフについて書面で告げられ、契約を締結した。この場合、Eは、当該宅地の代金の80％を支払っていたが、当該契約の締結の日から8日を経過するまでは、契約の解除をすることができる。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢4（テキスト元データ不足）",
+          "why_important": "選択肢4（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "クーリング・オフの期間制限は書面告知からの8日で管理され、支払割合だけで即座に失権しない。",
+      "exception": "代金の大半を支払ったから解除不可と短絡すると、制度の期間要件を落とす。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "書面告知があればいつでも解除可と読む",
+      "one_line_memory": "クーリングオフは8日管理",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "宅地建物取引業法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176",
+          "law_name": "宅地建物取引業法",
+          "article": "37条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2007-01-L3-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2007-01-L3-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2007-01-L3",
+      "question_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "source_question_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "card_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "民法系",
+      "statement_text": "結論：Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢3（テキスト元データ不足）",
+          "why_important": "選択肢3（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "民法96条の強迫は、相手方の第三者認識に左右されず、意思表示を保護する方向に働く。",
+      "exception": "詐欺の第三者保護と同じ感覚で読むと、強迫でも相手方善意悪意を問題にしてしまう。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "相手方Bの善意悪意が結論を左右すると読む",
+      "one_line_memory": "強迫は第三者でも取消し可",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "96条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2007-01-L3-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2007-01-L3-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2007-01-L3",
+      "question_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "source_question_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "card_id": "TAKKEN-SQ-KC_1_2007-01-L3",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "民法系",
+      "statement_text": "結論：Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：Aが第三者Cの強迫によりBとの間で売買契約を締結した場合、Bがその強迫の事実を知っていたか否かにかかわらず、AはAB間の売買契約に関する意思表示を取り消すことができる。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢3（テキスト元データ不足）",
+          "why_important": "選択肢3（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "民法96条の強迫は、相手方の第三者認識に左右されず、意思表示を保護する方向に働く。",
+      "exception": "詐欺の第三者保護と同じ感覚で読むと、強迫でも相手方善意悪意を問題にしてしまう。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "相手方Bの善意悪意が結論を左右すると読む",
+      "one_line_memory": "強迫は第三者でも取消し可",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "96条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2012-04-L2-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2012-04-L2-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2012-04-L2",
+      "question_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "source_question_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "card_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "民法系",
+      "statement_text": "結論：Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "無権代理は本人の追認があって初めて本人に効果が帰属し、追認拒絶の意思決定は本人側の権限として扱う。",
+      "exception": "無権代理を「相続で全部引き継ぐ」と雑に読むと、追認拒絶の立場がずれる。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "追認拒絶権を当然に使えると読む",
+      "one_line_memory": "無権代理は追認が鍵",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "113条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        },
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "117条",
+          "supports_field": [
+            "applicable_rule",
+            "trap_points"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2012-04-L2-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2012-04-L2-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2012-04-L2",
+      "question_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "source_question_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "card_id": "TAKKEN-SQ-KC_1_2012-04-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "民法系",
+      "statement_text": "結論：Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：Aの死亡により、BがAの唯一の相続人として相続した場合、Bは、Aの追認拒絶権を相続するので、自らの無権代理行為の追認を拒絶することができる。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "無権代理は本人の追認があって初めて本人に効果が帰属し、追認拒絶の意思決定は本人側の権限として扱う。",
+      "exception": "無権代理を「相続で全部引き継ぐ」と雑に読むと、追認拒絶の立場がずれる。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "追認拒絶権を当然に使えると読む",
+      "one_line_memory": "無権代理は追認が鍵",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "113条",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        },
+        {
+          "source_type": "e_gov",
+          "title": "民法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=129AC0000000089",
+          "law_name": "民法",
+          "article": "117条",
+          "supports_field": [
+            "applicable_rule",
+            "trap_points"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2006-28-L2-TRUE",
+      "choice_id": "TAKKEN-SC-KC_1_2006-28-L2-TRUE",
+      "source_choice_id": "TAKKEN-SC-KC_1_2006-28-L2",
+      "question_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "source_question_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "card_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "税・その他",
+      "statement_text": "結論：令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。",
+      "is_statement_true_snapshot": true,
+      "correct_answer_reason": "結論：令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。 この記述は問題文の事実関係と一致するため正しい。",
+      "why_true": "問題文の語句をそのまま当てはめると、正答方向になる。",
+      "why_false": null,
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、正答候補としては再確認が必要。",
+      "application_to_statement": "結論：令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。 問題文の固有語句に当てはめると、結論と一致する。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "不動産取得税は地方税法73条の2に基づく取得時課税で、住宅や宅地には特例の有無を確認する。",
+      "exception": "固定資産税や登録免許税と混同すると、課税のタイミングと対象を取り違える。",
+      "trap": "問題文の事実をそのまま読む",
+      "compare_with": "保有税と同じ感覚で毎年かかると読む",
+      "one_line_memory": "取得税は取得時だけ",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "地方税法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=325AC0000000226",
+          "law_name": "地方税法",
+          "article": "73条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": false,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    },
+    {
+      "id": "TAKKEN-SC-KC_1_2006-28-L2-TRAP",
+      "choice_id": "TAKKEN-SC-KC_1_2006-28-L2-TRAP",
+      "source_choice_id": "TAKKEN-SC-KC_1_2006-28-L2",
+      "question_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "source_question_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "card_id": "TAKKEN-SQ-KC_1_2006-28-L2",
+      "batch_id": "v30-pilot-phase3-020",
+      "category": "税・その他",
+      "statement_text": "結論：令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる という記述は誤り。",
+      "is_statement_true_snapshot": false,
+      "correct_answer_reason": "結論：令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。 反対方向に読む典型的な誤読を避ける必要があるため、誤りとして扱う。",
+      "why_true": null,
+      "why_false": "問題文の語句を反対方向に読むため、誤答になる。",
+      "why_user_wrong": "source_choices に実文がなく、プレースホルダを再参照できないため、ひっかけ候補としては再確認が必要。",
+      "application_to_statement": "結論：令和8年4月に宅地を取得した場合、当該取得に係る不動産取得税の課税標準は、当該宅地の価格の2分の1の額とされる。 問題文の固有語句に当てはめると、結論と一致しない。",
+      "key_phrases": [
+        {
+          "phrase": "選択肢2（テキスト元データ不足）",
+          "why_important": "選択肢2（テキスト元データ不足）は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。",
+          "location_in_question": "問題文"
+        }
+      ],
+      "rule": "不動産取得税は地方税法73条の2に基づく取得時課税で、住宅や宅地には特例の有無を確認する。",
+      "exception": "固定資産税や登録免許税と混同すると、課税のタイミングと対象を取り違える。",
+      "trap": "反対の結論に引きずられる",
+      "compare_with": "保有税と同じ感覚で毎年かかると読む",
+      "one_line_memory": "取得税は取得時だけ",
+      "source_refs": [
+        {
+          "source_type": "e_gov",
+          "title": "地方税法",
+          "url": "https://elaws.e-gov.go.jp/document?lawid=325AC0000000226",
+          "law_name": "地方税法",
+          "article": "73条の2",
+          "supports_field": [
+            "applicable_rule",
+            "correct_answer_reason"
+          ],
+          "checked_at": 1778482275087
+        }
+      ],
+      "source_trace_grade": "A",
+      "confidence": "medium",
+      "review_status": "human_review_required",
+      "label_conflict_suspected": false,
+      "statement_trap_detected": true,
+      "article_3_notification_trap_detected": false,
+      "human_review_required": true,
+      "disabled": false,
+      "created_at": 1778482275087,
+      "updated_at": 1778483535756,
+      "quality": "B",
+      "ready_for_import": false,
+      "generic_template_detected": false
+    }
+  ]
+}

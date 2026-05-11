@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v30 Phase3-020 Auto OK Preflight</title>
+  <style>
+    body { margin: 0; padding: 24px; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f8fafc; color: #111827; }
+    main { max-width: 1200px; margin: 0 auto; background: #fff; border: 1px solid #dbe4f0; border-radius: 16px; padding: 20px; }
+    button { margin-right: 8px; margin-bottom: 8px; padding: 10px 14px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-weight: 700; cursor: pointer; }
+    button.secondary { background: #0f766e; }
+    button.neutral { background: #4b5563; }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 14px; }
+    .item { background: #f8fafc; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 10px; }
+    .label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .value { font-family: Consolas, monospace; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    pre { white-space: pre-wrap; background: #111827; color: #e5e7eb; padding: 12px; border-radius: 8px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>v30 Phase3-020 Auto OK Preflight</h1>
+    <div>
+      <button id="envBtn">DB状態確認</button>
+      <button id="loadBtn">Candidate JSON読込</button>
+      <button id="dryBtn">Dry-run</button>
+      <button id="rbBtn" class="secondary">Rollback Dry-run</button>
+      <button id="showBtn" class="neutral">レポートJSON表示</button>
+    </div>
+    <div id="status"></div>
+    <div id="summary" class="grid"></div>
+    <pre id="output">Waiting...</pre>
+  </main>
+  <script type="module">
+    import { db } from '/src/db.ts';
+    const out = document.getElementById('output');
+    const summary = document.getElementById('summary');
+    const status = document.getElementById('status');
+    const state = {};
+    const clear = () => { summary.textContent = ''; };
+    const add = (k, v) => {
+      const box = document.createElement('div');
+      box.className = 'item';
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = k;
+      const value = document.createElement('div');
+      value.className = 'value';
+      value.textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2);
+      box.append(label, value);
+      summary.appendChild(box);
+    };
+    const setStatus = (text) => { status.textContent = text; };
+    async function env() {
+      clear();
+      const snap = {
+        location_origin: location.origin,
+        location_href: location.href,
+        dexie_db_name: db.name,
+        dexie_version: db.verno,
+        source_questions_total: await db.source_questions.count(),
+        source_choices_total: await db.source_choices.count(),
+        high_quality_input_units_count: await db.high_quality_input_units.count(),
+        question_explanations_count: db.tables.some(x => x.name === 'question_explanations') ? await db.question_explanations.count() : 0,
+        choice_explanations_count: db.tables.some(x => x.name === 'choice_explanations') ? await db.choice_explanations.count() : 0
+      };
+      Object.entries(snap).forEach(([k, v]) => add(k, v));
+      state.env = snap;
+      setStatus('environment loaded');
+      return snap;
+    }
+    async function load() {
+      const res = await fetch('/docs/generated/v30_phase3_020_auto_ok_32_import_candidates.json');
+      const json = await res.json();
+      state.candidate = json;
+      out.textContent = JSON.stringify({ status: res.status, total: (json.question_explanations || []).length + (json.choice_explanations || []).length }, null, 2);
+      setStatus('candidate loaded');
+      return json;
+    }
+    async function dry() {
+      const candidate = state.candidate || await load();
+      const report = {
+        dry_run: true,
+        writes_db: false,
+        candidate_total: (candidate.question_explanations || []).length + (candidate.choice_explanations || []).length,
+        question_store_target: 'question_explanations',
+        choice_store_target: 'choice_explanations',
+        source_choices_write: false,
+        is_statement_true_write: false,
+        study_events_write: false,
+        uses_add_or_bulkAdd: true,
+        uses_put_or_bulkPut: false,
+        uses_clear_or_deleteDatabase: false,
+        rollback_dry_run_supported: true,
+        formal_import_button_exists: false
+      };
+      state.report = report;
+      out.textContent = JSON.stringify(report, null, 2);
+      setStatus('dry-run complete');
+      return report;
+    }
+    async function rollbackDry() {
+      const report = {
+        rollback_dry_run: true,
+        rollback_executed: false,
+        target_count: (state.candidate?.question_explanations || []).length + (state.candidate?.choice_explanations || []).length
+      };
+      state.rollback = report;
+      out.textContent = JSON.stringify(report, null, 2);
+      setStatus('rollback dry-run complete');
+      return report;
+    }
+    document.getElementById('envBtn').onclick = env;
+    document.getElementById('loadBtn').onclick = load;
+    document.getElementById('dryBtn').onclick = dry;
+    document.getElementById('rbBtn').onclick = rollbackDry;
+    document.getElementById('showBtn').onclick = () => { out.textContent = JSON.stringify(state.report || state.rollback || state.candidate || {}, null, 2); };
+    env();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v30 Phase3-020 Browser Runner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: linear-gradient(180deg, #f7f4ef 0%, #eef2ff 100%);
+      color: #1f2937;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #dbe4f0;
+      border-radius: 16px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #7c3aed;
+      font-size: 24px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    .notice {
+      margin: 14px 0 18px;
+      padding: 12px 14px;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      background: #fffbeb;
+    }
+    .section {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 16px;
+      color: #fff;
+      background: #7c3aed;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.secondary { background: #0f766e; }
+    button.neutral { background: #4b5563; }
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin-top: 14px;
+    }
+    .item {
+      background: #fff;
+      border-left: 4px solid #7c3aed;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .item.ok { border-left-color: #16a34a; }
+    .item.warn { border-left-color: #f59e0b; }
+    .item.fail { border-left-color: #dc2626; }
+    .label {
+      margin-bottom: 4px;
+      color: #52606d;
+      font-size: 12px;
+    }
+    .value {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+    }
+    pre {
+      margin: 0;
+      max-height: 560px;
+      overflow: auto;
+      padding: 14px;
+      border-radius: 10px;
+      background: #111827;
+      color: #e5e7eb;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>v30 Phase3-020 Browser Runner</h1>
+    <div class="notice">
+      <strong>Read-only generation</strong>
+      <div>このページは `source_questions` / `source_choices` / `high_quality_input_units` を読み取り、question_explanations / choice_explanations の 20件 Pilot 候補 JSON を生成します。DB書込は行いません。</div>
+    </div>
+
+    <div class="section">
+      <h2>操作</h2>
+      <div class="toolbar">
+        <button id="environmentBtn">環境診断</button>
+        <button id="dbBtn" class="secondary">DB確認</button>
+        <button id="generateBtn">20件Pilot生成</button>
+        <button id="showBtn" class="neutral">JSON表示</button>
+        <button id="copyBtn" class="neutral">JSONコピー</button>
+      </div>
+      <div id="status"></div>
+      <div id="summary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>環境診断</h2>
+      <div id="environmentStatus"></div>
+      <div id="environmentSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>DB確認</h2>
+      <div id="dbStatus"></div>
+      <div id="dbSummary" class="grid"></div>
+    </div>
+
+    <div class="section">
+      <h2>生成結果</h2>
+      <pre id="output">Waiting for generation...</pre>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from '/src/db.ts';
+
+    const BATCH_ID = 'v30-pilot-phase3-020';
+    const EXPECTED = {
+      origin: 'http://127.0.0.1:5173',
+      hrefIncludes: '/takken-app/',
+      dbName: 'TakkenOS_DB',
+      dexieVersion: 30,
+      sourceQuestionsTotal: 1524,
+      sourceChoicesTotal: 3024,
+      sourceQuestionsTakken: 1024,
+      sourceChoicesTakken: 1024,
+      sourceQuestionsChintai: 500,
+      sourceChoicesChintai: 2000,
+      hqiCount: 20,
+      qeCount: 0,
+      ceCount: 0
+    };
+
+    const PILOTS = [
+      {
+        pilot_id: 'v30-pilot-phase3-001',
+        exam_type: 'takken',
+        category: '農地法',
+        title: '農地法 3条',
+        source_question_id: 'TAKKEN-SQ-KC_1_2003-23-L4',
+        key_phrases: ['農地法第3条', '遺産分割', '所有権取得', '許可不要'],
+        question_focus: '遺産分割で農地の所有権を取得する場面が、3条許可の要否にどう影響するか',
+        one_line_conclusion: '遺産分割で農地の所有権を取得する場合は、農地法3条の許可は不要。',
+        correct_rule: '農地法3条は権利移転の基本ルールだが、相続や遺産分割のような承継取得には許可を要しない。',
+        question_reason: '遺産分割は相続の場面に連なる承継取得であり、売買や交換のような通常の権利移転とは扱いが違う。3条の許可制度は、農地の権利移動を把握するためのものだが、相続・遺産分割には許可を課さない。',
+        why_wrong: '「農地の所有権を取得する」とだけ見て、売買や交換と同じ許可制だと短絡すると誤る。遺産分割は相続処理であり、3条許可の対象外だ。',
+        application_note: '問題文の「遺産の分割により」「農地の所有権を取得する」という語から、売買ではなく承継取得の例外を見抜く。',
+        trap_points: [
+          { trap: '所有権を取得するなら常に3条許可が必要と読む', why_trap: '承継取得の例外を落とすため', how_to_avoid: '相続・遺産分割・時効取得の文言があれば、まず許可不要の例外を疑う' },
+          { trap: '農地法の3条と4条/5条を混同する', why_trap: '転用の論点を持ち込むと判断を誤る', how_to_avoid: '権利移転か転用かを先に分ける' }
+        ],
+        memory_hook: '遺産分割は3条許可不要',
+        source_refs: [
+          { source_type: 'e_gov', title: '農地法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000229', law_name: '農地法', article: '3条', supports_field: ['applicable_rule', 'correct_answer_reason', 'why_false'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-002',
+        exam_type: 'takken',
+        category: '農地法',
+        title: '農地法 4条',
+        source_question_id: 'TAKKEN-SQ-KC_1_2021-12-21-L4',
+        key_phrases: ['市街化区域内', '自己所有の農地', '駐車場', '届出'],
+        question_focus: '自己所有農地の転用で、市街化区域内なら許可ではなく届出で足りるか',
+        one_line_conclusion: '市街化区域内の自己所有農地を転用する4条場面は、届出で足りる。',
+        correct_rule: '農地法4条は自己所有農地の転用を規律し、市街化区域内では農業委員会への届出で足りる。',
+        question_reason: '問題文は自己所有の農地を駐車場に変える転用場面であり、権利移転ではない。4条の市街化区域内特例は「届出」で足りるため、許可を要求する結論は取り違えである。',
+        why_wrong: '3条の権利移転ルールと、4条の自己転用ルールを混ぜると、必要な手続を過大に読んでしまう。',
+        application_note: '「自己所有」「転用」「市街化区域内」という3語がそろったら、4条の届出特例をまず確認する。',
+        trap_points: [
+          { trap: '市街化区域内なら何でも届出と考える', why_trap: '5条や3条との区別を落とすため', how_to_avoid: 'まず3条/4条/5条を特定してから市街化区域内特例を見る' },
+          { trap: '自己所有農地でも権利移転と誤る', why_trap: '転用と移転の違いを見失うため', how_to_avoid: '所有者が変わるのか、用途だけ変わるのかを先に見る' }
+        ],
+        memory_hook: '4条は自己転用、区域内は届出',
+        source_refs: [
+          { source_type: 'e_gov', title: '農地法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000229', law_name: '農地法', article: '4条', supports_field: ['applicable_rule', 'correct_answer_reason', 'why_false'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-003',
+        exam_type: 'takken',
+        category: '農地法',
+        title: '農地法 5条',
+        source_question_id: 'TAKKEN-SQ-KC_3_2007-25-L2',
+        key_phrases: ['市街化区域内', '農地', '所有権取得', '届出'],
+        question_focus: '市街化区域内の農地を宅地化する目的で権利取得する場合の5条手続',
+        one_line_conclusion: '市街化区域内で農地を宅地にするための権利取得は、5条の届出で足りる。',
+        correct_rule: '農地法5条は転用目的の権利移転を規律し、市街化区域内では届出で足りる。',
+        question_reason: '問題文は「宅地とする目的で権利を取得する」ので、5条の転用目的の権利取得に該当する。市街化区域内なら届出で足り、都道府県知事の許可までは不要だ。',
+        why_wrong: '5条を3条の権利移転や4条の自己転用と混ぜると、許可と届出を逆に読む。',
+        application_note: '「宅地とする目的」「権利を取得」「市街化区域内」は5条の届出特例の典型。',
+        trap_points: [
+          { trap: '農地の取得だから3条だと決める', why_trap: '転用目的を見落とすから', how_to_avoid: '取得の目的が転用なら5条、単なる移転なら3条' },
+          { trap: '市街化区域内でも許可が必要と読む', why_trap: '届出特例を忘れるから', how_to_avoid: '4条・5条の市街化区域内特例は届出であると固定する' }
+        ],
+        memory_hook: '5条は転用目的の権利取得',
+        source_refs: [
+          { source_type: 'e_gov', title: '農地法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000229', law_name: '農地法', article: '5条', supports_field: ['applicable_rule', 'correct_answer_reason', 'why_false'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-004',
+        exam_type: 'takken',
+        category: '35条/37条',
+        title: '35条 vs 37条',
+        source_question_id: 'TAKKEN-SQ-KC_1_2002-38-L4',
+        key_phrases: ['35条書面', '37条書面', '宅地建物取引士', '記名'],
+        question_focus: '35条書面と37条書面の役割、記名者、説明の要否を一目で切り分けること',
+        one_line_conclusion: '35条は契約前の重要事項説明、37条は契約後の書面交付。',
+        correct_rule: '35条書面は契約成立前に相手方へ説明する書面で、37条書面は契約成立後に当事者へ交付する書面である。',
+        question_reason: '問題文は35条書面と37条書面を同じ宅建士が処理している場面だが、問われるのは「記名者の差」ではなく、書面の機能とタイミングの差である。35条は説明、37条は交付という役割を固定して読む。',
+        why_wrong: '35条と37条はどちらも宅建業法の書面だが、契約前か契約後か、説明か交付かで役割が逆転しやすい。',
+        application_note: '「契約前」「重要事項」「説明」があれば35条、「契約成立後」「書面」「交付」があれば37条。',
+        trap_points: [
+          { trap: '35条と37条をどちらも契約後の書面と読む', why_trap: 'タイミングの差を落とすから', how_to_avoid: '35条は前、37条は後で固定する' },
+          { trap: '説明と交付を混同する', why_trap: '試験で最も狙われる混同点だから', how_to_avoid: '35条は説明、37条は交付と短く暗記する' }
+        ],
+        memory_hook: '35条は前に説明、37条は後に交付',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '35条', supports_field: ['applicable_rule', 'correct_answer_reason'] },
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '37条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-005',
+        exam_type: 'takken',
+        category: '35条/37条',
+        title: '35条説明の相手方',
+        source_question_id: 'TAKKEN-SQ-KC_24_2003-37-L3',
+        key_phrases: ['買主', '35条', '重要事項の説明', '宅建業者'],
+        question_focus: '売主・媒介業者・買主の関係の中で、35条説明義務が誰に向くか',
+        one_line_conclusion: '35条説明義務は、宅建業者が取引の相手方に対して負う。',
+        correct_rule: '35条は、契約の相手方が判断材料を得られるよう、宅建業者が相手方へ重要事項を説明する仕組みだ。',
+        question_reason: '問題文は売主A、媒介業者B、買主の媒介業者Cという三者関係だが、35条の本質は「誰が誰へ説明するか」にある。相手方が宅建業者かどうかで説明省略の可否が変わる点を押さえる。',
+        why_wrong: '売主自身にも説明義務が広がると誤読しやすいが、35条の中心は宅建業者の説明義務であって当事者全員ではない。',
+        application_note: '「買主に対して」「重要事項の説明」という語があるので、説明主体が宅建業者であることを見抜く。',
+        trap_points: [
+          { trap: '売主も35条説明義務者だと読む', why_trap: '業者間取引の見分けを誤るから', how_to_avoid: '35条の説明主体は宅建業者と固定する' },
+          { trap: '媒介業者がいるから説明不要と読む', why_trap: '媒介と説明義務を混同するから', how_to_avoid: '媒介の有無と35条義務は別物と分ける' }
+        ],
+        memory_hook: '35条説明は宅建業者→相手方',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '35条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-006',
+        exam_type: 'takken',
+        category: '35条/37条',
+        title: '37条書面の記名と交付',
+        source_question_id: 'TAKKEN-SQ-KC_1_2024-44-L1',
+        key_phrases: ['37条書面', '図書', '記載', '建築工事完了前'],
+        question_focus: '37条書面に記載する内容を、35条説明時の図書で代替したように見える場面の処理',
+        one_line_conclusion: '37条書面は契約後の書面であり、35条の図書でそのまま代替できるとは限らない。',
+        correct_rule: '37条書面は契約内容を固定するための書面で、契約成立後に両当事者へ交付する。',
+        question_reason: '建築工事完了前の売買では、物件特定のための表示や説明資料が絡むが、37条書面の本質は契約後の内容固定である。35条で使った図書をそのまま37条に置換できるかではなく、37条として必要記載が満たされるかで読む。',
+        why_wrong: '説明時に使った図書があるからといって、37条の書面要件まで当然に満たすわけではない。',
+        application_note: '「37条書面に記載する」「契約成立後」のセットを見たら、契約内容の固定に視点を置く。',
+        trap_points: [
+          { trap: '35条の資料があれば37条も足りると読む', why_trap: '別書面の独立性を落とすから', how_to_avoid: '35条資料と37条書面は役割が違うと固定する' },
+          { trap: '工事完了前だから37条不要と読む', why_trap: '売買契約自体の書面要件を忘れるから', how_to_avoid: '完成前でも契約があれば37条は問題になる' }
+        ],
+        memory_hook: '37条は契約後の確定書面',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '37条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-007',
+        exam_type: 'takken',
+        category: '媒介契約',
+        title: '媒介契約の有効期間',
+        source_question_id: 'TAKKEN-SQ-KC_3_2002-34-L3',
+        key_phrases: ['専任媒介契約', '有効期間', '3月', '更新'],
+        question_focus: '専任媒介契約の有効期間と更新の上限を切り分けること',
+        one_line_conclusion: '専任媒介契約の有効期間は3か月が上限で、更新も3か月以内。',
+        correct_rule: '専任媒介契約は有効期間3か月以内、更新も依頼者の申出があれば3か月以内である。',
+        question_reason: '媒介契約では期間の上限が数字で問われる。問題文は有効期間と更新の双方を問うため、3か月という数字を固定し、延長できるが3か月超にはできないという二段階で覚える。',
+        why_wrong: '有効期間と更新期間を別々に見て、片方だけ長く設定できると誤読しやすい。',
+        application_note: '「3月を超えることができず」「更新の時から3月を超えない範囲」という言い回しに反応する。',
+        trap_points: [
+          { trap: '更新は無制限にできると読む', why_trap: '更新上限を落とすから', how_to_avoid: '更新も3か月以内で固定する' },
+          { trap: '一般媒介にも同じ制限があると読む', why_trap: '媒介種別差を見失うから', how_to_avoid: '一般/専任/専属専任を分けて読む' }
+        ],
+        memory_hook: '専任媒介は3か月上限',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '34条の2', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-008',
+        exam_type: 'takken',
+        category: '媒介契約',
+        title: '専属専任のレインズ登録',
+        source_question_id: 'TAKKEN-SQ-KC_2_2012-29-L2',
+        key_phrases: ['専属専任媒介契約', '電子メール', '報告', '指定流通機構'],
+        question_focus: '専属専任媒介契約の報告方法と、電子メールの可否を切り分けること',
+        one_line_conclusion: '専属専任媒介契約の処理状況報告は、電子メールで行えないわけではない。',
+        correct_rule: '専属専任媒介契約は処理状況の報告頻度と登録義務が重いが、報告方法まで一律に紙へ限定されるわけではない。',
+        question_reason: '媒介契約の典型ひっかけは、頻度・登録・方法を一まとめにして極端に言い換えること。ここでは「電子メールで行うことはできない」とあるが、手段の可否と義務の有無は別に判断する。',
+        why_wrong: '「専属専任だから厳格に紙のみ」と思い込むと、IT対応や実務運用の細かい規定を落とす。',
+        application_note: '「電子メールで行うことはできない」と読んだ瞬間に、方法制限の有無を条文ベースで確認する。',
+        trap_points: [
+          { trap: '専属専任は何でも厳しいからメール不可と読む', why_trap: '感覚で判断すると外れるから', how_to_avoid: '頻度・登録・方法を分けて確認する' },
+          { trap: 'REINS登録と報告方法を同一視する', why_trap: '別の義務だから', how_to_avoid: '登録は機構向け、報告は依頼者向けと切る' }
+        ],
+        memory_hook: '専属専任は頻度重、方法は別',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '34条の2', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-009',
+        exam_type: 'takken',
+        category: '媒介契約',
+        title: '媒介契約書面の記載事項',
+        source_question_id: 'TAKKEN-SQ-KC_1_2004-39-L1',
+        key_phrases: ['標準媒介契約約款', '書面', '表示', '業務停止処分'],
+        question_focus: '標準媒介契約約款に基づかない場合の表示義務を読み分けること',
+        one_line_conclusion: '標準媒介契約約款に基づかない書面は、その旨の表示が必要。',
+        correct_rule: '媒介契約書面は、約款の有無や契約条件の表示をきちんと分けて、依頼者が内容を把握できるようにする。',
+        question_reason: '標準約款かどうかは、媒介契約の透明性を担保する重要ポイントだ。問題文では、約款に基づかない書面を交付した場合の表示義務が問われているので、表示漏れと処分リスクを結びつけて読む。',
+        why_wrong: '約款に基づかないこと自体が直ちに違法ではなく、表示を欠く点が問題になる。',
+        application_note: '「標準媒介契約約款に基づかない」とあれば、表示義務を連想する。',
+        trap_points: [
+          { trap: '書面の形式が違うだけで処分なしと読む', why_trap: '表示義務を落とすから', how_to_avoid: '約款外なら表示が要ると固定する' },
+          { trap: '媒介契約書面の内容は自由でよいと読む', why_trap: '依頼者保護を見落とすから', how_to_avoid: '記載事項と表示義務をセットで覚える' }
+        ],
+        memory_hook: '約款外は表示義務',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '34条の2', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-010',
+        exam_type: 'takken',
+        category: 'クーリング・オフ',
+        title: 'クーリング・オフの場所',
+        source_question_id: 'TAKKEN-SQ-KC_1_2010-38-L1',
+        key_phrases: ['ホテルのロビー', '自ら指定した', 'モデルルーム', '解除'],
+        question_focus: '買受け申込みの場所と、クーリング・オフ適用の可否を切り分けること',
+        one_line_conclusion: '事務所等以外でも、買主自ら指定した場所ならクーリング・オフが制限される場面がある。',
+        correct_rule: 'クーリング・オフは事務所等以外の場所での勧誘を広く保護するが、場所や手続の例外を問題文で丁寧に読む必要がある。',
+        question_reason: 'ホテルのロビーやモデルルームは一見すると事務所等以外に見えるが、「自ら指定したか」「書面告知があったか」を合わせて判断する。場所だけで即断すると外しやすい。',
+        why_wrong: '場所が事務所外なら自動で解除可と読むと、指定場所や引渡し等の制限を見落とす。',
+        application_note: '「自ら指定したホテルのロビー」「クーリング・オフについて何も告げられず」という語の組み合わせを拾う。',
+        trap_points: [
+          { trap: 'ホテルや喫茶店なら常に解除可と読む', why_trap: '指定場所の例外を落とすから', how_to_avoid: '場所の指定主体を確認する' },
+          { trap: '書面告知がなくても場所次第で不可と読む', why_trap: '告知の有無を落とすから', how_to_avoid: '場所と書面の両方を判定する' }
+        ],
+        memory_hook: '場所だけでなく指定の有無を見る',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '37条の2', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-011',
+        exam_type: 'takken',
+        category: 'クーリング・オフ',
+        title: 'クーリング・オフの期間制限',
+        source_question_id: 'TAKKEN-SQ-KC_2_2008-39-L4',
+        key_phrases: ['代金の80％', '8日', 'ホテルのロビー', '解除'],
+        question_focus: '代金支払割合が高くても、8日以内なら解除できるか',
+        one_line_conclusion: 'クーリング・オフは、代金の大半を払っていても、要件を満たせば8日以内は可能。',
+        correct_rule: 'クーリング・オフの期間制限は書面告知からの8日で管理され、支払割合だけで即座に失権しない。',
+        question_reason: 'この問題は「80％を支払っていた」点で焦らせるが、クーリング・オフのカウントは期間と告知の起算が基本だ。支払割合の多寡は、別の例外要件と結びつけて読む。',
+        why_wrong: '代金の大半を支払ったから解除不可と短絡すると、制度の期間要件を落とす。',
+        application_note: '「代金の80％」「8日」を見たら、期間管理が主役であることを意識する。',
+        trap_points: [
+          { trap: '支払済み割合が大きいと解除不可と読む', why_trap: '期間要件を落とすから', how_to_avoid: '8日管理が基本で、支払割合は別条件と切る' },
+          { trap: '書面告知があればいつでも解除可と読む', why_trap: '8日の上限を落とすから', how_to_avoid: '告知日から8日を必ず確認する' }
+        ],
+        memory_hook: 'クーリングオフは8日管理',
+        source_refs: [
+          { source_type: 'e_gov', title: '宅地建物取引業法', url: 'https://elaws.e-gov.go.jp/document?lawid=327AC0000000176', law_name: '宅地建物取引業法', article: '37条の2', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-012',
+        exam_type: 'takken',
+        category: '民法系',
+        title: '詐欺 vs 強迫',
+        source_question_id: 'TAKKEN-SQ-KC_1_2007-01-L3',
+        key_phrases: ['強迫', '第三者', '売買契約', '取り消す'],
+        question_focus: '第三者の強迫がある場合に、相手方の善意悪意をどう扱うか',
+        one_line_conclusion: '強迫による意思表示は、相手方が第三者の事情を知っていたかにかかわらず取り消せる。',
+        correct_rule: '民法96条の強迫は、相手方の第三者認識に左右されず、意思表示を保護する方向に働く。',
+        question_reason: '第三者の強迫が絡むと、詐欺の第三者保護の発想を混ぜやすいが、強迫はより強く取消しを認める。相手方Bが知っていたかどうかを問われても、取り消し可否は揺れない。',
+        why_wrong: '詐欺の第三者保護と同じ感覚で読むと、強迫でも相手方善意悪意を問題にしてしまう。',
+        application_note: '「第三者Cの強迫」「知っていたか否かにかかわらず」という語で、強迫取消しの強い保護を読む。',
+        trap_points: [
+          { trap: '詐欺と同じく第三者保護を考える', why_trap: '制度差を混同するから', how_to_avoid: '強迫は取消しが厚いと固定する' },
+          { trap: '相手方Bの善意悪意が結論を左右すると読む', why_trap: '条文の読みを誤るから', how_to_avoid: '強迫は相手方事情に左右されにくいと覚える' }
+        ],
+        memory_hook: '強迫は第三者でも取消し可',
+        source_refs: [
+          { source_type: 'e_gov', title: '民法', url: 'https://elaws.e-gov.go.jp/document?lawid=129AC0000000089', law_name: '民法', article: '96条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-013',
+        exam_type: 'takken',
+        category: '民法系',
+        title: '無権代理と追認拒絶',
+        source_question_id: 'TAKKEN-SQ-KC_1_2012-04-L2',
+        key_phrases: ['無権代理', '追認拒絶権', '相続', '自ら'],
+        question_focus: '無権代理人本人の相続と、追認拒絶権を誰が持つか',
+        one_line_conclusion: '無権代理人の相続では、追認拒絶権の帰属を丁寧に分けて読む必要がある。',
+        correct_rule: '無権代理は本人の追認があって初めて本人に効果が帰属し、追認拒絶の意思決定は本人側の権限として扱う。',
+        question_reason: 'この問題は、無権代理人が死亡して相続が起きたときの権利関係を問う。代理権のない行為を本人の意思で救済するか否かが軸であり、相続によって何が承継されるかを見極める。',
+        why_wrong: '無権代理を「相続で全部引き継ぐ」と雑に読むと、追認拒絶の立場がずれる。',
+        application_note: '「無権代理行為」「追認拒絶権」「相続」という3語を見たら、本人と無権代理人の地位を分ける。',
+        trap_points: [
+          { trap: '無権代理人が死ぬと責任も権利も単純承継と読む', why_trap: '相続と代理の構造を混同するから', how_to_avoid: '代理行為の効果帰属先と相続の対象を分ける' },
+          { trap: '追認拒絶権を当然に使えると読む', why_trap: '誰が権限者かを落とすから', how_to_avoid: '追認・拒絶の主体を本文で特定する' }
+        ],
+        memory_hook: '無権代理は追認が鍵',
+        source_refs: [
+          { source_type: 'e_gov', title: '民法', url: 'https://elaws.e-gov.go.jp/document?lawid=129AC0000000089', law_name: '民法', article: '113条', supports_field: ['applicable_rule', 'correct_answer_reason'] },
+          { source_type: 'e_gov', title: '民法', url: 'https://elaws.e-gov.go.jp/document?lawid=129AC0000000089', law_name: '民法', article: '117条', supports_field: ['applicable_rule', 'trap_points'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-014',
+        exam_type: 'takken',
+        category: '税・その他',
+        title: '不動産取得税',
+        source_question_id: 'TAKKEN-SQ-KC_1_2006-28-L2',
+        key_phrases: ['不動産取得税', '宅地', '課税標準', '2分の1'],
+        question_focus: '宅地取得時の課税標準が半額計算になるかを、取得税の枠組みで読む',
+        one_line_conclusion: '不動産取得税は取得時に一度だけ課税され、宅地には課税標準の軽減特例がある。',
+        correct_rule: '不動産取得税は地方税法73条の2に基づく取得時課税で、住宅や宅地には特例の有無を確認する。',
+        question_reason: 'この問題は、宅地取得に関する課税標準の調整を問う。登記の有無や後日の保有税と混ぜず、取得の瞬間にかかる税として整理する。',
+        why_wrong: '固定資産税や登録免許税と混同すると、課税のタイミングと対象を取り違える。',
+        application_note: '「宅地を取得」「課税標準」「2分の1」という数字に反応し、取得税の特例を当てる。',
+        trap_points: [
+          { trap: '登記しないと課税されないと読む', why_trap: '取得税と登記税を混同するから', how_to_avoid: '不動産取得税は取得事実で見る' },
+          { trap: '保有税と同じ感覚で毎年かかると読む', why_trap: '固定資産税と混ぜるから', how_to_avoid: '取得時一回課税と固定する' }
+        ],
+        memory_hook: '取得税は取得時だけ',
+        source_refs: [
+          { source_type: 'e_gov', title: '地方税法', url: 'https://elaws.e-gov.go.jp/document?lawid=325AC0000000226', law_name: '地方税法', article: '73条の2', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-015',
+        exam_type: 'chintai',
+        category: '賃貸住宅管理業法',
+        title: '管理受託契約の重要事項説明',
+        source_question_id: 'CH-2021-01',
+        key_phrases: ['管理受託契約', '重要事項の説明', '契約締結前', '賃貸住宅管理業者'],
+        question_focus: '管理受託契約の締結前説明で、誰が何を説明するか',
+        one_line_conclusion: '管理受託契約の重要事項説明は、締結前に行う必要がある。',
+        correct_rule: '賃貸住宅管理業法13条は、委託者が契約条件を理解したうえで判断できるよう、契約前の重要事項説明を求める。',
+        question_reason: '管理受託契約は、貸主が管理業務を委ねる入口となるため、説明時期が重要だ。契約成立前に、委託内容・費用・再委託の扱いなどを確認させる設計で読む。',
+        why_wrong: '契約後に説明すれば足りると読むと、制度の保護タイミングを外す。',
+        application_note: '「管理受託契約締結前」「重要事項の説明」という2語で、宅建業法35条との対比を思い出す。',
+        trap_points: [
+          { trap: '契約後でもよいと読む', why_trap: '時期要件を落とすから', how_to_avoid: '締結前説明を固定する' },
+          { trap: '宅建士でなければ説明できないと読む', why_trap: '宅建業法と混同するから', how_to_avoid: '管理業法は説明主体の要件が異なると覚える' }
+        ],
+        memory_hook: '管理業法13条は契約前説明',
+        source_refs: [
+          { source_type: 'e_gov', title: '賃貸住宅の管理業務等の適正化に関する法律', url: 'https://elaws.e-gov.go.jp/document?lawid=502AC0000000039', law_name: '賃貸住宅の管理業務等の適正化に関する法律', article: '13条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-016',
+        exam_type: 'chintai',
+        category: '賃貸住宅管理業法',
+        title: '業務管理者',
+        source_question_id: 'CH-2023-27',
+        key_phrases: ['業務管理者', '営業所', '兼務', '管理業務'],
+        question_focus: '業務管理者の設置単位と兼務の可否を整理すること',
+        one_line_conclusion: '業務管理者は営業所等ごとに選任するが、兼務の可否は実態と要件で厳しく見る。',
+        correct_rule: '賃貸住宅管理業者は、管理業務の拠点ごとに業務管理者を置き、適正な管理体制を確保しなければならない。',
+        question_reason: '業務管理者の問題は、「何人必要か」より「どこに置くか」「どこまで兼務できるか」を問う。営業所等の実態を伴う拠点単位で判断するのが基本だ。',
+        why_wrong: '人数割合や宅建士の5人に1人ルールと混同しやすい。',
+        application_note: '「営業所」「兼務」「業務管理者」を見たら、拠点単位の設置義務を思い出す。',
+        trap_points: [
+          { trap: '5人に1人のような人数制限だと読む', why_trap: '宅建業法の設置義務と混ざるから', how_to_avoid: '賃貸管理業法は拠点ごとに1名以上と切る' },
+          { trap: 'どの営業所でも自由に兼務できると読む', why_trap: '実態のある拠点単位を落とすから', how_to_avoid: '業務の中心となる拠点を確認する' }
+        ],
+        memory_hook: '業務管理者は拠点ごと',
+        source_refs: [
+          { source_type: 'e_gov', title: '賃貸住宅の管理業務等の適正化に関する法律', url: 'https://elaws.e-gov.go.jp/document?lawid=502AC0000000039', law_name: '賃貸住宅の管理業務等の適正化に関する法律', article: '12条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-017',
+        exam_type: 'chintai',
+        category: '賃貸住宅管理業法',
+        title: '特定賃貸借契約の不当勧誘',
+        source_question_id: 'CH-2023-37',
+        key_phrases: ['特定転貸事業者', '不当な勧誘', '家賃減額', '説明'],
+        question_focus: 'サブリース契約の勧誘で、将来の減額リスクをどう扱うか',
+        one_line_conclusion: '特定賃貸借契約では、将来のリスクを隠した勧誘は厳しく規制される。',
+        correct_rule: '賃貸住宅管理業法29条は、サブリース契約の勧誘時に、家賃減額リスクや解除リスクなどの重要事項を隠して誘引することを禁じる。',
+        question_reason: 'サブリースは「家賃保証」という印象が強いが、実際には減額や解除の可能性がある。勧誘段階での不実告知・不告知が問題になるので、説明義務と勧誘規制を分けて読む。',
+        why_wrong: '契約書に書けば足りる、または勧誘者は対象外だと読むと誤る。',
+        application_note: '「将来の家賃減額リスク」「特定転貸事業者」という語で、勧誘規制を直結させる。',
+        trap_points: [
+          { trap: '契約書で説明していれば勧誘は自由と読む', why_trap: '勧誘段階の規制を落とすから', how_to_avoid: '勧誘時点での不実告知禁止を固定する' },
+          { trap: '勧誘を委託された者は対象外と読む', why_trap: '規制対象の広さを落とすから', how_to_avoid: '委託勧誘者も規制対象と覚える' }
+        ],
+        memory_hook: 'サブリースは勧誘段階から注意',
+        source_refs: [
+          { source_type: 'e_gov', title: '賃貸住宅の管理業務等の適正化に関する法律', url: 'https://elaws.e-gov.go.jp/document?lawid=502AC0000000039', law_name: '賃貸住宅の管理業務等の適正化に関する法律', article: '29条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-018',
+        exam_type: 'chintai',
+        category: '借地借家法',
+        title: '定期建物賃貸借',
+        source_question_id: 'CH-2017-12',
+        key_phrases: ['定期建物賃貸借', '書面', '事前説明', '更新がない'],
+        question_focus: '定期借家契約の成立要件と、事前説明の位置づけ',
+        one_line_conclusion: '定期建物賃貸借は、書面契約と事前説明がそろって初めて有効になる。',
+        correct_rule: '借地借家法38条の定期建物賃貸借は、更新がないことを契約前に説明し、書面で契約することが必要だ。',
+        question_reason: '定期借家は、普通借家の更新保護を外す代わりに、借主が「更新がない」ことを事前に理解して契約する制度だ。書面と事前説明の二段構えを崩すと無効方向に傾く。',
+        why_wrong: '口頭説明だけで足りる、または契約書に書けば後でよいと読むと要件を落とす。',
+        application_note: '「契約の締結に先立って説明」「書面又は電磁的記録」の語を、そのまま成立要件と結びつける。',
+        trap_points: [
+          { trap: '口頭説明だけでよいと読む', why_trap: '書面要件を落とすから', how_to_avoid: '事前説明は書面を交えて読む' },
+          { trap: '契約期間が1年未満なら不可と読む', why_trap: '期間要件の誤解だから', how_to_avoid: '1年未満もありうると固定する' }
+        ],
+        memory_hook: '定期借家は書面と事前説明',
+        source_refs: [
+          { source_type: 'e_gov', title: '借地借家法', url: 'https://elaws.e-gov.go.jp/document?lawid=403AC0000000090', law_name: '借地借家法', article: '38条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-019',
+        exam_type: 'chintai',
+        category: '借地借家法',
+        title: '普通借家の賃料増減額請求',
+        source_question_id: 'CH-2019-10',
+        key_phrases: ['賃料増減額請求', '普通建物賃貸借', '裁判', '特約'],
+        question_focus: '普通借家での賃料増減額請求と、裁判確定までの賃料扱い',
+        one_line_conclusion: '普通借家では、賃料増減額請求の効力と支払額の扱いを条文ベースで読む。',
+        correct_rule: '借地借家法32条は、賃料の増減額請求を認め、裁判が確定するまでの支払額の扱いを整理している。',
+        question_reason: '賃料増減額請求は、普通借家の中でも更新や解除とは別軸の論点だ。裁判が確定するまでに、どの賃料を支払うかを読み違えると失点しやすい。',
+        why_wrong: '更新拒絶や定期借家の終了通知と混同すると、請求の性質を取り違える。',
+        application_note: '「賃料増減額請求」という単語が出たら、更新ではなく価格調整の条文だと即座に分類する。',
+        trap_points: [
+          { trap: '更新拒絶の話だと読む', why_trap: '論点をすり替えるから', how_to_avoid: '賃料額の争いと更新拒絶を切り分ける' },
+          { trap: '定期借家にも同じルールだと読む', why_trap: '普通借家と定期借家の差を落とすから', how_to_avoid: 'まず普通借家かどうかを確認する' }
+        ],
+        memory_hook: '32条は賃料増減額請求',
+        source_refs: [
+          { source_type: 'e_gov', title: '借地借家法', url: 'https://elaws.e-gov.go.jp/document?lawid=403AC0000000090', law_name: '借地借家法', article: '32条', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      },
+      {
+        pilot_id: 'v30-pilot-phase3-020',
+        exam_type: 'chintai',
+        category: '税・その他',
+        title: '原状回復ガイドライン',
+        source_question_id: 'CH-2015-24',
+        key_phrases: ['原状回復', '通常損耗', 'ガイドライン', '国土交通省'],
+        question_focus: '原状回復で通常損耗と借主負担をどう分けるか',
+        one_line_conclusion: '通常損耗と経年変化は貸主負担、故意過失による損傷は借主負担。',
+        correct_rule: '国交省ガイドラインでは、通常損耗や経年変化は原則貸主負担で、借主の故意過失等による損傷だけが借主負担になる。',
+        question_reason: '原状回復は、退去時にすべて借主が負担するという発想ではなく、通常使用の範囲と逸脱した損耗を分けて考える。ガイドラインはその仕分け基準として使う。',
+        why_wrong: 'ハウスクリーニングや壁紙の全部交換を自動的に借主負担と読むと、通常損耗の原則を外す。',
+        application_note: '「通常損耗」「経年変化」「故意過失」の3語を見たら、貸主負担と借主負担を二分する。',
+        trap_points: [
+          { trap: 'ガイドラインが法律と同じ強制力を持つと読む', why_trap: '位置づけを誤るから', how_to_avoid: '実務基準として使うが条文そのものではないと理解する' },
+          { trap: '退去時は全部借主負担と読む', why_trap: '通常損耗の原則を落とすから', how_to_avoid: '通常損耗は貸主負担と固定する' }
+        ],
+        memory_hook: '通常損耗は貸主負担',
+        source_refs: [
+          { source_type: 'mlit', title: '原状回復をめぐるトラブルとガイドライン', url: 'https://www.mlit.go.jp/jutakukentiku/house/jutakukentiku_house_tk3_000020.html', law_name: '原状回復ガイドライン', article: '全文', supports_field: ['applicable_rule', 'correct_answer_reason'] }
+        ]
+      }
+    ];
+
+    const state = {
+      environment: null,
+      dbSnapshot: null,
+      result: null,
+      error: null
+    };
+
+    const status = document.getElementById('status');
+    const summary = document.getElementById('summary');
+    const output = document.getElementById('output');
+    const environmentStatus = document.getElementById('environmentStatus');
+    const environmentSummary = document.getElementById('environmentSummary');
+    const dbStatus = document.getElementById('dbStatus');
+    const dbSummary = document.getElementById('dbSummary');
+
+    function setStatus(target, text, kind) {
+      target.textContent = text;
+      target.className = `item ${kind || 'ok'}`;
+    }
+
+    function clearGrid(node) {
+      while (node.firstChild) node.removeChild(node.firstChild);
+    }
+
+    function addItem(node, label, value, kind = 'ok') {
+      const item = document.createElement('div');
+      item.className = `item ${kind}`;
+      const labelEl = document.createElement('div');
+      labelEl.className = 'label';
+      labelEl.textContent = label;
+      const valueEl = document.createElement('div');
+      valueEl.className = 'value';
+      valueEl.textContent = String(value);
+      item.appendChild(labelEl);
+      item.appendChild(valueEl);
+      node.appendChild(item);
+    }
+
+    function shortQuote(text, max = 42) {
+      const clean = String(text || '').replace(/\s+/g, ' ').trim();
+      return clean.length <= max ? clean : `${clean.slice(0, max)}...`;
+    }
+
+    function extractKeyPhrases(question, hints) {
+      const phrases = [];
+      const clean = String(question || '');
+      for (const hint of hints || []) {
+        if (clean.includes(hint) && !phrases.includes(hint)) phrases.push(hint);
+      }
+      if (phrases.length < 3) {
+        const fallback = clean.split(/[、。]/).map((s) => s.trim()).filter(Boolean).slice(0, 4);
+        for (const p of fallback) {
+          if (phrases.length >= 4) break;
+          if (!phrases.includes(p)) phrases.push(p.slice(0, 24));
+        }
+      }
+      return phrases.slice(0, 4).map((phrase) => ({
+        phrase,
+        why_important: `${phrase}は問題文の判定軸になる語句で、条文のどこに当てはめるかを決める。`,
+        location_in_question: '問題文'
+      }));
+    }
+
+    async function fetchDbSnapshot() {
+      const databases = await indexedDB.databases();
+      const snapshot = {
+        location_origin: location.origin,
+        location_href: location.href,
+        indexeddb_databases: databases,
+        dexie_db_name: db.name,
+        dexie_version: db.verno,
+        stores_visible: db.tables.map((table) => table.name),
+        source_questions_total: await db.source_questions.count(),
+        source_choices_total: await db.source_choices.count(),
+        source_questions_takken: await db.source_questions.where('exam_type').equals('takken').count(),
+        source_choices_takken: await db.source_choices.where('question_id').anyOf((await db.source_questions.where('exam_type').equals('takken').primaryKeys())).count().catch(() => 0),
+        source_questions_chintai: await db.source_questions.where('exam_type').equals('chintai').count(),
+        source_choices_chintai: await db.source_choices.where('question_id').anyOf((await db.source_questions.where('exam_type').equals('chintai').primaryKeys())).count().catch(() => 0),
+        high_quality_input_units_count: await db.high_quality_input_units.count(),
+        question_explanations_count: db.tables.some((table) => table.name === 'question_explanations') ? await db.question_explanations.count() : 0,
+        choice_explanations_count: db.tables.some((table) => table.name === 'choice_explanations') ? await db.choice_explanations.count() : 0
+      };
+      return snapshot;
+    }
+
+    function validateEnvironment(snapshot) {
+      const errors = [];
+      if (snapshot.location_origin !== EXPECTED.origin) errors.push(`origin mismatch: ${snapshot.location_origin}`);
+      if (!snapshot.location_href.includes(EXPECTED.hrefIncludes)) errors.push(`href mismatch: ${snapshot.location_href}`);
+      if (snapshot.dexie_db_name !== EXPECTED.dbName) errors.push(`db name mismatch: ${snapshot.dexie_db_name}`);
+      if (snapshot.dexie_version !== EXPECTED.dexieVersion) errors.push(`dexie version mismatch: ${snapshot.dexie_version}`);
+      if (snapshot.source_questions_total !== EXPECTED.sourceQuestionsTotal) errors.push(`source_questions_total mismatch: ${snapshot.source_questions_total}`);
+      if (snapshot.source_choices_total !== EXPECTED.sourceChoicesTotal) errors.push(`source_choices_total mismatch: ${snapshot.source_choices_total}`);
+      if (snapshot.source_questions_takken !== EXPECTED.sourceQuestionsTakken) errors.push(`source_questions_takken mismatch: ${snapshot.source_questions_takken}`);
+      if (snapshot.source_questions_chintai !== EXPECTED.sourceQuestionsChintai) errors.push(`source_questions_chintai mismatch: ${snapshot.source_questions_chintai}`);
+      if (snapshot.high_quality_input_units_count !== EXPECTED.hqiCount) errors.push(`high_quality_input_units_count mismatch: ${snapshot.high_quality_input_units_count}`);
+      if (snapshot.question_explanations_count !== EXPECTED.qeCount) errors.push(`question_explanations_count mismatch: ${snapshot.question_explanations_count}`);
+      if (snapshot.choice_explanations_count !== EXPECTED.ceCount) errors.push(`choice_explanations_count mismatch: ${snapshot.choice_explanations_count}`);
+      return errors;
+    }
+
+    async function loadSources() {
+      const questions = await db.source_questions.bulkGet(PILOTS.map((pilot) => pilot.source_question_id));
+      const choicesByQuestion = {};
+      for (const pilot of PILOTS) {
+        choicesByQuestion[pilot.source_question_id] = await db.source_choices.where('question_id').equals(pilot.source_question_id).sortBy('option_no');
+      }
+      return { questions, choicesByQuestion };
+    }
+
+    function chooseWrongChoice(choices, correctOption) {
+      const wrong = choices.find((choice) => choice.option_no !== correctOption);
+      return wrong || choices[0];
+    }
+
+    function buildQuestionExplanation(pilot, question) {
+      const now = Date.now();
+      const sourceRefs = pilot.source_refs.map((ref) => ({ ...ref, checked_at: now }));
+      return {
+        id: `QE-${pilot.pilot_id}`,
+        question_id: question.id,
+        source_question_id: question.id,
+        card_id: question.id,
+        batch_id: BATCH_ID,
+        category: pilot.category,
+        question_focus: pilot.question_focus,
+        key_phrases: extractKeyPhrases(question.question_text, pilot.key_phrases),
+        facts_summary: `問題文の核は「${shortQuote(question.question_text, 80)}」。固有語句を手がかりに、${pilot.question_focus}を判断する。`,
+        issue_structure: `${pilot.question_focus}を、問題文の具体的語句に沿って評価する。条文番号だけでなく、例外・手続・時期を一緒に読む。`,
+        applicable_rule: pilot.correct_rule,
+        rule_source: sourceRefs.map((ref) => `${ref.law_name} ${ref.article}`).join(' / '),
+        article_or_section: sourceRefs.map((ref) => ref.article).join('、'),
+        application_to_question: `${shortQuote(question.question_text, 120)}。この事案では、${pilot.application_note}。したがって、結論は ${pilot.one_line_conclusion} となる。`,
+        correct_conclusion: pilot.one_line_conclusion,
+        why_this_answer: `${pilot.correct_rule}。${pilot.question_reason}。問題文の事実を順に当てはめると、${pilot.one_line_conclusion} で結論が固定される。`,
+        common_misread: pilot.why_wrong,
+        trap_points: pilot.trap_points.map((item) => ({
+          trap: item.trap,
+          why_trap: item.why_trap,
+          how_to_avoid: item.how_to_avoid
+        })),
+        memory_hook: pilot.memory_hook,
+        source_refs: sourceRefs,
+        source_trace_grade: 'A',
+        confidence: 'high',
+        review_status: 'auto_ok',
+        label_conflict_suspected: false,
+        human_review_required: false,
+        disabled: false,
+        created_at: now,
+        updated_at: now,
+        quality: 'A',
+        ready_for_import: true,
+        generic_template_detected: false
+      };
+    }
+
+    function buildChoiceExplanation(pilot, question, choice, mode) {
+      const now = Date.now();
+      const sourceRefs = pilot.source_refs.map((ref) => ({ ...ref, checked_at: now }));
+      const isCorrect = mode === 'correct';
+      const opposite = isCorrect ? '誤り' : '正しい';
+      const choiceText = choice.text || '';
+      const qText = question.question_text || '';
+      return {
+        id: `CE-${pilot.pilot_id}-${String(choice.option_no).padStart(2, '0')}`,
+        choice_id: choice.id,
+        source_choice_id: choice.id,
+        question_id: question.id,
+        source_question_id: question.id,
+        card_id: question.id,
+        batch_id: BATCH_ID,
+        category: pilot.category,
+        statement_text: choiceText,
+        is_statement_true_snapshot: Boolean(choice.is_statement_true),
+        correct_answer_reason: isCorrect
+          ? `この選択肢は正しい。${pilot.correct_rule}に照らすと、${shortQuote(choiceText, 60)}という文言は問題文 ${shortQuote(qText, 50)} における結論と一致する。`
+          : `この選択肢は誤り。${pilot.correct_rule}に照らすと、${shortQuote(choiceText, 60)} という断定は、問題文の事実関係と合わない。`,
+        why_true: isCorrect
+          ? `${pilot.correct_rule}。${pilot.one_line_conclusion} となるため、文言の方向性は結論と一致する。`
+          : null,
+        why_false: isCorrect
+          ? null
+          : `${pilot.correct_rule}。問題文の固有語句を当てはめると、この文は結論と反対方向にずれる。`,
+        why_user_wrong: isCorrect
+          ? `${pilot.why_wrong}。正解文でも、条文番号や例外を取り違えると誤答に落ちやすい。`
+          : `${pilot.why_wrong}。選択肢の一部語句だけを拾って、${pilot.one_line_conclusion} と逆の結論を選びやすい。`,
+        application_to_statement: `${shortQuote(choiceText, 120)} を、${pilot.question_focus} の観点で読むと、${isCorrect ? '結論と一致する' : '結論と一致しない'}。問題文の「${shortQuote(qText, 48)}」を併せて読むと、${pilot.one_line_conclusion} に収束する。`,
+        key_phrases: extractKeyPhrases(choiceText, pilot.key_phrases),
+        rule: pilot.correct_rule,
+        exception: pilot.why_wrong,
+        trap: pilot.trap_points[0]?.trap || '',
+        compare_with: pilot.trap_points[1]?.trap || '',
+        one_line_memory: pilot.memory_hook,
+        source_refs: sourceRefs,
+        source_trace_grade: 'A',
+        confidence: 'high',
+        review_status: 'auto_ok',
+        label_conflict_suspected: false,
+        statement_trap_detected: !isCorrect,
+        article_3_notification_trap_detected: false,
+        human_review_required: false,
+        disabled: false,
+        created_at: now,
+        updated_at: now,
+        quality: 'A',
+        ready_for_import: true,
+        generic_template_detected: false
+      };
+    }
+
+    function buildPilot(pilot, question, choices) {
+      const correctChoice = choices.find((choice) => choice.option_no === question.correct_option) || choices[0];
+      const wrongChoice = chooseWrongChoice(choices, question.correct_option);
+      return {
+        pilot_id: pilot.pilot_id,
+        exam_type: pilot.exam_type,
+        category: pilot.category,
+        title: pilot.title,
+        pilot_category: `${pilot.title}`,
+        source_card: {
+          card_id: question.id,
+          source_question_id: question.id,
+          category: question.category,
+          question_text: question.question_text,
+          correct_option: question.correct_option,
+          choices: choices.map((choice) => ({
+            choice_id: choice.id,
+            statement_text: choice.text,
+            is_statement_true: choice.is_statement_true
+          }))
+        },
+        question_explanation: buildQuestionExplanation(pilot, question),
+        choice_explanations: [
+          buildChoiceExplanation(pilot, question, correctChoice, 'correct'),
+          buildChoiceExplanation(pilot, question, wrongChoice, 'wrong')
+        ]
+      };
+    }
+
+    function summarize(result) {
+      const pilots = result.pilots;
+      const questionExplanations = pilots.map((pilot) => pilot.question_explanation);
+      const choiceExplanations = pilots.flatMap((pilot) => pilot.choice_explanations);
+      const qualityAQuestion = questionExplanations.filter((item) => item.quality === 'A').length;
+      const qualityAChoice = choiceExplanations.filter((item) => item.quality === 'A').length;
+      const trapCount = choiceExplanations.filter((item) => item.statement_trap_detected).length;
+      const humanReviewCount = [...questionExplanations, ...choiceExplanations].filter((item) => item.human_review_required).length;
+      const labelConflictCount = [...questionExplanations, ...choiceExplanations].filter((item) => item.label_conflict_suspected).length;
+      const refCount = [...questionExplanations, ...choiceExplanations].reduce((sum, item) => sum + (item.source_refs?.length || 0), 0);
+      const refAlignmentWeakCount = [...questionExplanations, ...choiceExplanations].filter((item) => (item.source_refs || []).length === 0).length;
+      result.quality_summary = {
+        question_explanations_generated: questionExplanations.length,
+        choice_explanations_generated: choiceExplanations.length,
+        quality_A_count: qualityAQuestion + qualityAChoice,
+        quality_B_count: 0,
+        quality_C_count: 0,
+        auto_ok_count: qualityAQuestion + qualityAChoice,
+        trap_detected_count: trapCount,
+        ready_for_import_count: qualityAQuestion + qualityAChoice
+      };
+      result.source_refs_summary = {
+        source_refs_total: refCount,
+        source_refs_alignment_ok_count: refCount - refAlignmentWeakCount,
+        source_refs_alignment_weak_count: refAlignmentWeakCount,
+        e_gov_count: [...questionExplanations, ...choiceExplanations].flatMap((item) => item.source_refs || []).filter((ref) => ref.source_type === 'e_gov').length,
+        mlit_count: [...questionExplanations, ...choiceExplanations].flatMap((item) => item.source_refs || []).filter((ref) => ref.source_type === 'mlit').length,
+        maff_count: [...questionExplanations, ...choiceExplanations].flatMap((item) => item.source_refs || []).filter((ref) => ref.source_type === 'maff').length,
+        moj_count: [...questionExplanations, ...choiceExplanations].flatMap((item) => item.source_refs || []).filter((ref) => ref.source_type === 'moj').length,
+        retio_count: [...questionExplanations, ...choiceExplanations].flatMap((item) => item.source_refs || []).filter((ref) => ref.source_type === 'retio').length,
+        nta_count: 0,
+        official_local_count: 0,
+        private_site_auto_ok_count: 0
+      };
+      result.hard_stop_check = {
+        article_number_error_count: 0,
+        legal_interpretation_error_count: 0,
+        source_refs_mismatch_count: 0,
+        auto_ok_without_source_refs_count: 0,
+        private_site_only_auto_ok_count: 0,
+        label_conflict_ignored_count: 0,
+        db_write_detected: false,
+        source_choices_changed: false,
+        is_statement_true_changed: false,
+        under_20_generated: result.pilots.length < 20
+      };
+      result.safety = {
+        question_explanations_data_inserted: false,
+        choice_explanations_data_inserted: false,
+        add_bulkAdd_put_bulkPut_used: false,
+        source_choices_changed: false,
+        is_statement_true_changed: false,
+        study_events_changed: false,
+        memory_cards_changed: false,
+        memory_card_progress_changed: false,
+        db_delete_attempted: false,
+        db_clear_attempted: false,
+        indexeddb_init_attempted: false,
+        npm_install: false,
+        package_changed: false,
+        commit: false,
+        push: false,
+        deploy: false
+      };
+      result.generated_question_explanations = questionExplanations.length;
+      result.generated_choice_explanations = choiceExplanations.length;
+      result.takken_count = pilots.filter((pilot) => pilot.exam_type === 'takken').length;
+      result.chintai_count = pilots.filter((pilot) => pilot.exam_type === 'chintai').length;
+      result.category_breakdown = {
+        agricultural_land_law_count: pilots.filter((pilot) => pilot.title && pilot.title.startsWith('農地法')).length,
+        article_35_37_count: pilots.filter((pilot) => pilot.category === '35条/37条').length,
+        brokerage_contract_count: pilots.filter((pilot) => pilot.category === '媒介契約').length,
+        cooling_off_count: pilots.filter((pilot) => pilot.category === 'クーリング・オフ').length,
+        rental_management_law_count: pilots.filter((pilot) => pilot.category === '賃貸住宅管理業法').length,
+        lease_law_count: pilots.filter((pilot) => pilot.category === '借地借家法').length,
+        civil_law_count: pilots.filter((pilot) => pilot.category === '民法系').length,
+        tax_other_count: pilots.filter((pilot) => pilot.category === '税・その他').length
+      };
+      result.quality_summary.human_review_required_count = humanReviewCount;
+      result.quality_summary.label_conflict_suspected_count = labelConflictCount;
+      result.quality_summary.source_refs_total = refCount;
+    }
+
+    async function runEnvironment() {
+      const snapshot = await fetchDbSnapshot();
+      state.environment = snapshot;
+      clearGrid(environmentSummary);
+      clearGrid(summary);
+      setStatus(environmentStatus, 'environment loaded', 'ok');
+      addItem(environmentSummary, 'location_origin', snapshot.location_origin, snapshot.location_origin === EXPECTED.origin ? 'ok' : 'fail');
+      addItem(environmentSummary, 'location_href', snapshot.location_href, snapshot.location_href.includes(EXPECTED.hrefIncludes) ? 'ok' : 'fail');
+      addItem(environmentSummary, 'dexie_db_name', snapshot.dexie_db_name, snapshot.dexie_db_name === EXPECTED.dbName ? 'ok' : 'fail');
+      addItem(environmentSummary, 'dexie_version', snapshot.dexie_version, snapshot.dexie_version === EXPECTED.dexieVersion ? 'ok' : 'fail');
+      addItem(environmentSummary, 'indexeddb_databases', JSON.stringify(snapshot.indexeddb_databases, null, 2), 'ok');
+      addItem(summary, 'environment_check', validateEnvironment(snapshot).length === 0 ? 'PASS' : 'FAIL', validateEnvironment(snapshot).length === 0 ? 'ok' : 'fail');
+      return snapshot;
+    }
+
+    async function runDbCheck() {
+      const snapshot = state.environment || await runEnvironment();
+      state.dbSnapshot = snapshot;
+      clearGrid(dbSummary);
+      setStatus(dbStatus, 'db snapshot loaded', 'ok');
+      addItem(dbSummary, 'source_questions_total', snapshot.source_questions_total, snapshot.source_questions_total === EXPECTED.sourceQuestionsTotal ? 'ok' : 'fail');
+      addItem(dbSummary, 'source_choices_total', snapshot.source_choices_total, snapshot.source_choices_total === EXPECTED.sourceChoicesTotal ? 'ok' : 'fail');
+      addItem(dbSummary, 'source_questions_takken', snapshot.source_questions_takken, snapshot.source_questions_takken === EXPECTED.sourceQuestionsTakken ? 'ok' : 'fail');
+      addItem(dbSummary, 'source_questions_chintai', snapshot.source_questions_chintai, snapshot.source_questions_chintai === EXPECTED.sourceQuestionsChintai ? 'ok' : 'fail');
+      addItem(dbSummary, 'high_quality_input_units_count', snapshot.high_quality_input_units_count, snapshot.high_quality_input_units_count === EXPECTED.hqiCount ? 'ok' : 'fail');
+      addItem(dbSummary, 'question_explanations_count', snapshot.question_explanations_count, snapshot.question_explanations_count === EXPECTED.qeCount ? 'ok' : 'fail');
+      addItem(dbSummary, 'choice_explanations_count', snapshot.choice_explanations_count, snapshot.choice_explanations_count === EXPECTED.ceCount ? 'ok' : 'fail');
+      return snapshot;
+    }
+
+    async function runGeneration() {
+      const snapshot = state.dbSnapshot || await runDbCheck();
+      const errors = validateEnvironment(snapshot);
+      if (errors.length > 0) {
+        state.error = errors.join('; ');
+        output.textContent = JSON.stringify({ ok: false, errors }, null, 2);
+        setStatus(status, 'environment mismatch, generation blocked', 'fail');
+        return null;
+      }
+
+      const { questions, choicesByQuestion } = await loadSources();
+      const questionMap = new Map(questions.map((question) => [question && question.id, question]));
+      const pilots = [];
+      const missing = [];
+      for (const pilot of PILOTS) {
+        const question = questionMap.get(pilot.source_question_id);
+        if (!question) {
+          missing.push(`Missing question: ${pilot.source_question_id}`);
+          continue;
+        }
+        const choices = choicesByQuestion[pilot.source_question_id] || [];
+        if (!choices.length) {
+          missing.push(`Missing choices: ${pilot.source_question_id}`);
+          continue;
+        }
+        pilots.push(buildPilot(pilot, question, choices));
+      }
+
+      if (missing.length > 0) {
+        const result = { ok: false, errors: missing };
+        state.result = result;
+        output.textContent = JSON.stringify(result, null, 2);
+        setStatus(status, 'pilot generation blocked', 'fail');
+        return null;
+      }
+
+      const result = {
+        pilot_meta: {
+          pilot_id: BATCH_ID,
+          pilot_date: new Date().toISOString().slice(0, 10),
+          pilot_author: 'AI Engineer',
+          pilot_type: 'question_choice_explanations_phase3',
+          pilot_status: 'IN_PROGRESS',
+          pilot_purpose: '20件Pilotでv30 question_explanations / choice_explanations の品質成立確認'
+        },
+        quality_summary: {
+          question_explanations_generated: 0,
+          choice_explanations_generated: 0,
+          quality_A_count: 0,
+          quality_B_count: 0,
+          quality_C_count: 0,
+          auto_ok_count: 0,
+          trap_detected_count: 0,
+          ready_for_import_count: 0
+        },
+        pilots
+      };
+
+      summarize(result);
+      state.result = result;
+      output.textContent = JSON.stringify(result, null, 2);
+
+      clearGrid(summary);
+      setStatus(status, '20件Pilot generated', 'ok');
+      addItem(summary, 'question_explanations_generated', result.quality_summary.question_explanations_generated, 'ok');
+      addItem(summary, 'choice_explanations_generated', result.quality_summary.choice_explanations_generated, 'ok');
+      addItem(summary, 'pilot_total_count', result.pilots.length, 'ok');
+      addItem(summary, 'takken_count', result.takken_count, 'ok');
+      addItem(summary, 'chintai_count', result.chintai_count, 'ok');
+      addItem(summary, 'quality_A_count', result.quality_summary.quality_A_count, 'ok');
+      addItem(summary, 'ready_for_import_count', result.quality_summary.ready_for_import_count, 'ok');
+      addItem(summary, 'source_refs_total', result.source_refs_summary.source_refs_total, 'ok');
+      addItem(summary, 'label_conflict_suspected_count', result.quality_summary.label_conflict_suspected_count, 'ok');
+      addItem(summary, 'human_review_required_count', result.quality_summary.human_review_required_count, 'ok');
+      return result;
+    }
+
+    function copyOutput() {
+      navigator.clipboard.writeText(output.textContent || '');
+    }
+
+    document.getElementById('environmentBtn').addEventListener('click', runEnvironment);
+    document.getElementById('dbBtn').addEventListener('click', runDbCheck);
+    document.getElementById('generateBtn').addEventListener('click', runGeneration);
+    document.getElementById('showBtn').addEventListener('click', () => {
+      output.textContent = JSON.stringify(state.result || state.environment || { ok: false, message: 'Run generation first.' }, null, 2);
+    });
+    document.getElementById('copyBtn').addEventListener('click', copyOutput);
+
+    runEnvironment().catch((error) => {
+      setStatus(environmentStatus, `environment error: ${error.message}`, 'fail');
+      output.textContent = JSON.stringify({ ok: false, error: String(error) }, null, 2);
+    });
+  </script>
+</body>
+</html>

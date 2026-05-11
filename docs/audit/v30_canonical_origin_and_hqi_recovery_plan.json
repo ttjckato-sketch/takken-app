@@ -1,0 +1,110 @@
+{
+  "design_meta": {
+    "design_type": "V30_CANONICAL_ORIGIN_AND_HQI_RECOVERY_PLAN",
+    "design_date": "2026-05-11",
+    "designer": "正本origin再定義・HQI復旧設計担当",
+    "purpose": "v30 Phase3-020 20件Pilot生成前のDB状態確認とHQI復旧設計"
+  },
+  "origin_status": {
+    "port_5173": {
+      "dexie_version": 30,
+      "source_questions_total": 1524,
+      "source_choices_total": 3024,
+      "source_questions_takken": 1024,
+      "source_choices_takken": 1024,
+      "source_questions_chintai": 500,
+      "source_choices_chintai": 2000,
+      "high_quality_input_units_count": 0,
+      "question_explanations_count": 0,
+      "choice_explanations_count": 0,
+      "status": "source_data_complete_hqi_missing",
+      "use_allowed": true,
+      "canonical_candidate": true
+    },
+    "port_5176": {
+      "dexie_version": 30,
+      "source_questions_total": 0,
+      "source_choices_total": 0,
+      "high_quality_input_units_count": 0,
+      "question_explanations_count": 0,
+      "choice_explanations_count": 0,
+      "status": "empty_db",
+      "use_allowed": false,
+      "canonical_candidate": false
+    }
+  },
+  "canonical_origin_decision": {
+    "selected_origin": "5173",
+    "reason": "source系データが完備しており、既存学習履歴が保全されているため",
+    "use_5173_allowed": true,
+    "use_5176_allowed": false
+  },
+  "hqi_recovery_audit": {
+    "batch1_json_exists": true,
+    "batch1_topic_count": 20,
+    "source_trace_grade_A_count": 20,
+    "human_review_required_false_count": 20,
+    "productionBatchLoader_exists": true,
+    "writes_only_high_quality_input_units": true,
+    "source_choices_write": false,
+    "is_statement_true_write": false,
+    "study_events_write": false,
+    "uses_add_or_bulkAdd": true,
+    "uses_put_or_bulkPut": false,
+    "dry_run_supported": true,
+    "rollback_dry_run_supported": true,
+    "safety_guards_count": 7
+  },
+  "recovery_plan": {
+    "recommended_action": "RESTORE_HQI_TO_5173",
+    "hqi_reimport_target_origin": "5173",
+    "hqi_reimport_scope": "high_quality_input_units_only",
+    "source_reimport_needed": false,
+    "question_explanations_import_allowed": false,
+    "choice_explanations_import_allowed": false,
+    "phase3_020_generation_allowed_now": false,
+    "phase3_020_generation_allowed_after": "AFTER_HQI_RECOVERY"
+  },
+  "recovery_procedure": {
+    "step_1": "5173でAntigravity Browserを起動",
+    "step_2": "productionBatchLoader.tsを使用してHQI Batch1を投入",
+    "step_3_dry_run": "dry-run mode: true で検証",
+    "step_4_formal": "dry-run mode: false, confirm: true で本投入",
+    "step_5_verify": "投入確認: high_quality_input_units_count = 20",
+    "step_6_phase3_020": "Phase3-020 20件Pilot生成実行"
+  },
+  "safety_restrictions": {
+    "prohibited_actions": [
+      "source_questions_reimport",
+      "source_choices_reimport",
+      "is_statement_true_change",
+      "study_events_change",
+      "db_delete",
+      "db_clear",
+      "IndexedDB_reset"
+    ]
+  },
+  "quality_criteria": {
+    "recovery_success": {
+      "high_quality_input_units_count": 20,
+      "all_source_trace_grade_A": true,
+      "all_human_review_required_false": true,
+      "existing_learning_history_preserved": true
+    },
+    "recovery_failure": {
+      "high_quality_input_units_count_not_20": true,
+      "article_number_error": true,
+      "legal_interpretation_error": true,
+      "existing_learning_history_destroyed": true
+    }
+  },
+  "next_steps": [
+    "HQI Batch1復旧実行（5173）",
+    "HQI復旧確認",
+    "Phase3-020 20件Pilot生成（5173）"
+  ],
+  "created_files": [
+    "docs/audit/V30_CANONICAL_ORIGIN_AND_HQI_RECOVERY_PLAN.md",
+    "docs/audit/v30_canonical_origin_and_hqi_recovery_plan.json"
+  ]
+}

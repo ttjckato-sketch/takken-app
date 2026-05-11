@@ -1,0 +1,453 @@
+{
+  "design_meta": {
+    "design_type": "V30_PILOT_PHASE3_020_GENERATION_DESIGN",
+    "design_date": "2026-05-11",
+    "designer": "AI Architect",
+    "phase": "Phase 3 - 20 Pilot Expansion",
+    "previous_phase": "Phase2-005 (5 pilots completed)",
+    "previous_commit": "3098783"
+  },
+  "generation_targets": {
+    "total_pilots": 20,
+    "takken_pilots": 14,
+    "chintai_pilots": 6,
+    "question_explanations_target": 20,
+    "choice_explanations_target_min": 40,
+    "choice_explanations_target_max": 60,
+    "source_refs_target_min": 40,
+    "source_refs_target_max": 120
+  },
+  "category_allocation": {
+    "agricultural_land_law": {
+      "count": 3,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "3条権利移転許可",
+        "4条転用届出",
+        "5条転用権利移転",
+        "市街化区域内届出特例"
+      ],
+      "trap_patterns": [
+        "3条 + 届出",
+        "権利移転 + 届出",
+        "市街化区域 = 4条・5条のみ"
+      ]
+    },
+    "article_35_37": {
+      "count": 3,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "35条重要事項説明",
+        "37条契約内容書面交付",
+        "契約前/契約後区別",
+        "説明/交付区別"
+      ],
+      "trap_patterns": [
+        "35条/37条条文混同",
+        "契約前後区別なし"
+      ]
+    },
+    "brokerage_contract": {
+      "count": 3,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "一般媒介契約",
+        "専任媒介契約",
+        "専属専任媒介契約",
+        "業務処理状況報告頻度",
+        "指定流通機構登録義務"
+      ],
+      "trap_patterns": [
+        "媒介契約種類区別なし",
+        "報告頻度混同"
+      ]
+    },
+    "cooling_off": {
+      "count": 2,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "37条の2書面告知",
+        "申込み撤回",
+        "契約解除",
+        "期間制限",
+        "除外事由"
+      ],
+      "trap_patterns": [
+        "35条の2誤り",
+        "告知/申出区別なし"
+      ],
+      "critical_rule": "根拠条文は37条の2。35条の2は存在しない。"
+    },
+    "rental_management_law": {
+      "count": 3,
+      "takken_chintai": "chintai",
+      "focus_areas": [
+        "管理受託契約重要事項説明",
+        "管理受託契約締結時書面",
+        "業務管理者",
+        "登録対象",
+        "67条1項業者交付義務",
+        "67条2項本人説明義務"
+      ],
+      "trap_patterns": [
+        "67条1項/2項区別なし",
+        "本人説明義務範囲誤り"
+      ]
+    },
+    "lease_law": {
+      "count": 2,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "普通借家",
+        "定期借家",
+        "更新拒絶正当事由",
+        "期間満了通知",
+        "書面要件"
+      ],
+      "trap_patterns": [
+        "普通/定期借家区別なし",
+        "正当事由不要と誤認"
+      ]
+    },
+    "civil_law": {
+      "count": 2,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "詐欺強迫",
+        "無権代理",
+        "表見代理",
+        "時効完成援用",
+        "抵当権根抵当"
+      ],
+      "trap_patterns": [
+        "詐欺/強迫第三者対抗誤り",
+        "無権代理/表見代理区別なし"
+      ]
+    },
+    "tax_other": {
+      "count": 2,
+      "takken_chintai": "takken",
+      "focus_areas": [
+        "登録免許税",
+        "不動産取得税",
+        "消費税",
+        "固定資産税",
+        "その他法令"
+      ],
+      "trap_patterns": [
+        "税率誤り",
+        "課税標準誤り"
+      ]
+    }
+  },
+  "quality_design": {
+    "quality_A": {
+      "requirements": [
+        "問題文固有の語句を3語以上使用",
+        "application_to_question が80文字以上",
+        "correct_answer_reason または why_this_answer が80文字以上",
+        "why_user_wrong が40文字以上",
+        "source_refs が1件以上",
+        "source_refs が結論と直接対応",
+        "generic_template_detected = false",
+        "label_conflict_suspected = false",
+        "human_review_required = false"
+      ],
+      "review_status": "auto_ok",
+      "ready_for_import": true
+    },
+    "quality_B": {
+      "requirements": [
+        "大筋正しいが、根拠・当てはめ・why_user_wrong の一部が弱い",
+        "問題文固有の語句が1〜2語",
+        "application_to_question が50〜79文字",
+        "why_user_wrong が20〜39文字"
+      ],
+      "review_status": "draft または human_review_required",
+      "ready_for_import": false,
+      "action": "修正または追加生成"
+    },
+    "quality_C": {
+      "triggers": [
+        "汎用文中心",
+        "条文番号誤り",
+        "法令解釈誤り",
+        "source_refsと結論が不一致",
+        "正誤ラベル疑義あり",
+        "source_refsなしでauto_ok",
+        "民間サイトだけでauto_ok"
+      ],
+      "review_status": "human_review_required",
+      "ready_for_import": false,
+      "action": "要修正・再生成"
+    }
+  },
+  "review_status_design": {
+    "auto_ok": {
+      "conditions": [
+        "quality_A",
+        "source_refsが1件以上で一次法令",
+        "label_conflict_suspected = false",
+        "human_review_required = false"
+      ]
+    },
+    "human_review_required": {
+      "conditions": [
+        "quality_C",
+        "label_conflict_suspected = true",
+        "source_refsなし",
+        "条文番号誤り疑い",
+        "法令解釈誤り疑い"
+      ]
+    },
+    "draft": {
+      "conditions": [
+        "quality_B",
+        "根拠不十分",
+        "当てはめ不足"
+      ]
+    }
+  },
+  "field_design": {
+    "trap_detected": {
+      "definition": "選択肢にtrapキーワードが含まれているか（正誤とは無関係）",
+      "examples": [
+        "農地法3条 + 届出",
+        "媒介契約種類混同",
+        "35条/37条混同"
+      ],
+      "note": "trap_detected = true は必ずしも誤りを意味しない。正しい選択肢でもtrapキーワードを含む場合がある。"
+    },
+    "label_conflict_suspected": {
+      "definition": "is_statement_trueと法的結論が矛盾している可能性",
+      "trigger_condition": "is_statement_true = true だが、法令解釈上は誤りである、またはその逆",
+      "severity": "HIGH",
+      "action": "label_conflict_suspected = true の場合、human_review_required = true にする"
+    }
+  },
+  "source_refs_design": {
+    "required_source_types": [
+      "e_gov"
+    ],
+    "source_type_priority": [
+      {
+        "type": "e_gov",
+        "priority": "PRIMARY",
+        "description": "一次法令（電子政府の窓口、e-Gov）"
+      },
+      {
+        "type": "official",
+        "priority": "SECONDARY",
+        "description": "省庁・公的機関公式サイト"
+      },
+      {
+        "type": "private",
+        "priority": "SUPPLEMENTARY",
+        "description": "民間サイト・学習サイト（補足のみ）"
+      }
+    ],
+    "alignment_rule": {
+      "description": "source_refs[].article と結論が直接対応している必要がある",
+      "validation": [
+        "applicable_rule に条文番号が含まれている",
+        "source_refs[].article と applicable_rule の条文番号が一致している",
+        "supports_field でどのフィールドを支えるか明示"
+      ]
+    },
+    "official_source_required": true,
+    "private_site_auto_ok_allowed": false
+  },
+  "stop_conditions": {
+    "hard_stop": {
+      "description": "即時停止・再設計が必要",
+      "conditions": [
+        "条文番号誤り",
+        "法令解釈誤り",
+        "source_refsと結論の不一致",
+        "source_refsなしでauto_ok",
+        "民間サイトだけでauto_ok",
+        "label_conflict_suspectedを無視してauto_ok",
+        "is_statement_trueを変更した",
+        "source_choicesを変更した",
+        "DBへ投入した",
+        "build FAIL"
+      ],
+      "action": "即時停止・原因分析・再設計"
+    },
+    "soft_warning": {
+      "description": "警告・修正推奨",
+      "conditions": [
+        "quality_B が3件以上連続",
+        "generic_template_detected が3件以上連続",
+        "問題文固有の語句が1〜2語のみが3件以上連続"
+      ],
+      "action": "生成プロンプト調整・再生成"
+    }
+  },
+  "category_specific_notes": {
+    "agricultural_land_law": {
+      "article_3": {
+        "article": "3条",
+        "scope": "権利移転",
+        "requirement": "原則許可",
+        "urban_area_exception": "なし（4条・5条のみ届出可能）",
+        "trap": "3条 + 届出"
+      },
+      "article_4": {
+        "article": "4条",
+        "scope": "自己所有農地転用",
+        "requirement": "許可",
+        "urban_area_exception": "届出（転用場面のみ）"
+      },
+      "article_5": {
+        "article": "5条",
+        "scope": "転用目的の権利移転",
+        "requirement": "許可",
+        "urban_area_exception": "届出（転用場面のみ）"
+      }
+    },
+    "article_35_37": {
+      "article_35": {
+        "article": "35条",
+        "timing": "契約成立前",
+        "content": "重要事項説明",
+        "counterparty": "相手方"
+      },
+      "article_37": {
+        "article": "37条",
+        "timing": "契約成立後",
+        "content": "契約内容記載書面交付",
+        "counterparty": "当事者"
+      }
+    },
+    "cooling_off": {
+      "correct_article": "37条の2",
+      "incorrect_article": "35条の2（存在しない）",
+      "key_concepts": [
+        "書面告知",
+        "申込み撤回",
+        "契約解除",
+        "期間制限",
+        "除外事由"
+      ],
+      "critical_rule": "必ず37条の2を使用する。35条の2は誤り。"
+    },
+    "brokerage_contract": {
+      "general_brokerage": {
+        "name": "一般媒介契約",
+        "report_frequency": "義務なし",
+        "designated Institution": "義務なし"
+      },
+      "exclusive_brokerage": {
+        "name": "専任媒介契約",
+        "report_frequency": "2週間に1回以上",
+        "designated_institution": "義務あり"
+      },
+      "solo_exclusive_brokerage": {
+        "name": "専属専任媒介契約",
+        "report_frequency": "4週間に1回以上",
+        "designated_institution": "義務あり",
+        "self_discovery_prohibited": "あり"
+      }
+    },
+    "rental_management_law": {
+      "article_67_1": {
+        "article": "67条1項",
+        "obligation": "業者による書面交付",
+        "subject": "管理業者"
+      },
+      "article_67_2": {
+        "article": "67条2項",
+        "obligation": "業務管理者本人記名押印",
+        "subject": "業務管理者",
+        "note": "本人説明義務は67条2項のみ"
+      }
+    },
+    "lease_law": {
+      "ordinary_lease": {
+        "name": "普通借家",
+        "renewal": "あり",
+        "termination_notice": "6ヶ月〜1年前"
+      },
+      "fixed_term_lease": {
+        "name": "定期借家",
+        "renewal": "なし",
+        "termination_notice": "期間満了の1〜6ヶ月前",
+        "writing_required": "あり"
+      }
+    },
+    "civil_law": {
+      "fraud_coercion": {
+        "fraud_third_party": "取消可",
+        "coercion_third_party": "取消不可（本人が取消可）"
+      },
+      "agency": {
+        "unauthorized_agency": "無権代理",
+        "apparent_agency": "表見代理",
+        "distinction": "相手方の保護"
+      },
+      "prescription": {
+        "completion": "時効完成",
+        "pleading": "援用",
+        "note": "完成だけで効力生じず、援用が必要"
+      }
+    }
+  },
+  "output_files": {
+    "main_output": {
+      "path": "docs/generated/v30_pilot_question_choice_explanations_phase3_020.json",
+      "format": "JSON",
+      "content": "20 pilots with question_explanations and choice_explanations"
+    },
+    "audit_report": {
+      "path": "docs/audit/V30_PILOT_EXPLANATION_PHASE3_020_QUALITY_AUDIT.md",
+      "format": "Markdown",
+      "content": "品質監査レポート"
+    },
+    "audit_json": {
+      "path": "docs/audit/v30_pilot_explanation_generation_phase3_020_report.json",
+      "format": "JSON",
+      "content": "監査結果JSON"
+    }
+  },
+  "safety_restrictions": {
+    "prohibited_actions": [
+      "question_explanations への本投入",
+      "choice_explanations への本投入",
+      "db.add / db.bulkAdd / db.put / db.bulkPut",
+      "formal import実装",
+      "explanationMatcher.ts実装",
+      "RepairPreview v30連携",
+      "source_choices変更",
+      "is_statement_true変更",
+      "study_events変更",
+      "DB削除",
+      "DB clear",
+      "IndexedDB初期化",
+      "npm install",
+      "package.json変更",
+      "package-lock.json変更",
+      "commit",
+      "push",
+      "deploy"
+    ]
+  },
+  "success_criteria": {
+    "minimum_quality_A": 16,
+    "minimum_quality_A_ratio": 0.8,
+    "maximum_quality_C": 2,
+    "maximum_quality_C_ratio": 0.1,
+    "all_auto_ok_valid": true,
+    "no_label_conflict_ignored": true,
+    "all_source_refs_aligned": true,
+    "no_article_number_errors": true
+  },
+  "next_phase_preparation": {
+    "after_20_pilots_success": [
+      "全問題・全選択肢の解説生成計画",
+      "本格生成パイプライン設計",
+      "formal import実装設計",
+      "explanationMatcher.ts設計"
+    ]
+  }
+}
