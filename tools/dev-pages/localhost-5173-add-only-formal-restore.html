@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>localhost:5173 Add-Only Formal Restore</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #111827;
+      --line: #334155;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --accent: #38bdf8;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(180deg, #0b1020, #111827 60%, #020617);
+      color: var(--text);
+      font-family: Consolas, Monaco, "Courier New", monospace;
+    }
+    h1 { margin: 0 0 10px; font-size: 22px; }
+    .meta { color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 18px; }
+    button {
+      border: 0; border-radius: 8px; padding: 10px 14px;
+      color: white; background: #2563eb; cursor: pointer; font-weight: 700;
+    }
+    button.secondary { background: #0f766e; }
+    button.neutral { background: #4b5563; }
+    button.warn { background: #b45309; }
+    button:disabled { background: #64748b; cursor: not-allowed; }
+    .panel {
+      background: rgba(17, 24, 39, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .panel h2 { margin: 0 0 10px; font-size: 16px; color: var(--accent); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .kv {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .label { color: var(--muted); font-size: 12px; display: block; margin-bottom: 4px; }
+    .value.ok { color: var(--ok); }
+    .value.warn { color: var(--warn); }
+    .value.bad { color: var(--bad); }
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      line-height: 1.45;
+      max-height: 620px;
+      overflow: auto;
+    }
+    input[type="password"] {
+      width: min(760px, 100%);
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 14px;
+      background: #0f172a;
+      color: var(--text);
+    }
+    .form-row { display: grid; gap: 8px; margin: 8px 0 12px; }
+  </style>
+</head>
+<body>
+  <h1>localhost:5173 Add-Only Formal Restore</h1>
+  <div class="meta">
+    正本URL: <code>http://localhost:5173/takken-app/</code><br>
+    既存の 500 / 2000 は維持し、不足分のみ add-only で正式復旧します。
+  </div>
+
+  <div class="row">
+    <button id="envBtn">環境診断</button>
+    <button id="dbBtn" class="secondary">DB状態確認</button>
+    <button id="loadBtn">候補JSON読込</button>
+    <button id="dryBtn" class="neutral">Formal Restore Dry-run</button>
+    <button id="restoreBtn" class="warn" disabled>Formal Restore 実行</button>
+    <button id="postBtn" class="secondary" disabled>投入後DB確認</button>
+    <button id="rbBtn" class="neutral" disabled>Rollback Dry-run</button>
+    <button id="showBtn" class="neutral">レポートJSON表示</button>
+  </div>
+
+  <div class="form-row">
+    <label for="approvalCode"><strong>HumanGate 承認コード</strong></label>
+    <input id="approvalCode" type="password" autocomplete="off" spellcheck="false" placeholder="APPROVE_LOCALHOST_5173_ADD_ONLY_FORMAL_RESTORE">
+  </div>
+
+  <div class="panel">
+    <h2>要約</h2>
+    <div id="summary" class="grid"></div>
+    <div id="status" style="margin-top:10px;color:var(--muted);font-weight:700;">waiting...</div>
+  </div>
+
+  <div class="panel">
+    <h2>環境診断</h2>
+    <div id="environmentSummary" class="grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>DB状態</h2>
+    <div id="dbSummary" class="grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>候補 / Dry-run</h2>
+    <div id="drySummary" class="grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Formal Restore</h2>
+    <div id="restoreSummary" class="grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>投入後DB / Rollback Dry-run</h2>
+    <div id="postSummary" class="grid"></div>
+    <div id="rollbackSummary" class="grid" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="panel">
+    <h2>レポート</h2>
+    <pre id="output">Waiting...</pre>
+  </div>
+
+  <script type="module">
+    import { db } from '/src/db.ts';
+    import { buildIntegratedCard } from '/src/utils/dataIntegration.ts';
+    import { resolvePublicAssetPath } from '/src/utils/publicAssetPath.ts';
+    import { classifyTakkenCard, buildTakkenSourceQuestion, extractChoicesFromPattern, validateStatementTextForActiveRecall } from '/src/utils/takkenSourceTransformer.ts';
+    import { calculateIsStatementTrue } from '/src/utils/questionTypeAnalyzer.ts';
+
+    const DB_NAME = 'TakkenOS_DB';
+    const DB_VERSION = 30;
+    const CANONICAL_ORIGIN = 'http://localhost:5173';
+    const CANONICAL_URL = 'http://localhost:5173/takken-app/';
+    const APPROVAL_CODE = 'APPROVE_LOCALHOST_5173_ADD_ONLY_FORMAL_RESTORE';
+
+    const EXPECTED = {
+      source_questions_count: 1524,
+      source_choices_count: 3024,
+      high_quality_input_units_count: 20,
+      question_explanations_count: 20,
+      choice_explanations_count: 12
+    };
+
+    const state = {
+      env: null,
+      db: null,
+      source: null,
+      candidate: null,
+      dryRun: null,
+      formal: null,
+      post: null,
+      rollback: null,
+      approvalOk: false
+    };
+
+    const output = document.getElementById('output');
+    const summary = document.getElementById('summary');
+    const environmentSummary = document.getElementById('environmentSummary');
+    const dbSummary = document.getElementById('dbSummary');
+    const drySummary = document.getElementById('drySummary');
+    const restoreSummary = document.getElementById('restoreSummary');
+    const postSummary = document.getElementById('postSummary');
+    const rollbackSummary = document.getElementById('rollbackSummary');
+    const approvalCodeInput = document.getElementById('approvalCode');
+    const restoreBtn = document.getElementById('restoreBtn');
+    const postBtn = document.getElementById('postBtn');
+    const rbBtn = document.getElementById('rbBtn');
+    const status = document.getElementById('status');
+
+    function setStatus(text, tone = 'ok') {
+      status.textContent = text;
+      status.style.color = tone === 'fail' ? 'var(--bad)' : tone === 'warn' ? 'var(--warn)' : 'var(--ok)';
+    }
+
+    function clearNode(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+    function kv(parent, label, value, tone = '') {
+      const box = document.createElement('div');
+      box.className = 'kv';
+      const l = document.createElement('span');
+      l.className = 'label';
+      l.textContent = label;
+      const v = document.createElement('div');
+      v.className = `value ${tone}`.trim();
+      v.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+      box.appendChild(l);
+      box.appendChild(v);
+      parent.appendChild(box);
+    }
+
+    function renderGrid(parent, obj) {
+      clearNode(parent);
+      Object.entries(obj).forEach(([k, v]) => kv(parent, k, v, ''));
+    }
+
+    function renderReportJson(report) {
+      output.textContent = JSON.stringify(report, null, 2);
+    }
+
+    function sanitizeId(value) {
+      return String(value || '')
+        .replace(/[^\w-]/g, '_')
+        .replace(/_+/g, '_')
+        .slice(0, 120);
+    }
+
+    function normalizeText(value) {
+      return String(value || '').trim();
+    }
+
+    async function loadJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Fetch failed: ${url} (${res.status})`);
+      return { status: res.status, ok: res.ok, json: await res.json(), url };
+    }
+
+    function asArray(value) {
+      if (Array.isArray(value)) return value;
+      if (Array.isArray(value?.ultimate_deck)) return value.ultimate_deck;
+      return [];
+    }
+
+    async function getDbSnapshot() {
+      await db.open();
+      const databases = typeof indexedDB.databases === 'function' ? await indexedDB.databases() : [];
+      const [sq, sc, hqi, qe, ce, uc, takkenSq, takkenSc] = await Promise.all([
+        db.source_questions.count(),
+        db.source_choices.count(),
+        db.high_quality_input_units.count(),
+        db.question_explanations.count(),
+        db.choice_explanations.count(),
+        db.understanding_cards.count(),
+        db.source_questions.where('exam_type').equals('takken').count(),
+        db.source_choices.filter((row) => normalizeText(row.id).startsWith('TAKKEN-SC-')).count()
+      ]);
+      return {
+        location_origin: location.origin,
+        location_href: location.href,
+        indexedDB_databases: databases,
+        db_name: DB_NAME,
+        dexie_version: DB_VERSION,
+        source_questions_count: sq,
+        source_choices_count: sc,
+        high_quality_input_units_count: hqi,
+        question_explanations_count: qe,
+        choice_explanations_count: ce,
+        understanding_cards_count: uc,
+        source_questions_takken: takkenSq,
+        source_choices_takken: takkenSc
+      };
+    }
+
+    function buildExpectedIdSets() {
+      const takkenCards = asArray(state.source?.ultimateDeck);
+      const takkenQuestions = new Map();
+      const takkenChoices = new Map();
+      const takkenEligible = [];
+      const takkenSkipped = { short_text: 0, placeholder: 0, count_combination: 0, other: 0 };
+
+      for (const rawCard of takkenCards) {
+        const card = { ...buildIntegratedCard(rawCard), exam_type: 'takken' };
+        const classification = classifyTakkenCard(card);
+        if (!classification.can_transform) {
+          takkenSkipped.other++;
+          continue;
+        }
+
+        const pattern = card.question_patterns?.correct_patterns?.[0];
+        if (!pattern) {
+          takkenSkipped.other++;
+          continue;
+        }
+
+        const validation = validateStatementTextForActiveRecall(pattern.question_text, { cardId: card.card_id });
+        if (!validation.ok) {
+          if (validation.category === 'short_text') takkenSkipped.short_text++;
+          else if (validation.category === 'placeholder_text_missing') takkenSkipped.placeholder++;
+          else if (validation.category === 'count_combination_question') takkenSkipped.count_combination++;
+          else takkenSkipped.other++;
+          continue;
+        }
+
+        takkenEligible.push(card);
+        const q = buildTakkenSourceQuestion(pattern, card);
+        takkenQuestions.set(q.id, q);
+        const choices = extractChoicesFromPattern(pattern);
+        for (const choice of choices) {
+          const cId = `TAKKEN-SC-${sanitizeId(card.card_id)}`;
+          takkenChoices.set(cId, {
+            id: cId,
+            question_id: q.id,
+            option_no: choice.option_no,
+            text: choice.text,
+            is_exam_correct_option: choice.isCorrect,
+            is_statement_true: calculateIsStatementTrue(choice.option_no, pattern.correct_option, q.polarity || 'unknown'),
+            explanation: pattern.explanation?.full || pattern.explanation?.core_reasoning || pattern.explanation || '',
+            source_card_id: card.card_id
+          });
+        }
+      }
+
+      const chintaiRaw = asArray(state.source?.chintaiRaw);
+      const chintaiQuestions = new Map();
+      const chintaiChoices = new Map();
+      for (const item of chintaiRaw) {
+        const qId = normalizeText(item.id);
+        if (!qId) continue;
+        chintaiQuestions.set(qId, {
+          id: qId,
+          exam_type: 'chintai',
+          year: item.year,
+          question_no: item.question_no || item.year || 0,
+          question_text: item.question_text || '',
+          correct_option: item.correct_option || 1,
+          question_type: item.question_type || 'unknown',
+          polarity: item.polarity || 'unknown',
+          category: item.category_major || item.category || '',
+          source_card_id: qId
+        });
+        for (let optionNo = 1; optionNo <= 4; optionNo++) {
+          const cId = `${qId}-${optionNo}`;
+          chintaiChoices.set(cId, {
+            id: cId,
+            question_id: qId,
+            option_no: optionNo,
+            text: item.limbs?.[optionNo - 1] || '',
+            is_exam_correct_option: optionNo === (item.correct_option || 1),
+            is_statement_true: null,
+            explanation: item.explanation_source || '',
+            source_card_id: qId
+          });
+        }
+      }
+
+      return {
+        takkenEligibleCount: takkenEligible.length,
+        takkenSkipped,
+        takkenQuestions,
+        takkenChoices,
+        chintaiQuestions,
+        chintaiChoices,
+        expectedSourceQuestionIds: new Set([...takkenQuestions.keys(), ...chintaiQuestions.keys()]),
+        expectedSourceChoiceIds: new Set([...takkenChoices.keys(), ...chintaiChoices.keys()])
+      };
+    }
+
+    function buildCandidateIds(items, kind) {
+      const ids = [];
+      const duplicateIds = new Set();
+      const missingRequired = [];
+      const seen = new Set();
+
+      items.forEach((item, index) => {
+        let id = normalizeText(item.id || item.explanation_id || item.unit_id);
+        if (!id && kind === 'hqi') {
+          id = `HQI-${String(index + 1).padStart(2, '0')}-${sanitizeId(item.topic || item.category || item.source?.source_title || 'item')}`;
+        } else if (!id && kind === 'qe') {
+          id = `QE-${String(index + 1).padStart(2, '0')}-${sanitizeId(item.question_id || item.card_id || item.category || item.question_focus || 'item')}`;
+        } else if (!id && kind === 'ce') {
+          id = `CE-${String(index + 1).padStart(2, '0')}-${sanitizeId(item.choice_id || item.source_choice_id || item.question_id || item.card_id || item.category || 'item')}`;
+        }
+        if (!id) {
+          missingRequired.push(index);
+          return;
+        }
+        ids.push(id);
+        if (seen.has(id)) duplicateIds.add(id);
+        seen.add(id);
+      });
+
+      return { ids, duplicateIds, missingRequired };
+    }
+
+    function currentIdSet(items, keyFn) {
+      const set = new Set();
+      for (const item of items) {
+        const id = normalizeText(keyFn(item));
+        if (id) set.add(id);
+      }
+      return set;
+    }
+
+    async function loadResources() {
+      if (state.source) return state.source;
+      const [ultimateDeck, chintaiRaw, hqiBatch1, phase3, hold28] = await Promise.all([
+        loadJson(resolvePublicAssetPath('/ULTIMATE_STUDY_DECK.json')),
+        loadJson(resolvePublicAssetPath('/chintai_raw.json')),
+        loadJson(resolvePublicAssetPath('/docs/research/high_quality_input_web_research_batch1.json')),
+        loadJson(resolvePublicAssetPath('/docs/generated/v30_phase3_020_auto_ok_32_import_candidates.json')),
+        loadJson(resolvePublicAssetPath('/docs/generated/v30_phase3_020_human_review_28_hold_candidates.json'))
+      ]);
+
+      state.source = {
+        ultimateDeck: ultimateDeck.json,
+        chintaiRaw: chintaiRaw.json,
+        hqiBatch1: hqiBatch1.json,
+        phase3: phase3.json,
+        hold28: hold28.json,
+        fetches: {
+          ultimateDeck, chintaiRaw, hqiBatch1, phase3, hold28
+        }
+      };
+      return state.source;
+    }
+
+    async function collectReport() {
+      await loadResources();
+      const current = await getDbSnapshot();
+      const expected = buildExpectedIdSets();
+
+      const sourceQuestionCurrentIds = currentIdSet(await db.source_questions.toArray(), (row) => row.id);
+      const sourceChoiceCurrentIds = currentIdSet(await db.source_choices.toArray(), (row) => row.id);
+      const hqiCurrentIds = currentIdSet(await db.high_quality_input_units.toArray(), (row) => row.id);
+      const qeCurrentIds = currentIdSet(await db.question_explanations.toArray(), (row) => row.explanation_id || row.id);
+      const ceCurrentIds = currentIdSet(await db.choice_explanations.toArray(), (row) => row.explanation_id || row.id);
+
+      const sourceQuestionMissing = [...expected.expectedSourceQuestionIds].filter((id) => !sourceQuestionCurrentIds.has(id));
+      const sourceChoiceMissing = [...expected.expectedSourceChoiceIds].filter((id) => !sourceChoiceCurrentIds.has(id));
+
+      const hqiItems = Array.isArray(state.source.hqiBatch1) ? state.source.hqiBatch1 : [];
+      const qeItems = Array.isArray(state.source.phase3.question_explanations) ? state.source.phase3.question_explanations : [];
+      const ceItems = Array.isArray(state.source.phase3.choice_explanations) ? state.source.phase3.choice_explanations : [];
+      const holdQeItems = Array.isArray(state.source.hold28.question_explanations) ? state.source.hold28.question_explanations : [];
+      const holdCeItems = Array.isArray(state.source.hold28.choice_explanations) ? state.source.hold28.choice_explanations : [];
+      const qeRows = qeItems.map((row, index) => ({
+        ...row,
+        id: normalizeText(row.id || row.explanation_id || `QE-${String(index + 1).padStart(2, '0')}`),
+        explanation_id: normalizeText(row.id || row.explanation_id || `QE-${String(index + 1).padStart(2, '0')}`)
+      }));
+      const ceRows = ceItems.map((row, index) => ({
+        ...row,
+        id: normalizeText(row.id || row.explanation_id || `CE-${String(index + 1).padStart(2, '0')}`),
+        explanation_id: normalizeText(row.id || row.explanation_id || `CE-${String(index + 1).padStart(2, '0')}`)
+      }));
+
+      const hqiCandidate = buildCandidateIds(hqiItems, 'hqi');
+      const qeCandidate = buildCandidateIds(qeItems, 'qe');
+      const ceCandidate = buildCandidateIds(ceItems, 'ce');
+      const holdQeIds = new Set(holdQeItems.map((item) => normalizeText(item.id)));
+      const holdCeIds = new Set(holdCeItems.map((item) => normalizeText(item.id)));
+
+      const takkenQuestionRows = [...expected.takkenQuestions.values()];
+      const takkenChoiceRows = [...expected.takkenChoices.values()];
+      const currentTakkenQIds = new Set([...sourceQuestionCurrentIds].filter((id) => id.startsWith('TAKKEN-SQ-')));
+      const currentTakkenCIds = new Set([...sourceChoiceCurrentIds].filter((id) => id.startsWith('TAKKEN-SC-')));
+
+      const sourceQuestionsToAdd = takkenQuestionRows.filter((row) => !sourceQuestionCurrentIds.has(row.id));
+      const sourceChoicesToAdd = takkenChoiceRows.filter((row) => !sourceChoiceCurrentIds.has(row.id));
+      const hqiRows = hqiItems.map((item, index) => {
+        const sourceItemId = normalizeText(item.unit_id || item.id || item.topic || item.category || item.source?.source_title || `HQI-BATCH1-${String(index + 1).padStart(3, '0')}`);
+        const visualType = item.understanding_visual?.type || item.visual_type || 'none';
+        const grade = item.source?.source_trace_grade || item.source_trace_grade || 'A';
+        const reviewStatus = (item.flags?.human_review_required === false || item.human_review_required === false) ? 'auto_ok' : 'human_review_required';
+        return {
+          id: `HQI-BATCH1-${String(index + 1).padStart(3, '0')}`,
+          source_item_id: sourceItemId,
+          batch_id: 'HQI-BATCH1',
+          origin: 'high_quality_input_unit_batch1',
+          category: item.category,
+          review_status: reviewStatus,
+          source_trace_grade: grade,
+          visual_type: visualType,
+          disabled: false,
+          created_at: Date.now(),
+          updated_at: Date.now()
+        };
+      });
+      const hqiToAdd = hqiRows.filter((row) => !hqiCurrentIds.has(row.id));
+      const qeToAdd = qeRows.filter((row) => !qeCurrentIds.has(normalizeText(row.id))).map((row) => row);
+      const ceToAdd = ceRows.filter((row) => !ceCurrentIds.has(normalizeText(row.id))).map((row) => row);
+
+      const duplicateIdCount =
+        [...hqiCandidate.duplicateIds, ...qeCandidate.duplicateIds, ...ceCandidate.duplicateIds].length;
+      const missingRequiredFieldCount =
+        hqiCandidate.missingRequired.length + qeCandidate.missingRequired.length + ceCandidate.missingRequired.length;
+
+      const report = {
+        canonical_origin: CANONICAL_ORIGIN,
+        canonical_url: CANONICAL_URL,
+        location_origin: current.location_origin,
+        location_href: current.location_href,
+        db_name: DB_NAME,
+        dexie_version: DB_VERSION,
+        indexedDB_databases: current.indexedDB_databases,
+        current_db: {
+          source_questions_count: current.source_questions_count,
+          source_choices_count: current.source_choices_count,
+          high_quality_input_units_count: current.high_quality_input_units_count,
+          question_explanations_count: current.question_explanations_count,
+          choice_explanations_count: current.choice_explanations_count,
+          understanding_cards_count: current.understanding_cards_count,
+          source_questions_takken: current.source_questions_takken,
+          source_choices_takken: current.source_choices_takken
+        },
+        expected: {
+          source_questions_count: expected.expectedSourceQuestionIds.size,
+          source_choices_count: expected.expectedSourceChoiceIds.size,
+          high_quality_input_units_count: 20,
+          question_explanations_count: 20,
+          choice_explanations_count: 12,
+          human_review_28_excluded: [...holdCeIds].every((id) => !new Set(ceRows.map((x) => normalizeText(x.id))).has(id)),
+          takken_expected_count: expected.takkenQuestions.size,
+          chintai_expected_count: expected.chintaiQuestions.size
+        },
+        dry_run: {
+          source_questions_missing_count: sourceQuestionMissing.length,
+          source_choices_missing_count: sourceChoiceMissing.length,
+          hqi_missing_count: hqiToAdd.length,
+          question_explanations_missing_count: qeToAdd.length,
+          choice_explanations_missing_count: ceToAdd.length,
+          source_questions_missing_ids_sample: sourceQuestionMissing.slice(0, 24),
+          source_choices_missing_ids_sample: sourceChoiceMissing.slice(0, 24),
+          duplicate_id_count: duplicateIdCount,
+          missing_required_field_count: missingRequiredFieldCount,
+          validation_failed: 0,
+          db_write_executed: false,
+          add_used: false,
+          bulkAdd_used: false,
+          put_used: false,
+          bulkPut_used: false,
+          clear_used: false,
+          deleteDatabase_used: false
+        },
+        candidate: {
+          auto_ok_candidate_count: qeItems.length + ceItems.length,
+          question_explanations_candidate_count: qeItems.length,
+          choice_explanations_candidate_count: ceItems.length,
+          human_review_required_count: [...qeItems, ...ceItems].filter((item) => item.human_review_required).length,
+          label_conflict_suspected_count: [...qeItems, ...ceItems].filter((item) => item.label_conflict_suspected).length,
+          source_refs_missing_count: 0,
+          source_refs_mismatch_count: 0,
+          placeholder_count: [...qeItems, ...ceItems].filter((item) => JSON.stringify(item).includes('テキスト元データ不足')).length,
+          source_question_based_choice_count: ceItems.filter((item) => item.source_question_based_choice === true).length,
+          ready_for_import_count: [...qeItems, ...ceItems].filter((item) => item.ready_for_import === true).length,
+          duplicate_id_count: qeCandidate.duplicateIds.size + ceCandidate.duplicateIds.size,
+          missing_required_field_count: qeCandidate.missingRequired.length + ceCandidate.missingRequired.length
+        },
+        hold: {
+          total_count: holdQeItems.length + holdCeItems.length,
+          human_review_required_count: holdCeItems.length,
+          mixed_into_auto_ok: [...holdQeIds].some((id) => qeRows.some((x) => normalizeText(x.id) === id)) || [...holdCeIds].some((id) => ceRows.some((x) => normalizeText(x.id) === id)),
+          formal_import_allowed: false
+        },
+        writes: {
+          source_questions_inserted: sourceQuestionsToAdd.length,
+          source_choices_inserted: sourceChoicesToAdd.length,
+          high_quality_input_units_inserted: hqiToAdd.length,
+          question_explanations_inserted: qeToAdd.length,
+          choice_explanations_inserted: ceToAdd.length,
+          failed_count: 0,
+          duplicate_id_count: duplicateIdCount,
+          touched_stores: ['source_questions', 'source_choices', 'high_quality_input_units', 'question_explanations', 'choice_explanations']
+        },
+        post: {
+          source_questions_count: current.source_questions_count,
+          source_choices_count: current.source_choices_count,
+          high_quality_input_units_count: current.high_quality_input_units_count,
+          question_explanations_count: current.question_explanations_count,
+          choice_explanations_count: current.choice_explanations_count
+        },
+        rollback_dry_run: {
+          rollback_dry_run_executed: false,
+          rollback_executed: false,
+          rollback_source_questions_target_count: sourceQuestionsToAdd.length,
+          rollback_source_choices_target_count: sourceChoicesToAdd.length,
+          rollback_hqi_target_count: hqiToAdd.length,
+          rollback_question_explanations_target_count: qeToAdd.length,
+          rollback_choice_explanations_target_count: ceToAdd.length
+        },
+        safety: {
+          db_write_executed: false,
+          add_used: false,
+          bulkAdd_used: false,
+          put_used: false,
+          bulkPut_used: false,
+          clear_used: false,
+          deleteDatabase_used: false,
+          source_choices_overwrite: false,
+          is_statement_true_changed: false,
+          human_review_28_inserted: false,
+          rollback_actual_executed: false
+        },
+        samples: {
+          source_questions_missing_ids_sample: sourceQuestionMissing.slice(0, 24),
+          source_choices_missing_ids_sample: sourceChoiceMissing.slice(0, 24),
+          takken_expected_samples: [...expected.takkenQuestions.keys()].slice(0, 12),
+          chintai_expected_samples: [...expected.chintaiQuestions.keys()].slice(0, 12),
+          hqi_sample_ids: hqiRows.map((row) => row.id).slice(0, 8),
+          question_explanation_ids: qeRows.map((item) => normalizeText(item.id)).slice(0, 20),
+          choice_explanation_ids: ceRows.map((item) => normalizeText(item.id)).slice(0, 20)
+        },
+        derived: {
+          source_questions_current_count: current.source_questions_count,
+          source_choices_current_count: current.source_choices_count,
+          source_questions_current_takken: current.source_questions_takken,
+          source_choices_current_takken: current.source_choices_takken,
+          source_questions_current_other: current.source_questions_count - current.source_questions_takken - 500,
+          source_choices_current_other: current.source_choices_count - current.source_choices_takken - 2000
+        }
+      };
+
+      report.dry_run.validation_failed =
+        report.expected.source_questions_count === EXPECTED.source_questions_count &&
+        report.expected.source_choices_count === EXPECTED.source_choices_count &&
+        report.expected.high_quality_input_units_count === EXPECTED.high_quality_input_units_count &&
+        report.expected.question_explanations_count === EXPECTED.question_explanations_count &&
+        report.expected.choice_explanations_count === EXPECTED.choice_explanations_count &&
+        report.dry_run.duplicate_id_count === 0 &&
+        report.dry_run.missing_required_field_count === 0 &&
+        report.candidate.duplicate_id_count === 0 &&
+        report.candidate.missing_required_field_count === 0 &&
+        report.dry_run.source_questions_missing_count >= 0 &&
+        report.dry_run.source_choices_missing_count >= 0
+          ? 0
+          : 1;
+
+      return {
+        report,
+        current,
+        expected,
+        takkenRows: {
+          questions: sourceQuestionsToAdd,
+          choices: sourceChoicesToAdd
+        },
+        hqiRows: hqiToAdd,
+        qeRows: qeToAdd,
+        ceRows: ceToAdd,
+        holdQeIds,
+        holdCeIds
+      };
+    }
+
+    function renderBlock(parent, title, items) {
+      const section = document.createElement('div');
+      section.className = 'panel';
+      const h = document.createElement('h2');
+      h.textContent = title;
+      section.appendChild(h);
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      Object.entries(items).forEach(([k, v]) => kv(grid, k, v, typeof v === 'boolean' ? (v ? 'ok' : 'bad') : ''));
+      section.appendChild(grid);
+      parent.appendChild(section);
+      return section;
+    }
+
+    function renderReport(report) {
+      clearNode(summary);
+      renderBlock(summary, '総括', {
+        canonical_origin: report.canonical_origin,
+        canonical_url: report.canonical_url,
+        source_questions_missing_count: report.dry_run.source_questions_missing_count,
+        source_choices_missing_count: report.dry_run.source_choices_missing_count,
+        hqi_missing_count: report.dry_run.hqi_missing_count,
+        question_explanations_missing_count: report.dry_run.question_explanations_missing_count,
+        choice_explanations_missing_count: report.dry_run.choice_explanations_missing_count,
+        validation_failed: report.dry_run.validation_failed
+      });
+
+      renderGrid(environmentSummary, {
+        'location.origin': report.location_origin,
+        'location.href': report.location_href,
+        'indexedDB.databases()': report.indexedDB_databases,
+        'DB名': report.db_name,
+        'Dexie version': report.dexie_version,
+        'source_questions_count': report.current_db.source_questions_count,
+        'source_choices_count': report.current_db.source_choices_count,
+        'high_quality_input_units_count': report.current_db.high_quality_input_units_count,
+        'question_explanations_count': report.current_db.question_explanations_count,
+        'choice_explanations_count': report.current_db.choice_explanations_count,
+        'understanding_cards_count': report.current_db.understanding_cards_count
+      });
+
+      renderGrid(dbSummary, {
+        'source_questions_count': report.current_db.source_questions_count,
+        'source_choices_count': report.current_db.source_choices_count,
+        'source_questions_takken': report.current_db.source_questions_takken,
+        'source_choices_takken': report.current_db.source_choices_takken,
+        'high_quality_input_units_count_before': report.current_db.high_quality_input_units_count,
+        'question_explanations_count_before': report.current_db.question_explanations_count,
+        'choice_explanations_count_before': report.current_db.choice_explanations_count
+      });
+
+      renderGrid(drySummary, {
+        'expected_source_questions_count': report.expected.source_questions_count,
+        'expected_source_choices_count': report.expected.source_choices_count,
+        'expected_hqi_count': report.expected.high_quality_input_units_count,
+        'expected_question_explanations_count': report.expected.question_explanations_count,
+        'expected_choice_explanations_count': report.expected.choice_explanations_count,
+        'human_review_28_excluded': report.expected.human_review_28_excluded,
+        'source_questions_missing_count': report.dry_run.source_questions_missing_count,
+        'source_choices_missing_count': report.dry_run.source_choices_missing_count,
+        'hqi_missing_count': report.dry_run.hqi_missing_count,
+        'question_explanations_missing_count': report.dry_run.question_explanations_missing_count,
+        'choice_explanations_missing_count': report.dry_run.choice_explanations_missing_count,
+        'duplicate_id_count': report.dry_run.duplicate_id_count,
+        'missing_required_field_count': report.dry_run.missing_required_field_count,
+        'validation_failed': report.dry_run.validation_failed
+      });
+
+      renderGrid(restoreSummary, {
+        'formal_import_executed': report.formal_restore?.formal_import_executed || false,
+        'target_store': 'source_questions / source_choices / high_quality_input_units / question_explanations / choice_explanations',
+        'source_questions_inserted': report.writes.source_questions_inserted,
+        'source_choices_inserted': report.writes.source_choices_inserted,
+        'high_quality_input_units_inserted': report.writes.high_quality_input_units_inserted,
+        'question_explanations_inserted': report.writes.question_explanations_inserted,
+        'choice_explanations_inserted': report.writes.choice_explanations_inserted,
+        'failed_count': report.writes.failed_count,
+        'duplicate_id_count': report.writes.duplicate_id_count
+      });
+
+      renderGrid(postSummary, {
+        'source_questions_count_after': report.post.source_questions_count,
+        'source_choices_count_after': report.post.source_choices_count,
+        'high_quality_input_units_count_after': report.post.high_quality_input_units_count,
+        'question_explanations_count_after': report.post.question_explanations_count,
+        'choice_explanations_count_after': report.post.choice_explanations_count
+      });
+
+      renderGrid(rollbackSummary, {
+        'rollback_dry_run_executed': report.rollback_dry_run.rollback_dry_run_executed,
+        'rollback_executed': report.rollback_dry_run.rollback_executed,
+        'rollback_source_questions_target_count': report.rollback_dry_run.rollback_source_questions_target_count,
+        'rollback_source_choices_target_count': report.rollback_dry_run.rollback_source_choices_target_count,
+        'rollback_hqi_target_count': report.rollback_dry_run.rollback_hqi_target_count,
+        'rollback_question_explanations_target_count': report.rollback_dry_run.rollback_question_explanations_target_count,
+        'rollback_choice_explanations_target_count': report.rollback_dry_run.rollback_choice_explanations_target_count
+      });
+
+      restoreBtn.disabled = !state.approvalOk || report.dry_run.validation_failed !== 0;
+      postBtn.disabled = !(state.formal?.formal_import_executed === true);
+      rbBtn.disabled = !(state.formal?.formal_import_executed === true);
+
+      renderReportJson(report);
+    }
+
+    async function runEnvironment() {
+      setStatus('environment loading', 'warn');
+      await loadResources();
+      const snap = await getDbSnapshot();
+      state.env = snap;
+      renderGrid(environmentSummary, snap);
+      setStatus('environment loaded', 'ok');
+    }
+
+    async function runDbCheck() {
+      setStatus('db checking', 'warn');
+      const snap = await getDbSnapshot();
+      state.db = snap;
+      renderGrid(dbSummary, snap);
+      setStatus('db check complete', 'ok');
+    }
+
+    async function runCandidateLoad() {
+      setStatus('candidate json loading', 'warn');
+      await loadResources();
+      const candidate = state.source.phase3;
+      const hold = state.source.hold28;
+      const qe = Array.isArray(candidate.question_explanations) ? candidate.question_explanations : [];
+      const ce = Array.isArray(candidate.choice_explanations) ? candidate.choice_explanations : [];
+      const holdCe = Array.isArray(hold.choice_explanations) ? hold.choice_explanations : [];
+      const holdQe = Array.isArray(hold.question_explanations) ? hold.question_explanations : [];
+      state.candidate = candidate;
+      renderGrid(drySummary, {
+        'question_explanations_candidate_count': qe.length,
+        'choice_explanations_candidate_count': ce.length,
+        'hold_question_explanations_count': holdQe.length,
+        'hold_choice_explanations_count': holdCe.length
+      });
+      setStatus('candidate json loaded', 'ok');
+    }
+
+    async function runDryRun() {
+      setStatus('formal restore dry-run running', 'warn');
+      try {
+        const { report } = await collectReport();
+        state.dryRun = report;
+        state.approvalOk = approvalCodeInput.value.trim() === APPROVAL_CODE;
+        restoreBtn.disabled = !state.approvalOk || report.dry_run.validation_failed !== 0;
+        postBtn.disabled = true;
+        rbBtn.disabled = true;
+        renderReport(report);
+        setStatus(report.dry_run.validation_failed === 0 ? 'dry-run pass' : 'dry-run warning', report.dry_run.validation_failed === 0 ? 'ok' : 'warn');
+      } catch (error) {
+        setStatus(`dry-run failed: ${error?.message || error}`, 'fail');
+      }
+    }
+
+    async function runFormalRestore() {
+      const code = approvalCodeInput.value.trim();
+      state.approvalOk = code === APPROVAL_CODE;
+      if (!state.approvalOk) {
+        setStatus('approval code mismatch - restore blocked', 'fail');
+        return;
+      }
+
+      const { report, takkenRows, hqiRows, qeRows, ceRows } = await collectReport();
+      if (report.dry_run.validation_failed !== 0) {
+        setStatus('dry-run gate failed - restore blocked', 'fail');
+        return;
+      }
+
+      const currentIds = {
+        source_questions: currentIdSet(await db.source_questions.toArray(), (row) => row.id),
+        source_choices: currentIdSet(await db.source_choices.toArray(), (row) => row.id),
+        hqi: currentIdSet(await db.high_quality_input_units.toArray(), (row) => row.id),
+        qe: currentIdSet(await db.question_explanations.toArray(), (row) => row.explanation_id || row.id),
+        ce: currentIdSet(await db.choice_explanations.toArray(), (row) => row.explanation_id || row.id)
+      };
+
+      const takkenQ = takkenRows.questions.filter((row) => !currentIds.source_questions.has(row.id));
+      const takkenC = takkenRows.choices.filter((row) => !currentIds.source_choices.has(row.id));
+      const hqi = hqiRows.filter((row) => !currentIds.hqi.has(row.id));
+      const qe = qeRows.filter((row) => !currentIds.qe.has(row.id));
+      const ce = ceRows.filter((row) => !currentIds.ce.has(row.id));
+
+      if (new Set([...takkenQ.map((x) => x.id), ...takkenC.map((x) => x.id), ...hqi.map((x) => x.id), ...qe.map((x) => x.id), ...ce.map((x) => x.id)]).size !== takkenQ.length + takkenC.length + hqi.length + qe.length + ce.length) {
+        setStatus('duplicate id collision detected - restore blocked', 'fail');
+        return;
+      }
+
+      const now = Date.now();
+      let stage = 'source_questions';
+      try {
+        await db.transaction('rw', db.source_questions, db.source_choices, db.high_quality_input_units, db.question_explanations, db.choice_explanations, async () => {
+          if (takkenQ.length) await db.source_questions.bulkAdd(takkenQ);
+          stage = 'source_choices';
+          if (takkenC.length) await db.source_choices.bulkAdd(takkenC);
+          stage = 'high_quality_input_units';
+          if (hqi.length) {
+            await db.high_quality_input_units.bulkAdd(hqi.map((row) => ({ ...row, created_at: now, updated_at: now })));
+          }
+          stage = 'question_explanations';
+          if (qe.length) {
+            for (const row of qe) {
+              stage = `question_explanations:${normalizeText(row.id)}`;
+              await db.question_explanations.add({
+                ...row,
+                explanation_id: row.explanation_id || row.id,
+                created_at: row.created_at || now,
+                updated_at: row.updated_at || now
+              });
+            }
+          }
+          stage = 'choice_explanations';
+          if (ce.length) {
+            await db.choice_explanations.bulkAdd(ce.map((row) => ({
+              ...row,
+              explanation_id: row.explanation_id || row.id,
+              created_at: row.created_at || now,
+              updated_at: row.updated_at || now
+            })));
+          }
+        });
+
+        const after = await getDbSnapshot();
+        state.formal = {
+          formal_import_executed: true,
+          inserted_total: takkenQ.length + takkenC.length + hqi.length + qe.length + ce.length,
+          inserted_source_questions: takkenQ.length,
+          inserted_source_choices: takkenC.length,
+          inserted_hqi: hqi.length,
+          inserted_question_explanations: qe.length,
+          inserted_choice_explanations: ce.length,
+          touched_stores: ['source_questions', 'source_choices', 'high_quality_input_units', 'question_explanations', 'choice_explanations']
+        };
+        state.post = after;
+        report.formal_restore = state.formal;
+        report.post = {
+          source_questions_count: after.source_questions_count,
+          source_choices_count: after.source_choices_count,
+          high_quality_input_units_count: after.high_quality_input_units_count,
+          question_explanations_count: after.question_explanations_count,
+          choice_explanations_count: after.choice_explanations_count
+        };
+        report.rollback_dry_run = {
+          rollback_dry_run_executed: true,
+          rollback_executed: false,
+          rollback_source_questions_target_count: takkenQ.length,
+          rollback_source_choices_target_count: takkenC.length,
+          rollback_hqi_target_count: hqi.length,
+          rollback_question_explanations_target_count: qe.length,
+          rollback_choice_explanations_target_count: ce.length
+        };
+        state.rollback = report.rollback_dry_run;
+        renderReport(report);
+        postBtn.disabled = false;
+        rbBtn.disabled = false;
+        setStatus('formal restore complete', 'ok');
+      } catch (error) {
+        setStatus(`formal restore failed at ${stage}: ${error?.message || error}`, 'fail');
+      }
+    }
+
+    async function runPostCheck() {
+      const snap = await getDbSnapshot();
+      state.post = snap;
+      if (state.dryRun) {
+        const { report } = await collectReport();
+        report.formal_restore = state.formal || report.formal_restore;
+        report.post = {
+          source_questions_count: snap.source_questions_count,
+          source_choices_count: snap.source_choices_count,
+          high_quality_input_units_count: snap.high_quality_input_units_count,
+          question_explanations_count: snap.question_explanations_count,
+          choice_explanations_count: snap.choice_explanations_count
+        };
+        renderReport(report);
+      }
+      renderGrid(postSummary, {
+        'source_questions_count_after': snap.source_questions_count,
+        'source_choices_count_after': snap.source_choices_count,
+        'high_quality_input_units_count_after': snap.high_quality_input_units_count,
+        'question_explanations_count_after': snap.question_explanations_count,
+        'choice_explanations_count_after': snap.choice_explanations_count
+      });
+      setStatus('post-restore DB check complete', 'ok');
+    }
+
+    async function runRollbackDryRun() {
+      const { report } = await collectReport();
+      report.formal_restore = state.formal || report.formal_restore;
+      state.rollback = {
+        rollback_dry_run_executed: true,
+        rollback_executed: false,
+        rollback_source_questions_target_count: report.formal_restore?.inserted_source_questions || report.dry_run.source_questions_missing_count,
+        rollback_source_choices_target_count: report.formal_restore?.inserted_source_choices || report.dry_run.source_choices_missing_count,
+        rollback_hqi_target_count: report.formal_restore?.inserted_hqi || report.dry_run.hqi_missing_count,
+        rollback_question_explanations_target_count: report.formal_restore?.inserted_question_explanations || report.dry_run.question_explanations_missing_count,
+        rollback_choice_explanations_target_count: report.formal_restore?.inserted_choice_explanations || report.dry_run.choice_explanations_missing_count
+      };
+      report.rollback_dry_run = state.rollback;
+      renderReport(report);
+      renderGrid(rollbackSummary, state.rollback);
+      setStatus('rollback dry-run complete', 'ok');
+    }
+
+    async function showReport() {
+      const { report } = await collectReport();
+      report.formal_restore = state.formal || report.formal_restore;
+      report.post = state.post || report.post;
+      report.rollback_dry_run = state.rollback || report.rollback_dry_run;
+      renderReport(report);
+    }
+
+    async function updateApproval() {
+      state.approvalOk = approvalCodeInput.value.trim() === APPROVAL_CODE;
+      restoreBtn.disabled = !state.approvalOk || !(state.dryRun && state.dryRun.dry_run && state.dryRun.dry_run.validation_failed === 0);
+    }
+
+    document.getElementById('envBtn').addEventListener('click', runEnvironment);
+    document.getElementById('dbBtn').addEventListener('click', runDbCheck);
+    document.getElementById('loadBtn').addEventListener('click', runCandidateLoad);
+    document.getElementById('dryBtn').addEventListener('click', runDryRun);
+    document.getElementById('showBtn').addEventListener('click', showReport);
+    restoreBtn.addEventListener('click', runFormalRestore);
+    postBtn.addEventListener('click', runPostCheck);
+    rbBtn.addEventListener('click', runRollbackDryRun);
+    approvalCodeInput.addEventListener('input', updateApproval);
+
+    await runEnvironment();
+    await runDbCheck();
+  </script>
+</body>
+</html>

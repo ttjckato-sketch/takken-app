@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>localhost:5173 Add-Only Restore Dry-Run</title>
+  <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --line: #334155;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --ok: #34d399;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --accent: #38bdf8;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(180deg, #0f172a, #111827 55%, #020617);
+      color: var(--text);
+      font-family: Consolas, Monaco, "Courier New", monospace;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 12px;
+    }
+    .meta {
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 18px;
+    }
+    button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      background: #2563eb;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    .panel {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--accent);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+    .kv {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .value.ok { color: var(--ok); }
+    .value.warn { color: var(--warn); }
+    .value.bad { color: var(--bad); }
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .small { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <h1>localhost:5173 Add-Only Restore Dry-Run</h1>
+  <div class="meta">
+    正本URL: <code>http://localhost:5173/takken-app/</code><br>
+    既存データは消さず、差分だけを ID で算出する dry-run 専用ページです。
+  </div>
+
+  <div class="row">
+    <button id="envBtn">環境診断</button>
+    <button id="dbBtn">DB状態確認</button>
+    <button id="runBtn">Dry-run実行</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script type="module">
+    const DB_NAME = 'TakkenOS_DB';
+    const DB_VERSION = 30;
+    const CANONICAL_ORIGIN = 'http://localhost:5173';
+    const CANONICAL_URL = 'http://localhost:5173/takken-app/';
+    const OUTPUT = document.getElementById('output');
+    const { buildIntegratedCard } = await import('/src/utils/dataIntegration.ts');
+    const { resolvePublicAssetPath } = await import('/src/utils/publicAssetPath.ts');
+
+    const db = new Dexie(DB_NAME);
+    db.version(DB_VERSION).stores({
+      limbs: 'id, parent_id, year, category_major, category_minor, *tags, importance, contrast_axis',
+      progress: 'limb_id, due_at, state, last_review',
+      comparisons: '++id, title',
+      cases: 'id, title',
+      stats: '++id, item',
+      mnemonics: '++id, category, title',
+      metadata: 'key',
+      knowledge_cards: 'card_id, knowledge_domain.major, *knowledge_domain.tags, study_metadata.importance',
+      knowledge_progress: 'card_id, mastered, next_review, last_review',
+      understanding_cards: 'card_id, category, *tags, exam_type, srs_params.repetitions, srs_params.last_reviewed, srs_params.next_review_date',
+      learning_sessions: 'id, mode, start_time',
+      source_questions: 'id, exam_type, year, question_no, category, question_type',
+      source_choices: 'id, question_id, option_no, text, is_exam_correct_option',
+      study_events: 'event_id, card_id, exam_type, category, mode, answered_correct, created_at',
+      knowledge_units: 'unit_id, source_card_id, exam_type, category, learning_type, importance, confidence',
+      memory_cards: 'memory_card_id, unit_id, exam_type, category, card_type, confidence',
+      chintai_clusters: 'cluster_id, official_category, *tags, variations_count, confidence',
+      recovered_learning_assets: 'asset_id, source_id, source_type, exam_type, category, asset_type, confidence, usable_in_learning, created_at, quality_review_needed',
+      quality_improvement_suggestions: 'suggestion_id, target_id, target_type, issue_type, confidence, requires_human_review, is_applied',
+      study_sessions: 'session_id, date, started_at, session_variant',
+      enhanced_explanations: 'explanation_id, source_id, exam_type, category, quality_score, usable_in_learning',
+      improvement_candidates: 'candidate_id, card_id, category, issue_type, human_review_required',
+      confusion_pairs: 'pair_id, exam_type, category, left_term, right_term',
+      memory_card_progress: 'card_id, last_reviewed_at',
+      memory_study_events: 'event_id, card_id, mode, created_at',
+      restoration_candidates: 'restoration_id, source_choice_id, source_question_id, exam_type, category, restore_reason, review_status, confidence',
+      high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at',
+      question_explanations: 'id, question_id, choice_id, source_question_id, source_choice_id, card_id, batch_id, category, review_status, source_trace_grade, confidence, disabled, label_conflict_suspected, human_review_required, created_at, updated_at',
+      choice_explanations: 'id, choice_id, source_choice_id, question_id, source_question_id, card_id, batch_id, category, review_status, source_trace_grade, confidence, disabled, label_conflict_suspected, human_review_required, created_at, updated_at'
+    });
+
+    function addSection(title) {
+      const section = document.createElement('section');
+      section.className = 'panel';
+      const h2 = document.createElement('h2');
+      h2.textContent = title;
+      section.appendChild(h2);
+      OUTPUT.appendChild(section);
+      return section;
+    }
+
+    function addKV(parent, label, value, tone = '') {
+      const box = document.createElement('div');
+      box.className = 'kv';
+      const lab = document.createElement('span');
+      lab.className = 'label';
+      lab.textContent = label;
+      const val = document.createElement('div');
+      val.className = `value ${tone}`.trim();
+      val.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+      box.appendChild(lab);
+      box.appendChild(val);
+      parent.appendChild(box);
+    }
+
+    function addPre(parent, text) {
+      const box = document.createElement('div');
+      box.className = 'kv';
+      const pre = document.createElement('pre');
+      pre.textContent = text;
+      box.appendChild(pre);
+      parent.appendChild(box);
+    }
+
+    function clearOutput() {
+      OUTPUT.textContent = '';
+    }
+
+    function sanitizeId(value) {
+      return String(value || '')
+        .replace(/[^\w-]/g, '_')
+        .replace(/_+/g, '_')
+        .slice(0, 120);
+    }
+
+    function normalizeText(value) {
+      return String(value || '').trim();
+    }
+
+    function isCountCombinationQuestion(text) {
+      const t = normalizeText(text).toLowerCase();
+      return [
+        '個数',
+        'いくつ',
+        '何個',
+        '組合せ',
+        '組み合わせ',
+        'すべて',
+        '正しいものはいくつ',
+        '誤っているものはいくつ',
+        'いくつあるか'
+      ].some((word) => t.includes(word));
+    }
+
+    function classifyTakkenCard(card) {
+      const patterns = card.question_patterns?.correct_patterns || [];
+      if (!patterns.length) {
+        return { category: 'source_recovery_pending', can_transform: false, reason: 'correct_patternsなし' };
+      }
+
+      const pattern = patterns[0];
+      const questionText = normalizeText(pattern.question_text);
+      if (questionText.length < 10) {
+        return { category: 'broken_or_unknown', can_transform: false, reason: '問題文が短すぎる' };
+      }
+
+      if (isCountCombinationQuestion(questionText)) {
+        return { category: 'active_recall_excluded_count_combination', can_transform: false, reason: '個数・組合せ問題' };
+      }
+
+      return { category: 'active_recall_eligible', can_transform: true, reason: 'correct_patternsあり' };
+    }
+
+    function validateStatementTextForActiveRecall(text, context = {}) {
+      if (!text) return { ok: false, category: 'empty_text', reason: 'テキストが空です' };
+      const trimmed = String(text).trim();
+      const clean = trimmed.replace(/[ \s　、。．.,？！?!]/g, '');
+
+      if (trimmed.length < 15) {
+        return { ok: false, category: 'short_text', reason: `文字数が不足しています(${trimmed.length})` };
+      }
+
+      const exclusionList = ['一つ', '二つ', '三つ', '四つ', '五つ', 'なし', 'すべて', '全て', 'イ', 'ウ', 'エ', 'ア、イ', 'イ、ウ', 'ウ、エ', 'ア、ウ', 'ア、エ', 'イ、エ'];
+      if (exclusionList.includes(trimmed) || exclusionList.includes(clean)) {
+        return { ok: false, category: 'label_only', reason: '選択肢ラベルまたは極短文です' };
+      }
+
+      if (trimmed.includes('テキスト元データ不足') || (trimmed.includes('選択肢') && trimmed.includes('不足'))) {
+        return { ok: false, category: 'placeholder_text_missing', reason: 'データ不足プレースホルダです' };
+      }
+
+      if (/^[アイウエ][、,・]?[アイウエ]?$/.test(clean)) {
+        return { ok: false, category: 'label_only', reason: '選択肢記号のみです' };
+      }
+
+      if (/^[一二三四五六七八九十]+つ$/.test(clean)) {
+        return { ok: false, category: 'label_only', reason: '個数回答のみです' };
+      }
+
+      const checkText = (trimmed + ' ' + (context.questionText || '')).toLowerCase();
+      const countCombinationWords = ['いくつあるか', '何個あるか', 'いくつ', '個数', '組合せ', '組み合わせ', '正しいものはいくつ', '誤っているものはいくつ'];
+      if (countCombinationWords.some((word) => checkText.includes(word))) {
+        return { ok: false, category: 'count_combination_question', reason: '個数・組合せ問題の文脈が含まれています' };
+      }
+
+      return { ok: true };
+    }
+
+    function buildCurrentIdSet(items, keyFn) {
+      const ids = [];
+      const seen = new Set();
+      for (const item of items) {
+        const id = normalizeText(keyFn(item));
+        if (!id) continue;
+        ids.push(id);
+        seen.add(id);
+      }
+      return { ids, set: seen };
+    }
+
+    function diffSet(expectedSet, currentSet) {
+      const missing = [];
+      const extra = [];
+      for (const id of expectedSet) {
+        if (!currentSet.has(id)) missing.push(id);
+      }
+      for (const id of currentSet) {
+        if (!expectedSet.has(id)) extra.push(id);
+      }
+      return { missing, extra };
+    }
+
+    async function loadJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Fetch failed: ${url} (${res.status})`);
+      return await res.json();
+    }
+
+    async function getIndexedDbSnapshot() {
+      const databases = await indexedDB.databases();
+      return {
+        databases,
+        hasTakkenDb: databases.some((dbInfo) => dbInfo.name === DB_NAME)
+      };
+    }
+
+    async function ensureDbReady() {
+      const snapshot = await getIndexedDbSnapshot();
+      if (!snapshot.hasTakkenDb) {
+        throw new Error(`IndexedDB に ${DB_NAME} が見つかりません。誤ったプロファイルです。`);
+      }
+      await db.open();
+      return snapshot;
+    }
+
+    async function buildTakkenExpectedSets(understandingCards) {
+      const expectedQuestions = new Map();
+      const expectedChoices = new Map();
+      const eligibleCards = [];
+      const skipped = {
+        no_pattern: 0,
+        short_text: 0,
+        count_combination: 0,
+        label_only: 0,
+        other: 0
+      };
+
+      for (const card of understandingCards) {
+        if ((card.exam_type || 'takken') !== 'takken') continue;
+        const cls = classifyTakkenCard(card);
+        if (!cls.can_transform) {
+          if (cls.category === 'source_recovery_pending' || cls.category === 'broken_or_unknown') {
+            skipped.other++;
+          } else if (cls.category === 'active_recall_excluded_count_combination') {
+            skipped.count_combination++;
+          } else {
+            skipped.other++;
+          }
+          continue;
+        }
+
+        const pattern = card.question_patterns?.correct_patterns?.[0];
+        const qValidation = validateStatementTextForActiveRecall(pattern.question_text, { cardId: card.card_id });
+        if (!qValidation.ok) {
+          if (qValidation.category === 'short_text') skipped.short_text++;
+          else if (qValidation.category === 'count_combination_question') skipped.count_combination++;
+          else if (qValidation.category === 'label_only' || qValidation.category === 'placeholder_text_missing') skipped.label_only++;
+          else skipped.other++;
+          continue;
+        }
+
+        eligibleCards.push(card);
+        const qId = `TAKKEN-SQ-${sanitizeId(card.card_id)}`;
+        const cId = `TAKKEN-SC-${sanitizeId(card.card_id)}`;
+        expectedQuestions.set(qId, { id: qId, question_id: qId, source_card_id: card.card_id });
+        expectedChoices.set(cId, { id: cId, question_id: qId, option_no: pattern.correct_option || 1, source_card_id: card.card_id });
+      }
+
+      return { expectedQuestions, expectedChoices, eligibleCards, skipped };
+    }
+
+    function buildChintaiExpectedSets(chintaiRaw) {
+      const expectedQuestions = new Map();
+      const expectedChoices = new Map();
+      for (const item of chintaiRaw) {
+        const qId = normalizeText(item.id);
+        if (!qId) continue;
+        expectedQuestions.set(qId, { id: qId, question_id: qId, source_card_id: qId });
+        for (let optionNo = 1; optionNo <= 4; optionNo++) {
+          const cId = `${qId}-${optionNo}`;
+          expectedChoices.set(cId, { id: cId, question_id: qId, option_no: optionNo, source_card_id: qId });
+        }
+      }
+      return { expectedQuestions, expectedChoices };
+    }
+
+    function buildExpectedCandidateIds(items, kind) {
+      const ids = new Set();
+      const duplicateIds = new Set();
+      const missingRequired = [];
+      items.forEach((item, index) => {
+        let id = '';
+        if (kind === 'hqi') id = normalizeText(item.unit_id || item.id);
+        else if (kind === 'qe') id = normalizeText(item.id || item.explanation_id);
+        else if (kind === 'ce') id = normalizeText(item.id || item.explanation_id);
+        if (!id && kind === 'hqi') {
+          id = `HQI-${String(index + 1).padStart(2, '0')}-${sanitizeId(item.topic || item.category || item.source?.source_title || 'item')}`;
+        } else if (!id && kind === 'qe') {
+          id = `QE-${String(index + 1).padStart(2, '0')}-${sanitizeId(item.question_id || item.card_id || item.category || item.question_focus || 'item')}`;
+        } else if (!id && kind === 'ce') {
+          id = `CE-${String(index + 1).padStart(2, '0')}-${sanitizeId(item.choice_id || item.source_choice_id || item.question_id || item.card_id || item.category || 'item')}`;
+        }
+        if (!id) {
+          missingRequired.push(item);
+          return;
+        }
+        if (ids.has(id)) duplicateIds.add(id);
+        ids.add(id);
+      });
+      return { ids, duplicateIds, missingRequired };
+    }
+
+    function renderSnapshot(parent, snapshot) {
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      addKV(grid, 'location.origin', snapshot.location.origin);
+      addKV(grid, 'location.href', snapshot.location.href);
+      addKV(grid, 'navigator.userAgent', snapshot.userAgent);
+      addKV(grid, 'indexedDB.databases()', snapshot.indexedDBDatabases);
+      addKV(grid, 'DB名', snapshot.dbName);
+      addKV(grid, 'Dexie verno', String(snapshot.dexieVersion));
+      addKV(grid, 'source_questions_count', String(snapshot.counts.source_questions));
+      addKV(grid, 'source_choices_count', String(snapshot.counts.source_choices));
+      addKV(grid, 'high_quality_input_units_count', String(snapshot.counts.high_quality_input_units));
+      addKV(grid, 'question_explanations_count', String(snapshot.counts.question_explanations));
+      addKV(grid, 'choice_explanations_count', String(snapshot.counts.choice_explanations));
+      addKV(grid, 'understanding_cards_count', String(snapshot.counts.understanding_cards));
+      parent.appendChild(grid);
+    }
+
+    async function collectAllState() {
+      const environment = {
+        location: {
+          origin: location.origin,
+          href: location.href
+        },
+        userAgent: navigator.userAgent,
+        indexedDBDatabases: [],
+        dbName: DB_NAME,
+        dexieVersion: DB_VERSION
+      };
+
+      const snapshot = await ensureDbReady();
+      environment.indexedDBDatabases = snapshot.databases;
+
+      const [sourceQuestions, sourceChoices, hqiRows, qeRows, ceRows, understandingCards] = await Promise.all([
+        db.source_questions.toArray(),
+        db.source_choices.toArray(),
+        db.high_quality_input_units.toArray(),
+        db.question_explanations.toArray(),
+        db.choice_explanations.toArray(),
+        db.understanding_cards.toArray()
+      ]);
+
+      const current = {
+        source_questions: buildCurrentIdSet(sourceQuestions, (x) => x.id),
+        source_choices: buildCurrentIdSet(sourceChoices, (x) => x.id),
+        high_quality_input_units: buildCurrentIdSet(hqiRows, (x) => x.id),
+        question_explanations: buildCurrentIdSet(qeRows, (x) => x.id || x.explanation_id),
+        choice_explanations: buildCurrentIdSet(ceRows, (x) => x.id || x.explanation_id),
+        understanding_cards: buildCurrentIdSet(understandingCards, (x) => x.card_id)
+      };
+
+      const [ultimateDeckRaw, chintaiRaw, hqiBatch1, phase3, hold28] = await Promise.all([
+        loadJson(resolvePublicAssetPath('/ULTIMATE_STUDY_DECK.json')),
+        loadJson(resolvePublicAssetPath('/chintai_raw.json')),
+        loadJson(resolvePublicAssetPath('/docs/research/high_quality_input_web_research_batch1.json')),
+        loadJson(resolvePublicAssetPath('/docs/generated/v30_phase3_020_auto_ok_32_import_candidates.json')),
+        loadJson(resolvePublicAssetPath('/docs/generated/v30_phase3_020_human_review_28_hold_candidates.json'))
+      ]);
+
+      const takkenDeck = Array.isArray(ultimateDeckRaw)
+        ? ultimateDeckRaw
+        : (Array.isArray(ultimateDeckRaw?.ultimate_deck) ? ultimateDeckRaw.ultimate_deck : []);
+      const takkenUnderstandingCards = takkenDeck.map((card) => {
+        const integrated = buildIntegratedCard(card);
+        return { ...integrated, exam_type: 'takken' };
+      });
+
+      const takkenExpected = await buildTakkenExpectedSets(takkenUnderstandingCards);
+      const chintaiExpected = buildChintaiExpectedSets(Array.isArray(chintaiRaw) ? chintaiRaw : []);
+
+      const sourceQuestionExpectedIds = new Set([...takkenExpected.expectedQuestions.keys(), ...chintaiExpected.expectedQuestions.keys()]);
+      const sourceChoiceExpectedIds = new Set([...takkenExpected.expectedChoices.keys(), ...chintaiExpected.expectedChoices.keys()]);
+
+      const sourceQuestionDiff = diffSet(sourceQuestionExpectedIds, current.source_questions.set);
+      const sourceChoiceDiff = diffSet(sourceChoiceExpectedIds, current.source_choices.set);
+
+      const hqiItems = Array.isArray(hqiBatch1) ? hqiBatch1 : (Array.isArray(hqiBatch1.batch_data) ? hqiBatch1.batch_data : []);
+      const hqiCandidate = buildExpectedCandidateIds(hqiItems, 'hqi');
+
+      const questionExps = Array.isArray(phase3.question_explanations) ? phase3.question_explanations : [];
+      const choiceExps = Array.isArray(phase3.choice_explanations) ? phase3.choice_explanations : [];
+      const questionExpCandidate = buildExpectedCandidateIds(questionExps, 'qe');
+      const choiceExpCandidate = buildExpectedCandidateIds(choiceExps, 'ce');
+      const holdQuestionIds = new Set((Array.isArray(hold28.question_explanations) ? hold28.question_explanations : []).map((x) => normalizeText(x.id)));
+      const holdChoiceIds = new Set((Array.isArray(hold28.choice_explanations) ? hold28.choice_explanations : []).map((x) => normalizeText(x.id)));
+      const autoOkQuestionIds = new Set(questionExps.map((x) => normalizeText(x.id)));
+      const autoOkChoiceIds = new Set(choiceExps.map((x) => normalizeText(x.id)));
+
+      const humanReviewExcluded = [...holdQuestionIds].every((id) => !autoOkQuestionIds.has(id)) &&
+        [...holdChoiceIds].every((id) => !autoOkChoiceIds.has(id));
+
+      const currentSourceChoiceBreakdown = {
+        chintai: sourceChoices.filter((c) => normalizeText(c.question_id).startsWith('CH-')).length,
+        takken: sourceChoices.filter((c) => normalizeText(c.question_id).startsWith('TAKKEN-SQ-')).length,
+        other: sourceChoices.filter((c) => {
+          const qid = normalizeText(c.question_id);
+          return !qid.startsWith('CH-') && !qid.startsWith('TAKKEN-SQ-');
+        }).length
+      };
+
+      const currentSourceQuestionBreakdown = {
+        chintai: sourceQuestions.filter((q) => normalizeText(q.exam_type) === 'chintai').length,
+        takken: sourceQuestions.filter((q) => normalizeText(q.exam_type) === 'takken').length,
+        other: sourceQuestions.filter((q) => {
+          const exam = normalizeText(q.exam_type);
+          return exam !== 'chintai' && exam !== 'takken';
+        }).length
+      };
+
+      const sourceQuestionsExpectedCount = sourceQuestionExpectedIds.size;
+      const sourceChoicesExpectedCount = sourceChoiceExpectedIds.size;
+      const sourceQuestionsCurrentCount = current.source_questions.ids.length;
+      const sourceChoicesCurrentCount = current.source_choices.ids.length;
+
+      const report = {
+        canonical_origin: CANONICAL_ORIGIN,
+        canonical_url: CANONICAL_URL,
+        location_origin: environment.location.origin,
+        location_href: environment.location.href,
+        db_name: DB_NAME,
+        dexie_version: DB_VERSION,
+        indexeddb_databases: environment.indexedDBDatabases,
+        current_db: {
+          source_questions_count: sourceQuestionsCurrentCount,
+          source_choices_count: sourceChoicesCurrentCount,
+          high_quality_input_units_count: current.high_quality_input_units.ids.length,
+          question_explanations_count: current.question_explanations.ids.length,
+          choice_explanations_count: current.choice_explanations.ids.length,
+          understanding_cards_count: current.understanding_cards.ids.length,
+          source_choices_2100_reason: currentSourceChoiceBreakdown.chintai === 2000 && sourceChoicesCurrentCount === 2100
+            ? `chintai=2000 + takken=${currentSourceChoiceBreakdown.takken} + other=${currentSourceChoiceBreakdown.other}`
+            : `chintai=${currentSourceChoiceBreakdown.chintai}, takken=${currentSourceChoiceBreakdown.takken}, other=${currentSourceChoiceBreakdown.other}`
+        },
+        expected: {
+          source_questions_count: sourceQuestionsExpectedCount,
+          source_choices_count: sourceChoicesExpectedCount,
+          hqi_count: hqiItems.length,
+          question_explanations_count: questionExps.length,
+          choice_explanations_count: choiceExps.length,
+          human_review_28_excluded: humanReviewExcluded,
+          takken_expected_count: takkenExpected.expectedQuestions.size,
+          chintai_expected_count: chintaiExpected.expectedQuestions.size
+        },
+        dry_run: {
+          source_questions_missing_count: sourceQuestionDiff.missing.length,
+          source_choices_missing_count: sourceChoiceDiff.missing.length,
+          hqi_missing_count: Math.max(0, hqiItems.length - current.high_quality_input_units.ids.length),
+          question_explanations_missing_count: Math.max(0, questionExps.length - current.question_explanations.ids.length),
+          choice_explanations_missing_count: Math.max(0, choiceExps.length - current.choice_explanations.ids.length),
+          source_questions_missing_ids_sample: sourceQuestionDiff.missing.slice(0, 24),
+          source_choices_missing_ids_sample: sourceChoiceDiff.missing.slice(0, 24),
+          duplicate_id_count: [...hqiCandidate.duplicateIds, ...questionExpCandidate.duplicateIds, ...choiceExpCandidate.duplicateIds].length,
+          missing_required_field_count: hqiCandidate.missingRequired.length + questionExpCandidate.missingRequired.length + choiceExpCandidate.missingRequired.length,
+          validation_failed: 0,
+          db_write_executed: false,
+          add_used: false,
+          bulkAdd_used: false,
+          put_used: false,
+          bulkPut_used: false,
+          clear_used: false,
+          deleteDatabase_used: false
+        },
+        source_question_breakdown: currentSourceQuestionBreakdown,
+        source_choice_breakdown: currentSourceChoiceBreakdown,
+        takken_expected_samples: [...takkenExpected.expectedQuestions.keys()].slice(0, 12),
+        chintai_expected_samples: [...chintaiExpected.expectedQuestions.keys()].slice(0, 12),
+        hqi_sample_ids: [...hqiCandidate.ids].slice(0, 8),
+        question_explanation_ids: questionExps.map((item) => normalizeText(item.id)).slice(0, 20),
+        choice_explanation_ids: choiceExps.map((item) => normalizeText(item.id)).slice(0, 20)
+      };
+
+      report.dry_run.validation_failed =
+        report.expected.source_questions_count === 1524 &&
+        report.expected.source_choices_count === 3024 &&
+        report.expected.hqi_count === 20 &&
+        report.expected.question_explanations_count === 20 &&
+        report.expected.choice_explanations_count === 12 &&
+        report.dry_run.duplicate_id_count === 0 &&
+        report.dry_run.missing_required_field_count === 0 &&
+        report.dry_run.source_questions_missing_count >= 0 &&
+        report.dry_run.source_choices_missing_count >= 0
+          ? 0
+          : 1;
+
+      return report;
+    }
+
+    function renderReport(report) {
+      const section = addSection('Dry-run レポート');
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      addKV(grid, '正本origin', report.canonical_origin, 'ok');
+      addKV(grid, '正本URL', report.canonical_url, 'ok');
+      addKV(grid, 'location.origin', report.location_origin, 'ok');
+      addKV(grid, 'location.href', report.location_href, 'ok');
+      addKV(grid, 'DB名', report.db_name, 'ok');
+      addKV(grid, 'Dexie version', String(report.dexie_version), 'ok');
+      addKV(grid, 'source_questions_count', String(report.current_db.source_questions_count));
+      addKV(grid, 'source_choices_count', String(report.current_db.source_choices_count));
+      addKV(grid, 'high_quality_input_units_count', String(report.current_db.high_quality_input_units_count));
+      addKV(grid, 'question_explanations_count', String(report.current_db.question_explanations_count));
+      addKV(grid, 'choice_explanations_count', String(report.current_db.choice_explanations_count));
+      addKV(grid, 'understanding_cards_count', String(report.current_db.understanding_cards_count));
+      addKV(grid, 'expected_source_questions_count', String(report.expected.source_questions_count), report.expected.source_questions_count === 1524 ? 'ok' : 'warn');
+      addKV(grid, 'expected_source_choices_count', String(report.expected.source_choices_count), report.expected.source_choices_count === 3024 ? 'ok' : 'warn');
+      addKV(grid, 'expected_hqi_count', String(report.expected.hqi_count), report.expected.hqi_count === 20 ? 'ok' : 'warn');
+      addKV(grid, 'expected_question_explanations_count', String(report.expected.question_explanations_count), report.expected.question_explanations_count === 20 ? 'ok' : 'warn');
+      addKV(grid, 'expected_choice_explanations_count', String(report.expected.choice_explanations_count), report.expected.choice_explanations_count === 12 ? 'ok' : 'warn');
+      addKV(grid, 'human_review_28_excluded', String(report.expected.human_review_28_excluded), report.expected.human_review_28_excluded ? 'ok' : 'bad');
+      addKV(grid, 'source_questions_missing_count', String(report.dry_run.source_questions_missing_count), report.dry_run.source_questions_missing_count >= 0 ? 'ok' : 'bad');
+      addKV(grid, 'source_choices_missing_count', String(report.dry_run.source_choices_missing_count), report.dry_run.source_choices_missing_count >= 0 ? 'ok' : 'bad');
+      addKV(grid, 'hqi_missing_count', String(report.dry_run.hqi_missing_count));
+      addKV(grid, 'question_explanations_missing_count', String(report.dry_run.question_explanations_missing_count));
+      addKV(grid, 'choice_explanations_missing_count', String(report.dry_run.choice_explanations_missing_count));
+      addKV(grid, 'duplicate_id_count', String(report.dry_run.duplicate_id_count), report.dry_run.duplicate_id_count === 0 ? 'ok' : 'bad');
+      addKV(grid, 'missing_required_field_count', String(report.dry_run.missing_required_field_count), report.dry_run.missing_required_field_count === 0 ? 'ok' : 'bad');
+      addKV(grid, 'validation_failed', String(report.dry_run.validation_failed), report.dry_run.validation_failed === 0 ? 'ok' : 'bad');
+      addKV(grid, 'db_write_executed', String(report.dry_run.db_write_executed), 'ok');
+      addKV(grid, 'add_used', String(report.dry_run.add_used), 'ok');
+      addKV(grid, 'bulkAdd_used', String(report.dry_run.bulkAdd_used), 'ok');
+      addKV(grid, 'put_used', String(report.dry_run.put_used), 'ok');
+      addKV(grid, 'bulkPut_used', String(report.dry_run.bulkPut_used), 'ok');
+      addKV(grid, 'clear_used', String(report.dry_run.clear_used), 'ok');
+      addKV(grid, 'deleteDatabase_used', String(report.dry_run.deleteDatabase_used), 'ok');
+      addKV(grid, 'source_choices_2100_reason', report.current_db.source_choices_2100_reason);
+      addKV(grid, 'source_question_breakdown', report.source_question_breakdown);
+      addKV(grid, 'source_choice_breakdown', report.source_choice_breakdown);
+      section.appendChild(grid);
+
+      const listSection = addSection('ID単位の差分');
+      addKV(listSection, 'source_questions_missing_ids_sample', report.dry_run.source_questions_missing_ids_sample);
+      addKV(listSection, 'source_choices_missing_ids_sample', report.dry_run.source_choices_missing_ids_sample);
+      addKV(listSection, 'takken_expected_samples', report.takken_expected_samples);
+      addKV(listSection, 'chintai_expected_samples', report.chintai_expected_samples);
+      addKV(listSection, 'hqi_sample_ids', report.hqi_sample_ids);
+      addKV(listSection, 'question_explanation_ids', report.question_explanation_ids);
+      addKV(listSection, 'choice_explanation_ids', report.choice_explanation_ids);
+
+      const jsonSection = addSection('JSON');
+      addPre(jsonSection, JSON.stringify(report, null, 2));
+
+      return report;
+    }
+
+    function showMessage(text, tone = '') {
+      const p = document.createElement('p');
+      p.className = tone;
+      p.textContent = text;
+      OUTPUT.appendChild(p);
+    }
+
+    async function runDryRun() {
+      clearOutput();
+      showMessage('⏳ Dry-run 実行中...');
+      try {
+        const report = await collectAllState();
+        OUTPUT.textContent = '';
+        renderReport(report);
+        showMessage(report.dry_run.validation_failed === 0 && report.expected.source_questions_count === 1524 && report.expected.source_choices_count === 3024
+          ? '✅ Dry-run 完了'
+          : '⚠️ Dry-run 完了（期待件数が未達のため要確認）',
+          report.dry_run.validation_failed === 0 ? 'ok' : 'warn');
+      } catch (error) {
+        clearOutput();
+        showMessage(`❌ エラー: ${error?.message || error}`, 'bad');
+      }
+    }
+
+    async function showEnvironment() {
+      clearOutput();
+      try {
+        const snapshot = await getIndexedDbSnapshot();
+        const section = addSection('環境診断');
+        renderSnapshot(section, {
+          location: { origin: location.origin, href: location.href },
+          userAgent: navigator.userAgent,
+          indexedDBDatabases: snapshot.databases,
+          dbName: DB_NAME,
+          dexieVersion: DB_VERSION,
+          counts: {
+            source_questions: await db.source_questions.count(),
+            source_choices: await db.source_choices.count(),
+            high_quality_input_units: await db.high_quality_input_units.count(),
+            question_explanations: await db.question_explanations.count(),
+            choice_explanations: await db.choice_explanations.count(),
+            understanding_cards: await db.understanding_cards.count()
+          }
+        });
+      } catch (error) {
+        showMessage(`❌ 環境診断エラー: ${error?.message || error}`, 'bad');
+      }
+    }
+
+    async function showDbStatus() {
+      clearOutput();
+      try {
+        await db.open();
+        const section = addSection('DB状態確認');
+        const [sq, sc, hqi, qe, ce, uc] = await Promise.all([
+          db.source_questions.count(),
+          db.source_choices.count(),
+          db.high_quality_input_units.count(),
+          db.question_explanations.count(),
+          db.choice_explanations.count(),
+          db.understanding_cards.count()
+        ]);
+        addKV(section, 'source_questions_count', String(sq));
+        addKV(section, 'source_choices_count', String(sc));
+        addKV(section, 'high_quality_input_units_count', String(hqi));
+        addKV(section, 'question_explanations_count', String(qe));
+        addKV(section, 'choice_explanations_count', String(ce));
+        addKV(section, 'understanding_cards_count', String(uc));
+      } catch (error) {
+        showMessage(`❌ DB状態確認エラー: ${error?.message || error}`, 'bad');
+      }
+    }
+
+    document.getElementById('envBtn').addEventListener('click', showEnvironment);
+    document.getElementById('dbBtn').addEventListener('click', showDbStatus);
+    document.getElementById('runBtn').addEventListener('click', runDryRun);
+
+    // 初回表示
+    showEnvironment();
+  </script>
+</body>
+</html>
