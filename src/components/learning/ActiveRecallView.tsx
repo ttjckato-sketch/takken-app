@@ -131,32 +131,31 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     updateCardSRS(card.card_id, isCorrect, finalRating);
     if (isCorrect) onAnswer(true);
 
-    if (!isCorrect) {
-      const selectedChoice = typeof selected === 'number'
-        ? sourceChoices.find(choice => choice.option_no === selected)
-        : null;
-      const cardSourceChoiceId = card.source_choice_id || (card as any).sourceChoiceId || null;
-      const cardQuestionId = (card as any).source_question_id || (card as any).question_id || getSourceQuestionId(card.card_id);
-      const selectedSourceChoiceId = (selectedChoice as any)?.source_choice_id || selectedChoice?.id || null;
+    // Always resolve explanation pack for consistent UI
+    const selectedChoice = typeof selected === 'number'
+      ? sourceChoices.find(choice => choice.option_no === selected)
+      : null;
+    const cardSourceChoiceId = card.source_choice_id || (card as any).sourceChoiceId || null;
+    const cardQuestionId = (card as any).source_question_id || (card as any).question_id || getSourceQuestionId(card.card_id);
+    const selectedSourceChoiceId = (selectedChoice as any)?.source_choice_id || selectedChoice?.id || null;
 
-      resolveExplanationPack({
-        sourceChoiceId: cardSourceChoiceId || selectedSourceChoiceId,
-        choiceId: selectedChoice?.id || cardSourceChoiceId || (card as any).sourceChoiceId,
-        sourceQuestionId: cardQuestionId,
-        questionId: cardQuestionId,
-        cardId: card.card_id,
-        category: card.category,
-        tags: card.tags,
-        examType: card.exam_type || 'unknown'
-      }).then((match) => {
-        setExplanationMatch(match);
-        if (!repairUnit && match.repairUnit) {
-          setRepairUnit(match.repairUnit);
-        }
-      }).catch((error) => {
-        console.error('[ActiveRecallView] explanation match failed:', error);
-      });
-    }
+    resolveExplanationPack({
+      sourceChoiceId: cardSourceChoiceId || selectedSourceChoiceId,
+      choiceId: selectedChoice?.id || cardSourceChoiceId || (card as any).sourceChoiceId,
+      sourceQuestionId: cardQuestionId,
+      questionId: cardQuestionId,
+      cardId: card.card_id,
+      category: card.category,
+      tags: card.tags,
+      examType: card.exam_type || 'unknown'
+    }).then((match) => {
+      setExplanationMatch(match);
+      if (!repairUnit && match.repairUnit) {
+        setRepairUnit(match.repairUnit);
+      }
+    }).catch((error) => {
+      console.error('[ActiveRecallView] explanation match failed:', error);
+    });
   };
 
   // handleFSRSRating: FSRS button pressed -> save rating -> advance to next card
@@ -331,44 +330,11 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
 
             {/* Explanation Section */}
             <div className="space-y-4">
-                {selectedAnswer !== correctAnswer && explanationMatch && (
+                {explanationMatch && (
                     <ExplanationRepairPanel
                         match={explanationMatch}
                         onOpenInputUnit={explanationMatch.repairUnit ? () => setShowFullViewer(true) : undefined}
                     />
-                )}
-
-                {/* HQI Fallback or v30 Explanation */}
-                {(!explanationMatch || selectedAnswer === correctAnswer) && (
-                    <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-200 space-y-8">
-                        <div>
-                            <div className="text-[10px] font-black text-indigo-500 uppercase mb-3 tracking-widest flex items-center gap-2">
-                                <Zap size={14} /> 結論 (Core Rule)
-                            </div>
-                            <div className="text-xl font-black text-slate-800 leading-relaxed">
-                                {contract?.core_rule}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="text-[10px] font-black text-slate-500 uppercase mb-3 tracking-widest flex items-center gap-2">
-                                <BookOpen size={14} /> 理由・解説
-                            </div>
-                            <div className="text-slate-600 font-bold leading-relaxed whitespace-pre-wrap">
-                                {contract?.why_this_is_correct}
-                            </div>
-                        </div>
-
-                        {/* P42: HQI Preview Button (if available) */}
-                        {repairUnit && (
-                            <button
-                                onClick={() => setShowFullViewer(true)}
-                                className="w-full bg-slate-900 text-white p-5 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 transition-all"
-                            >
-                                <BookOpen size={20} /> 構造化解説ユニットを開く
-                            </button>
-                        )}
-                    </div>
                 )}
             </div>
 
