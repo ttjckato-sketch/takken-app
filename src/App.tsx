@@ -32,6 +32,52 @@ type HomeStats = {
 
 type TabType = 'home' | 'study_session' | 'session_summary' | 'input_viewer' | 'comparison_viewer' | 'admin_explorer' | 'ai_salvage' | 'reality_projection';
 
+type SimpleFieldCard = {
+  title: string;
+  topic: string;
+  examType: 'takken' | 'chintai';
+  description: string;
+  accent: string;
+};
+
+const SIMPLE_FIELD_CARDS: SimpleFieldCard[] = [
+  {
+    title: '権利関係',
+    topic: '権利関係',
+    examType: 'takken',
+    description: '民法・借地借家法・区分所有法を1問1答で確認',
+    accent: 'border-blue-200 bg-blue-50 text-blue-700'
+  },
+  {
+    title: '宅建業法',
+    topic: '宅建業法',
+    examType: 'takken',
+    description: '35条、37条、媒介、8種制限など得点源を反復',
+    accent: 'border-emerald-200 bg-emerald-50 text-emerald-700'
+  },
+  {
+    title: '法令上の制限',
+    topic: '法令上の制限',
+    examType: 'takken',
+    description: '都市計画法・建築基準法・農地法を分野別に演習',
+    accent: 'border-amber-200 bg-amber-50 text-amber-700'
+  },
+  {
+    title: '税その他',
+    topic: '税・その他',
+    examType: 'takken',
+    description: '税、鑑定、統計、土地建物の頻出知識を整理',
+    accent: 'border-rose-200 bg-rose-50 text-rose-700'
+  },
+  {
+    title: '賃貸管理士',
+    topic: '賃貸管理士',
+    examType: 'chintai',
+    description: '管理受託契約、原状回復、サブリースを集中演習',
+    accent: 'border-indigo-200 bg-indigo-50 text-indigo-700'
+  }
+];
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabType>('home');
   const [loading, setLoading] = useState(false);
@@ -373,6 +419,99 @@ export default function App() {
     }
   };
 
+  const buildSourceChoiceFieldQueue = async (field: SimpleFieldCard) => {
+    const [questions, choices, questionExplanations, choiceExplanations] = await Promise.all([
+      db.source_questions.toArray(),
+      db.source_choices.toArray(),
+      db.question_explanations.toArray(),
+      db.choice_explanations.toArray()
+    ]);
+    const questionById = new Map(questions.map(question => [question.id, question]));
+    const questionExplanationIds = new Set(
+      questionExplanations.flatMap(item => [item.question_id, item.source_question_id, item.card_id]).filter(Boolean)
+    );
+    const choiceExplanationIds = new Set(
+      choiceExplanations.flatMap(item => [item.choice_id, item.source_choice_id]).filter(Boolean)
+    );
+    const seenChoiceIds = new Set<string>();
+
+    return choices
+      .filter(choice => {
+        if (seenChoiceIds.has(choice.id)) return false;
+        const question = questionById.get(choice.question_id);
+        if (!question) return false;
+        if (choice.is_statement_true !== true && choice.is_statement_true !== false) return false;
+        const isTargetField = field.examType === 'chintai'
+          ? question.exam_type === 'chintai'
+          : question.exam_type === 'takken' && question.category === field.topic;
+        if (!isTargetField) return false;
+        seenChoiceIds.add(choice.id);
+        return true;
+      })
+      .sort((left, right) => {
+        const leftChoiceScore = choiceExplanationIds.has(left.id) ? 2 : 0;
+        const rightChoiceScore = choiceExplanationIds.has(right.id) ? 2 : 0;
+        const leftQuestionScore = questionExplanationIds.has(left.question_id) ? 1 : 0;
+        const rightQuestionScore = questionExplanationIds.has(right.question_id) ? 1 : 0;
+        return (rightChoiceScore + rightQuestionScore) - (leftChoiceScore + leftQuestionScore);
+      })
+      .slice(0, 20)
+      .map(choice => {
+        const question = questionById.get(choice.question_id)!;
+        const statementText = /テキスト元データ不足|^選択肢\d+/.test(choice.text)
+          ? question.question_text
+          : choice.text;
+        return {
+          card_id: choice.id,
+          category: question.category,
+          tags: [question.category],
+          exam_type: question.exam_type,
+          sample_question: statementText,
+          sample_answer: choice.is_statement_true,
+          is_statement_true: choice.is_statement_true,
+          source_choice_id: choice.id,
+          question_id: question.id,
+          source_question_id: question.id,
+          core_knowledge: {
+            rule: choice.explanation || question.question_text,
+            essence: choice.explanation || question.question_text,
+            examiners_intent: question.question_text
+          },
+          session_mode: 'active_recall'
+        };
+      });
+  };
+
+  const startSimpleFieldSession = async (field: SimpleFieldCard) => {
+    setLoading(true);
+    try {
+      setExamTypeFilter(field.examType);
+      let validCards = await buildSourceChoiceFieldQueue(field);
+      const { buildWeakTopicQueue, buildLearningQueue } = await import('./utils/analytics');
+      if (validCards.length === 0) {
+        let queue = await buildWeakTopicQueue({ topic: field.topic, limit: 20 });
+        if (queue.length === 0) {
+          queue = await buildLearningQueue({ examType: field.examType, limit: 20 });
+        }
+        validCards = queue.map(c => ({ ...c, session_mode: 'active_recall' }));
+      }
+
+      if (validCards.length === 0) {
+        alert(`${field.title} の1問1答データが見つかりませんでした。`);
+        return;
+      }
+
+      setCurrentSessionId(null);
+      setKnowledgeQueue(validCards);
+      setActiveKnowledgeCard(validCards[0]);
+      setCurrentTab('study_session');
+    } catch (err) {
+      console.error('Simple field session start error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const finishSession = async () => {
     if (!currentSessionId) return;
     setLoading(true);
@@ -392,9 +531,69 @@ export default function App() {
 
   const currentIdx = activeKnowledgeCard ? knowledgeQueue.findIndex(c => (c.card_id || c.id) === (activeKnowledgeCard.card_id || activeKnowledgeCard.id)) : -1;
 
+  const renderSimpleHome = () => (
+    <div className="max-w-5xl mx-auto py-8 md:py-14 space-y-10">
+      <section className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-slate-500 text-xs font-black shadow-sm">
+          <BookOpen size={16} className="text-indigo-500" />
+          分野別1問1答
+        </div>
+        <div className="space-y-3">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950">
+            分野を選んで1問1答
+          </h1>
+          <p className="text-slate-500 font-bold max-w-2xl mx-auto leading-relaxed">
+            過去問を分解した問題を、分野別に解く。間違えたら、その問題専用の解説で理由・ひっかけ・1行暗記を確認する。
+          </p>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+        {SIMPLE_FIELD_CARDS.map((field) => (
+          <article
+            key={field.title}
+            className="bg-white rounded-[28px] border border-slate-200 p-5 shadow-soft flex flex-col gap-5"
+          >
+            <div className={`inline-flex self-start px-3 py-1.5 rounded-2xl border text-xs font-black ${field.accent}`}>
+              {field.examType === 'chintai' ? '賃貸管理士' : '宅建'}
+            </div>
+            <div className="space-y-2 flex-1">
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">{field.title}</h2>
+              <p className="text-sm text-slate-500 font-bold leading-relaxed">{field.description}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => startSimpleFieldSession(field)}
+              className="w-full bg-slate-950 hover:bg-indigo-700 text-white rounded-2xl py-3.5 px-4 font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              この分野を解く <ChevronRight size={18} />
+            </button>
+          </article>
+        ))}
+      </section>
+
+      <section className="bg-slate-950 text-white rounded-[32px] p-5 md:p-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-xl font-black">間違えた問題だけ、すぐ反復</h2>
+          <p className="text-sm text-slate-400 font-bold">
+            直近の誤答だけを集めて、同じ形式で解き直します。
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={startWrongAnswerSession}
+          className="bg-rose-500 hover:bg-rose-400 text-white rounded-2xl py-3.5 px-6 font-black transition-all active:scale-95 flex items-center justify-center gap-2"
+        >
+          誤答だけ復習 <AlertTriangle size={18} />
+        </button>
+      </section>
+    </div>
+  );
+
   const renderContent = () => {
     switch (currentTab) {
       case 'home':
+        return renderSimpleHome();
         return (
           <div className="space-y-8 max-w-4xl mx-auto py-8">
             <div className="text-center">

@@ -4,7 +4,8 @@ import { db, type UnderstandingCard, type SourceChoice } from '../../db';
 import { AnalogyBlock } from './AnalogyBlock';
 import { recordStudyEvent, updateCardSRS } from '../../utils/analytics';
 import { findRepairInputUnit } from '../../utils/inputUnitRepairMatcher';
-import { RepairPreview } from './RepairPreview';
+import { resolveExplanationPack, type ExplanationMatchResult } from '../../utils/explanationMatcher';
+import { ExplanationRepairPanel } from './ExplanationRepairPanel';
 import { InputUnitViewer } from './InputUnitViewer';
 import { QuestionUnderstandingAid } from './QuestionUnderstandingAid';
 import { classifyQuestionRenderMode, type QuestionRenderMode } from '../../utils/questionTypeClassifier';
@@ -30,6 +31,10 @@ interface ActiveRecallViewProps {
   questionMeta: QuestionMeta;
 }
 
+function getSourceQuestionId(cardId: string): string {
+  return cardId.replace(/^CHINTAI-KC-/, '').replace(/^KC-/, '');
+}
+
 export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, categoryProgress, questionMeta }: ActiveRecallViewProps) {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | number | null>(null);
@@ -39,6 +44,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
   const [sourceChoices, setSourceChoices] = useState<SourceChoice[]>([]);
   const [renderMode, setRenderMode] = useState<QuestionRenderMode>('TRUE_FALSE');
   const [contract, setContract] = useState<LearningContentContract | null>(null);
+  const [explanationMatch, setExplanationMatch] = useState<ExplanationMatchResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
@@ -49,7 +55,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     const loadData = async () => {
         setIsLoading(true);
         // Load Source Choices
-        const baseId = card.card_id.replace(/^CHINTAI-KC-/, '').replace(/^KC-/, '');
+        const baseId = getSourceQuestionId(card.card_id);
         const choices = await db.source_choices
           .where('question_id')
           .equals(baseId)
@@ -63,6 +69,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         // Build Initial Explanation (User answer is null initially)
         const initialContract = buildLearningContentContract(card, choices, null);
         setContract(initialContract);
+        setExplanationMatch(null);
         setIsLoading(false);
     };
     loadData();
@@ -91,6 +98,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     const isCorrect = selected === correctAnswer;
     setSelectedAnswer(selected);
     setHasAnswered(true);
+    setExplanationMatch(null);
     
     // Re-build contract with user answer to generate mistake diagnosis
     const updatedContract = buildLearningContentContract(card, sourceChoices, selected);
@@ -122,6 +130,33 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     recordStudyEvent(eventParams);
     updateCardSRS(card.card_id, isCorrect, finalRating);
     if (isCorrect) onAnswer(true);
+
+    if (!isCorrect) {
+      const selectedChoice = typeof selected === 'number'
+        ? sourceChoices.find(choice => choice.option_no === selected)
+        : null;
+      const cardSourceChoiceId = card.source_choice_id || (card as any).sourceChoiceId || null;
+      const cardQuestionId = (card as any).source_question_id || (card as any).question_id || getSourceQuestionId(card.card_id);
+      const selectedSourceChoiceId = (selectedChoice as any)?.source_choice_id || selectedChoice?.id || null;
+
+      resolveExplanationPack({
+        sourceChoiceId: cardSourceChoiceId || selectedSourceChoiceId,
+        choiceId: selectedChoice?.id || cardSourceChoiceId || (card as any).sourceChoiceId,
+        sourceQuestionId: cardQuestionId,
+        questionId: cardQuestionId,
+        cardId: card.card_id,
+        category: card.category,
+        tags: card.tags,
+        examType: card.exam_type || 'unknown'
+      }).then((match) => {
+        setExplanationMatch(match);
+        if (!repairUnit && match.repairUnit) {
+          setRepairUnit(match.repairUnit);
+        }
+      }).catch((error) => {
+        console.error('[ActiveRecallView] explanation match failed:', error);
+      });
+    }
   };
 
   // handleFSRSRating: FSRS button pressed -> save rating -> advance to next card
@@ -160,6 +195,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
       setHasAnswered(false);
       setSelectedAnswer(null);
       setRepairUnit(null);
+      setExplanationMatch(null);
       setShowFullViewer(false);
       setContract(null);
       onNext();
@@ -174,6 +210,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
         setHasAnswered(false); 
         setSelectedAnswer(null); 
         setRepairUnit(null);
+        setExplanationMatch(null);
         setShowFullViewer(false);
     }, 300);
   };
@@ -352,8 +389,15 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
               </div>
             </div>
 
+            {selectedAnswer !== correctAnswer && explanationMatch && (
+                <ExplanationRepairPanel
+                    match={explanationMatch}
+                    onOpenInputUnit={explanationMatch.repairUnit ? () => setShowFullViewer(true) : undefined}
+                />
+            )}
+
             {/* P42: 誤答時の補修プレビュー (Chintai/Takken共通) */}
-            {selectedAnswer !== correctAnswer && repairUnit && (
+            {selectedAnswer !== correctAnswer && repairUnit && !explanationMatch && (
                 <div className="bg-indigo-600 text-white p-8 rounded-[40px] shadow-glow flex flex-col md:flex-row items-center justify-between gap-6 animate-in fade-in slide-in-from-left-4 duration-500">
                     <div className="space-y-2 text-center md:text-left">
                         <div className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">Deep Learning Resource</div>
@@ -370,7 +414,7 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
             )}
 
             {/* 誤答時のfallback表示 (repairUnitがない場合) */}
-            {selectedAnswer !== correctAnswer && !repairUnit && (
+            {selectedAnswer !== correctAnswer && !repairUnit && !explanationMatch && (
                 <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-[32px] p-6 space-y-4 shadow-lg animate-in fade-in slide-in-from-left-4 duration-500">
                     {/* Fallbackヘッダー */}
                     <div className="flex items-center gap-2 text-amber-700 font-bold">
@@ -568,4 +612,3 @@ export function ActiveRecallView({ card, onAnswer, onNext, sessionProgress, cate
     </div>
   );
 }
-

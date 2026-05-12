@@ -424,7 +424,7 @@ export class TakkenDatabase extends Dexie {
       high_quality_input_units: 'id, source_item_id, batch_id, origin, category, review_status, source_trace_grade, visual_type, disabled, created_at, updated_at'
     });
 
-    this.version(30).stores({
+    this.version(30.1).stores({
       question_explanations: 'id, question_id, source_question_id, card_id, batch_id, category, review_status, source_trace_grade, confidence, disabled, label_conflict_suspected, human_review_required, created_at, updated_at',
       choice_explanations: 'id, choice_id, source_choice_id, question_id, source_question_id, card_id, batch_id, category, review_status, source_trace_grade, confidence, disabled, label_conflict_suspected, human_review_required, created_at, updated_at'
     });

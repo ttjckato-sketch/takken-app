@@ -1,0 +1,119 @@
+{
+  "topic": "v30 explanationMatcher implementation design",
+  "status": "design_only",
+  "summary": {
+    "goal": "question_explanations / choice_explanations を ActiveRecall の誤答補修へ接続する",
+    "non_goals": [
+      "DB投入",
+      "UI改修",
+      "RepairPreview改修",
+      "ActiveRecallView改修",
+      "inputUnitRepairMatcher破壊的変更"
+    ],
+    "current_db": {
+      "name": "TakkenOS_DB",
+      "version": 30,
+      "question_explanations": 20,
+      "choice_explanations": 12,
+      "high_quality_input_units": 20
+    }
+  },
+  "current_structure": {
+    "inputUnitRepairMatcher_responsibility": "high_quality_input_units と TAKKEN_PROTOTYPE_UNITS から InputUnit を返す補修ユニット解決",
+    "repairPreview_input_spec": "InputUnit | null を受け取り、結論・ひっかけ・比較・再確認クイズを表示",
+    "activeRecall_flow": [
+      "source_choices を読む",
+      "buildLearningContentContract で解説を生成",
+      "正誤判定",
+      "誤答時に findRepairInputUnit を呼ぶ",
+      "RepairPreview / InputUnitViewer を表示"
+    ],
+    "v29_fallback": "high_quality_input_units -> TAKKEN_PROTOTYPE_UNITS -> null"
+  },
+  "v30_schema": {
+    "question_explanations_keys": [
+      "id",
+      "question_id",
+      "source_question_id",
+      "card_id",
+      "category",
+      "question_focus",
+      "application_to_question",
+      "correct_conclusion",
+      "why_this_answer",
+      "why_user_wrong",
+      "source_refs",
+      "review_status",
+      "human_review_required",
+      "label_conflict_suspected"
+    ],
+    "choice_explanations_keys": [
+      "id",
+      "choice_id",
+      "source_choice_id",
+      "question_id",
+      "source_question_id",
+      "card_id",
+      "category",
+      "statement_text",
+      "correct_answer_reason",
+      "why_true",
+      "why_false",
+      "why_user_wrong",
+      "application_to_statement",
+      "source_refs",
+      "review_status",
+      "human_review_required",
+      "label_conflict_suspected"
+    ],
+    "identifier_relation": "choice_explanations は source_choice_id / choice_id / question_id / source_question_id / card_id を持ち、question_explanations は question_id / source_question_id / card_id を持つ"
+  },
+  "recommended_design": {
+    "new_file": "src/utils/explanationMatcher.ts",
+    "target_function": "resolveExplanationPack(params)",
+    "matching_priority": [
+      "choice_explanations",
+      "question_explanations",
+      "high_quality_input_units",
+      "TAKKEN_PROTOTYPE_UNITS",
+      "final fallback"
+    ],
+    "choice_level_supported": true,
+    "question_level_supported": true,
+    "v29_fallback_preserved": true,
+    "prototype_fallback_preserved": true,
+    "final_fallback_preserved": true
+  },
+  "matching_keys": {
+    "choice_explanations": [
+      "source_choice_id",
+      "choice_id",
+      "source_question_id",
+      "question_id",
+      "card_id"
+    ],
+    "question_explanations": [
+      "source_question_id",
+      "question_id",
+      "card_id",
+      "category"
+    ],
+    "hqi_fallback": [
+      "category",
+      "linked_tags",
+      "card_id"
+    ]
+  },
+  "design_constraints": {
+    "read_only": true,
+    "no_db_writes": true,
+    "preserve_existing_fallbacks": true,
+    "no_breaking_change_to_RepairPreview": true
+  },
+  "test_plan": [
+    "choice_explanations が question_explanations より優先される",
+    "question_explanations のみ存在する場合も解決できる",
+    "v30 が無いカードは既存 HQI / prototype fallback に落ちる",
+    "source_choices / is_statement_true / study_events に書き込まない"
+  ]
+}
