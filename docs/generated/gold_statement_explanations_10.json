@@ -1,0 +1,263 @@
+[
+  {
+    "explanation_id": "SE-GOLD-001",
+    "statement_item_id": "KC_TAKKEN_LAW_LICENSE_001",
+    "app_type": "takken",
+    "category": "宅建業法",
+    "statement_text": "宅地建物取引業者Aの役員が、刑法第204条（傷害）の罪により懲役1年の刑に処せられた場合、その刑の執行が終わった日から5年を経過しなければ、Aは免許を受けることができない。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。傷害罪で「懲役刑」に処せられた場合、刑の執行終了から5年間は欠格事由に該当します。",
+    "reason_bullets": [
+      "宅建業法では、一定の罪（傷害罪、暴行罪、脅迫罪等）で「罰金刑」以上、または罪種を問わず「禁錮刑」以上の刑に処せられた場合が欠格事由となります。",
+      "「懲役」は禁錮以上の刑に該当するため、執行終了から5年間の待機期間が必要です。",
+      "役員が欠格事由に該当する場合、法人としての業者Aも免許を受けることができません。"
+    ],
+    "application_to_question": "本問の役員は「傷害罪」かつ「懲役」であるため、法第5条第1項の欠格事由に完全に合致し、業者Aの免許は拒否されます。",
+    "common_trap": "「傷害罪なら罰金でもアウト」「過失傷害なら罰金はセーフ」という区別に注意。本問は懲役なので罪種に関わらずアウトです。",
+    "one_line_memory": "役員が「懲役」なら即アウト！5年待たないと免許は取れない。",
+    "comparison_points": "傷害罪：罰金でもアウト。過失傷害罪：禁錮以上ならアウト（罰金ならセーフ）。",
+    "source_refs": [
+      { "title": "宅建業法", "article": "5条1項" },
+      { "title": "e-Gov 宅地建物取引業法", "url": "https://elaws.e-gov.go.jp/document?lawid=327AC0000000176" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-002",
+    "statement_item_id": "KC_TAKKEN_LAW_ART35_001",
+    "app_type": "takken",
+    "category": "宅建業法",
+    "statement_text": "宅地建物取引業者は、建物の売買の媒介を行う場合、当該建物が既存の建物であるときは、建物の構造耐力上主要な部分等の状況の調査（インスペクション）の結果の概要を説明しなければならない。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。既存建物の売買・交換・貸借の媒介において、インスペクション結果の概要は重要事項説明の必須項目です。",
+    "reason_bullets": [
+      "既存建物（中古物件）の取引において、建物のコンディションを把握しやすくするための規定です。",
+      "説明対象は「インスペクションを実施したかどうか」および「実施した場合はその結果の概要」です。",
+      "売買・交換だけでなく、貸借の媒介・代理の場合も説明が必要です。"
+    ],
+    "application_to_question": "既存建物の売買媒介において、調査結果の概要を説明する義務があるとする本肢の記述は法第35条に適合します。",
+    "common_trap": "「インスペクションの実施自体が義務」というひっかけに注意。義務なのは「結果の概要を説明すること」です。",
+    "one_line_memory": "中古物件なら「インスペクションの有無と結果」を重説せよ！",
+    "comparison_points": "35条（重説）：インスペクション結果の概要。37条（書面）：構造耐力上の点検について当事者が確認した事項。",
+    "source_refs": [
+      { "title": "宅建業法", "article": "35条1項6号の2" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-003",
+    "statement_item_id": "KC_TAKKEN_LAW_ART37_001",
+    "app_type": "takken",
+    "category": "宅建業法",
+    "statement_text": "宅地建物取引業者は、自ら売主として宅地の売買契約を締結したときは、買主が宅地建物取引業者であっても、遅滞なく、法第37条の規定に基づく書面を交付しなければならない。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。37条書面（契約書面）の交付義務は、相手方が「業者」であっても免除されません。",
+    "reason_bullets": [
+      "宅建業法には「業者間取引」で適用されない規定（8種制限等）がありますが、37条書面の交付は免除対象ではありません。",
+      "契約内容を確定させ、紛争を防止する実務上の必要性が業者間でも高いためです。",
+      "重要事項説明（35条）は業者間取引で一部簡略化（説明不要、書面交付のみ）されますが、37条は交付必須です。"
+    ],
+    "application_to_question": "買主が業者である場合でも37条書面を交付しなければならないとする記述は正しいです。",
+    "common_trap": "「相手が業者なら37条書面は不要」というひっかけが頻出です。重説（35条）の説明義務免除と混同しないようにしましょう。",
+    "one_line_memory": "プロ同士の取引でも、37条（契約書）は絶対に渡す！",
+    "comparison_points": "35条（重説）：業者間なら「説明」不要（書面交付は必要）。37条：業者間でも「交付」必須。",
+    "source_refs": [
+      { "title": "宅建業法", "article": "37条" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-004",
+    "statement_item_id": "KC_TAKKEN_LAW_COOLINGOFF_001",
+    "app_type": "takken",
+    "category": "宅建業法",
+    "statement_text": "買主Bが、宅地建物取引業者Aの提案により、Bの自宅で宅地の買受けの申込みをした場合、Bは当該申込みを撤回することができる。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。業者の提案による「自宅」での申込みは、クーリング・オフの対象場所となります。",
+    "reason_bullets": [
+      "クーリング・オフができる場所は、原則として「事務所等以外の場所」です。",
+      "「買主自ら申し出た場合の自宅または勤務先」はクーリング・オフができませんが、本肢は「業者の提案」によるものです。",
+      "業者の提案で自宅に招いた場合は、心理的に断りづらい状況にあるとみなされ、消費者保護の対象となります。"
+    ],
+    "application_to_question": "Bが自ら申し出たのではなく「Aの提案」により自宅で申し込んでいるため、クーリング・オフが可能です。",
+    "common_trap": "「自宅＝解除不可」と暗記している人を狙った問題。「どちらが言い出したか（自発性）」を確認してください。",
+    "one_line_memory": "自宅でも「業者が言い出しっぺ」なら、クーリング・オフOK！",
+    "comparison_points": "買主の申出による自宅：解除不可。業者の提案による自宅：解除可能。",
+    "source_refs": [
+      { "title": "宅建業法", "article": "37条の2第1項" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-005",
+    "statement_item_id": "KC_CIVIL_AGENCY_001",
+    "app_type": "takken",
+    "category": "権利関係",
+    "statement_text": "無権代理人が本人の不動産を勝手に売却した後、本人が追認を拒絶した場合、その後本人が死亡して無権代理人が本人を単独で相続しても、その売買契約は有効にならない。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。本人が「追認拒絶」した時点で契約の無効が確定するため、その後の相続で有効に転じることはありません。",
+    "reason_bullets": [
+      "無権代理人が本人を相続した場合、通常は「信義則」により有効とされます（資格の融合）。",
+      "しかし、本人が生前に「追認拒絶（認めない）」という意思表示をした場合、その時点で契約は「確定的に無効」となります。",
+      "一度確定した無効は、その後の相続という事情によって有効に覆ることはありません（判例）。"
+    ],
+    "application_to_question": "本人が既に「追認を拒絶」しているため、無権代理人が単独相続しても契約が有効になることはありません。",
+    "common_trap": "「無権代理人が相続＝有効」という基本ルールを覚えた人を狙った判例知識です。「拒絶済み」か「拒絶前」かをチェック。",
+    "one_line_memory": "死ぬ前に本人が「ダメ！」と言ったら、相続しても無効のまま！",
+    "comparison_points": "拒絶前の相続：有効になる。拒絶後の相続：無効のまま（本肢）。",
+    "source_refs": [
+      { "title": "最高裁判所判例", "article": "昭和48年4月20日" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-006",
+    "statement_item_id": "KC_CIVIL_INTENT_001",
+    "app_type": "takken",
+    "category": "権利関係",
+    "statement_text": "AがBの強迫により、A所有の土地をBに売却し、Bがその土地を事情を知らない第三者Cに転売して登記を移した場合、AはCに対して強迫による取消しを主張できない。",
+    "is_statement_true": false,
+    "conclusion_short": "結論：誤り。強迫による取消しは、善意無過失の第三者に対しても主張（対抗）することができます。",
+    "reason_bullets": [
+      "「強迫」によって意思表示をした人は、自分の落ち度が極めて小さいため、最大限保護されます。",
+      "「詐欺」の場合は善意の第三者に対抗できませんが、「強迫」は第三者が善意であっても契約の取消しを主張できます。",
+      "真実の権利者（A）の保護を、取引の安全（Cの信頼）よりも優先する規定です。"
+    ],
+    "application_to_question": "Aは強迫を受けているため、善意のCに対しても取消しを主張できます。したがって「主張できない」とする本肢は誤りです。",
+    "common_trap": "「詐欺」と「強迫」の第三者対抗要件の入れ替え。「脅された人は最強」と覚えましょう。",
+    "one_line_memory": "詐欺は善意に勝てないが、強迫は善意にも勝てる！",
+    "comparison_points": "詐欺：善意の第三者に対抗不可。強迫：善意の第三者に対抗可能（本肢）。",
+    "source_refs": [
+      { "title": "民法", "article": "96条3項（反対解釈）" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-007",
+    "statement_item_id": "KC_CIVIL_PRESCRIPTION_001",
+    "app_type": "takken",
+    "category": "権利関係",
+    "statement_text": "AがB所有の土地を20年間占有し、取得時効が完成した場合、AはBに対して時効を援用し、その登記をしなければ、時効完成後に当該土地をBから買い受けた第三者Cに対して所有権を主張できない。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。時効完成「後」の第三者に対しては、登記がなければ所有権を対抗できません。",
+    "reason_bullets": [
+      "時効完成「前」の第三者は、当事者（Bの後継者）と同じ扱いなので登記不要です。",
+      "しかし時効完成「後」の第三者は、AとCが「二重譲渡」のような対抗関係に立ちます。",
+      "先に登記を備えた方が勝ち（対抗できる）となるため、Aは登記が必要です。"
+    ],
+    "application_to_question": "時効完成「後」に現れたCに対しては、Aは登記をしていない限り、所有権を主張することができません。",
+    "common_trap": "「前」か「後」か。「時効完成前の第三者には登記不要、完成後の第三者には登記必要」の切り分けが重要です。",
+    "one_line_memory": "時効完成「後」の第三者には、登記で先手を取れ！",
+    "comparison_points": "完成前の第三者：登記不要。完成後の第三者：登記必要（本肢）。",
+    "source_refs": [
+      { "title": "最高裁判所判例", "article": "昭和33年8月28日" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-008",
+    "statement_item_id": "CH_LAW_REGISTRATION_001",
+    "app_type": "chintai",
+    "category": "賃貸管理",
+    "statement_text": "賃貸住宅管理業を営もうとする者は、管理する賃貸住宅の戸数が150戸である場合、国土交通大臣の登録を受けなければならない。",
+    "is_statement_true": false,
+    "conclusion_short": "結論：誤り。登録が義務となるのは「200戸以上」を管理する場合です。",
+    "reason_bullets": [
+      "賃貸住宅管理業法では、営利の有無に関わらず、管理戸数が一定規模以上の業者に登録を義務付けています。",
+      "その基準は「200戸以上」であり、それ未満の場合は任意登録となります。",
+      "戸数のカウントは、管理受託契約に基づき管理する戸数の合計です。"
+    ],
+    "application_to_question": "本問では「150戸」であるため、登録義務はありません。「受けなければならない」とする記述は誤りです。",
+    "common_trap": "「100戸」「200戸」「300戸」などの数字のひっかけ。「ふ・な・れ（2・0・0）な管理は登録義務」と覚えましょう。",
+    "one_line_memory": "賃貸管理業の登録義務は「200戸以上」から！",
+    "comparison_points": "宅建業：1件でも免許必要。賃貸管理業：200戸未満は任意。",
+    "source_refs": [
+      { "title": "賃貸住宅管理業法", "article": "3条1項", "note": "施行令1条" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-009",
+    "statement_item_id": "CH_LAW_CONSIGNMENT_001",
+    "app_type": "chintai",
+    "category": "賃貸管理",
+    "statement_text": "賃貸住宅管理業者は、管理受託契約を締結したときは、速やかに、管理業務の再委託に関する事項を含む書面を貸主に交付しなければならない。",
+    "is_statement_true": true,
+    "conclusion_short": "結論：正しい。管理受託契約締結時の交付書面（契約締結時書面）には、再委託に関する事項の記載が必須です。",
+    "reason_bullets": [
+      "貸主に対し、契約内容を明確にするための義務です。",
+      "「再委託の有無」および「再委託の範囲・内容」は、適切な管理を担保するための重要項目です。",
+      "契約締結「前」の重要事項説明でも説明が必要ですが、締結「後」の書面にも記載が必要です。"
+    ],
+    "application_to_question": "再委託に関する事項を含む書面を交付する義務があるとする記述は正しいです。",
+    "common_trap": "「再委託は全面的に禁止されている」というひっかけ。再委託は可能ですが、契約書面への記載と重要事項としての説明が必要です。",
+    "one_line_memory": "契約が決まったら、再委託の内容も書いて渡す！",
+    "comparison_points": "35条（宅建）：売買・貸借。13条（賃貸管理）：管理受託契約の書面。",
+    "source_refs": [
+      { "title": "賃貸住宅管理業法", "article": "14条" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  },
+  {
+    "explanation_id": "SE-GOLD-010",
+    "statement_item_id": "CH_LAW_IMPMATTERS_001",
+    "app_type": "chintai",
+    "category": "賃貸管理",
+    "statement_text": "賃貸住宅管理業者は、管理受託契約の重要事項説明を行う際、貸主が宅地建物取引業者である場合、説明を省略することができる。",
+    "is_statement_true": false,
+    "conclusion_short": "結論：誤り。賃貸住宅管理業法では、貸主が「業者」であっても重要事項の「説明」を省略することはできません。",
+    "reason_bullets": [
+      "宅建業法（35条）では相手が業者なら説明不要となりますが、賃貸住宅管理業法にはその特例はありません。",
+      "管理受託契約は、宅建業者であっても管理の実務には詳しくない可能性があるため、一律に説明を求めています。",
+      "書面の交付（13条）だけでなく、口頭またはIT等による説明も必須です。"
+    ],
+    "application_to_question": "貸主が業者であるからといって説明を省略できるとする本肢の記述は誤りです。",
+    "common_trap": "「宅建業法と同じだろう」という思い込みを狙った問題。賃貸管理業法は、プロ（貸主）に対しても説明が必要です。",
+    "one_line_memory": "賃貸管理の重説は、相手がプロでも「省略不可」！",
+    "comparison_points": "宅建業法（重説）：プロ相手なら「説明」不要。賃貸管理業法：プロ相手でも「説明」必須。",
+    "source_refs": [
+      { "title": "賃貸住宅管理業法", "article": "13条1項" }
+    ],
+    "source_trace_grade": "A",
+    "quality": "A",
+    "review_status": "auto_ok",
+    "human_review_required": false,
+    "label_conflict_suspected": false
+  }
+]
